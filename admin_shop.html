@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛠 لوحة تحكم المتجر</title>
+<style>
+/* إخفاء الهيدبار والفوتر والتوب بار */
+.header-logo, .sidebar, .search-form, .dark-toggle, .top-bar, header, #header-wrapper, footer, .footer-container, #footer-wrapper {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+    direction: rtl;
+}
+
+h2 { text-align: center; margin-bottom: 20px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: bold; }
+input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; margin-bottom: 5px; }
+button { background: #2196f3; color: white; padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; margin-top: 5px; }
+button:hover { background: #1976d2; }
+.msg { margin-top: 10px; font-weight: bold; }
+.product-item { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; }
+.product-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-left: 10px; }
+.product-actions button { margin-left: 5px; }
+
+/* مودال */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal.show { display: block; }
+.modal-content { background: #fff; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5em; color: #aaa; cursor: pointer; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyByR2B-XISUw_PYh5EeIcbNQwwII0c6xZg",
+  authDomain: "store-points-7d2f4.firebaseapp.com",
+  databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "store-points-7d2f4",
+  storageBucket: "store-points-7d2f4.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+let products = {};
+let editProductId = null;
+
+// تحميل المنتجات وعرضها
+function loadProducts() {
+  database.ref('products').once('value').then(snapshot=>{
+    products = snapshot.val() || {};
+    const container = document.getElementById('productList');
+    container.innerHTML = '';
+    for(let pid in products){
+      const p = products[pid];
+      const div = document.createElement('div');
+      div.className = 'product-item';
+      div.innerHTML = `
+        <div style="display:flex; align-items:center;">
+          <img src="${p.image || 'https://via.placeholder.com/60'}" alt="${p.name}" />
+          <div>
+            <strong>${p.name}</strong><br>
+            السعر: ${p.price} | صاحب المنتج: ${p.ownerCode}
+          </div>
+        </div>
+        <div class="product-actions">
+          <button onclick="openEditModal('${pid}')">✏️ تعديل</button>
+          <button onclick="deleteProduct('${pid}')">🗑 حذف</button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+  });
+}
+
+// إضافة منتج جديد
+function addProduct() {
+  const name = document.getElementById('productName').value.trim();
+  const price = parseInt(document.getElementById('productPrice').value);
+  const ownerCode = document.getElementById('ownerCode').value.trim();
+  const image = document.getElementById('productImage').value.trim();
+  const msg = document.getElementById('msg');
+
+  if(!name || !price || !ownerCode){ msg.style.color='red'; msg.innerText='❌ جميع الحقول مطلوبة!'; return; }
+
+  const newRef = database.ref('products').push();
+  newRef.set({name, price, ownerCode, image: image||''}).then(()=>{
+    msg.style.color='green'; msg.innerText='✅ تم إضافة المنتج!';
+    document.getElementById('productName').value='';
+    document.getElementById('productPrice').value='';
+    document.getElementById('ownerCode').value='';
+    document.getElementById('productImage').value='';
+    loadProducts();
+  }).catch(()=>{ msg.style.color='red'; msg.innerText='❌ حدث خطأ!'; });
+}
+
+// فتح مودال تعديل
+function openEditModal(pid){
+  editProductId = pid;
+  const p = products[pid];
+  document.getElementById('editName').value = p.name;
+  document.getElementById('editPrice').value = p.price;
+  document.getElementById('editOwner').value = p.ownerCode;
+  document.getElementById('editImage').value = p.image || '';
+  document.getElementById('editModal').classList.add('show');
+}
+
+// حفظ التعديل
+function saveEdit(){
+  const name = document.getElementById('editName').value.trim();
+  const price = parseInt(document.getElementById('editPrice').value);
+  const owner = document.getElementById('editOwner').value.trim();
+  const image = document.getElementById('editImage').value.trim();
+  if(!name || !price || !owner){ alert('❌ جميع الحقول مطلوبة!'); return; }
+
+  database.ref(`products/${editProductId}`).update({name, price, ownerCode: owner, image: image||''}).then(()=>{
+    document.getElementById('editModal').classList.remove('show');
+    document.getElementById('msg').style.color = 'green';
+    document.getElementById('msg').innerText = '✅ تم تعديل المنتج!';
+    loadProducts();
+  });
+}
+
+// حذف منتج بدون confirm
+function deleteProduct(pid){
+  const msg = document.getElementById('msg');
+  msg.style.color = 'blue';
+  msg.innerText = '🗑 جاري حذف المنتج...';
+  
+  database.ref(`products/${pid}`).remove().then(()=>{
+    msg.style.color='green';
+    msg.innerText='✅ تم حذف المنتج!';
+    loadProducts();
+  }).catch(()=>{
+    msg.style.color='red';
+    msg.innerText='❌ حدث خطأ أثناء الحذف!';
+  });
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+window.onload = loadProducts;
+</script>
+</head>
+<body>
+
+<h2>🛠 إدارة منتجات المتجر</h2>
+
+<div class="form-group">
+  <label>اسم المنتج:</label>
+  <input type="text" id="productName">
+</div>
+<div class="form-group">
+  <label>السعر بالنقاط:</label>
+  <input type="number" id="productPrice">
+</div>
+<div class="form-group">
+  <label>رابط صورة المنتج:</label>
+  <input type="text" id="productImage">
+</div>
+<div class="form-group">
+  <label>رقم الأكاديمي لصاحب المنتج:</label>
+  <input type="text" id="ownerCode">
+</div>
+
+<button onclick="addProduct()">إضافة المنتج</button>
+<div id="msg" class="msg"></div>
+
+<h2>📦 قائمة المنتجات الحالية</h2>
+<div id="productList"></div>
+
+<!-- مودال التعديل -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('editModal')">✖</button>
+    <h3>تعديل المنتج</h3>
+    <input type="text" id="editName" placeholder="اسم المنتج">
+    <input type="number" id="editPrice" placeholder="السعر">
+    <input type="text" id="editOwner" placeholder="رقم الأكاديمي لصاحب المنتج">
+    <input type="text" id="editImage" placeholder="رابط صورة المنتج">
+    <button onclick="saveEdit()">حفظ التعديل</button>
+  </div>
+</div>
+
+</body>
+</html>
