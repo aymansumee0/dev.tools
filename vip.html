@@ -13,11 +13,13 @@
     display: none !important;
   }
 </style>
+
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <title>عن الأكاديمية</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Cairo', sans-serif;
@@ -26,29 +28,33 @@
       margin: 0;
       padding: 0;
       text-align: center;
+      min-height: 100vh;
     }
+
     h1#anniversary {
-      font-size: 14px;
-      margin-top: 12px;
+      font-size: 15px;
+      margin-top: 14px;
       color: #c0392b;
     }
+
     .countdown-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin: 20px auto 10px;
+      gap: 12px;
+      margin: 22px auto 14px;
+      width: 100%;
     }
 
     .time-box {
       background: white;
-      border-radius: 12px;
-      padding: 10px 16px;
+      border-radius: 14px;
+      padding: 12px 18px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
       color: #2c3e50;
       position: relative;
-      width: 60px;
+      width: 72px;
       overflow: hidden;
     }
 
@@ -58,31 +64,32 @@
     }
 
     .time-label {
-      font-size: 12px;
+      font-size: 13px;
       color: #555;
       margin-top: 4px;
     }
 
     .buttons-container {
-      margin-top: 30px;
+      margin-top: 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      width: 100%;
     }
 
     .dropdown {
-      width: 80%;
-      max-width: 400px;
+      width: 86%;
+      max-width: 460px;
     }
 
     .dropbtn {
       background: linear-gradient(to left, #2980b9, #8e44ad);
       color: white;
-      padding: 12px 20px;
+      padding: 14px 22px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 12px;
+      font-size: 17px;
       cursor: pointer;
       width: 100%;
       transition: 0.3s;
@@ -95,13 +102,13 @@
     .dropdown-content {
       display: none;
       background-color: #fff;
-      border-radius: 8px;
+      border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      padding: 12px;
-      margin-top: 6px;
+      padding: 14px;
+      margin-top: 8px;
       text-align: right;
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 16px;
+      line-height: 1.7;
       color: #2c3e50;
     }
 
@@ -116,10 +123,12 @@
     }
   </style>
 </head>
+
 <body>
+
   <h1 id="anniversary"></h1>
 
-  <div class="countdown-container" id="countdown">
+  <div class="countdown-container">
     <div class="time-box"><span id="days">--</span><div class="time-label">يوم</div></div>
     <div class="time-box"><span id="hours">--</span><div class="time-label">ساعة</div></div>
     <div class="time-box"><span id="minutes">--</span><div class="time-label">دقيقة</div></div>
@@ -127,6 +136,7 @@
   </div>
 
   <div class="buttons-container">
+
     <div class="dropdown">
       <button class="dropbtn">من نحن؟</button>
       <div class="dropdown-content">
@@ -158,98 +168,65 @@
     <div class="dropdown">
       <button class="dropbtn">ما هو الرقم الأكاديمي؟</button>
       <div class="dropdown-content">
-        الرقم الأكاديمي هو رقم خاص بكل طالب يُستخدم لمتابعة تطوره ومستواه. من خلاله يستطيع الطالب معرفة تقدمه، ويمكنه استخدامه في متجر الأكاديمية للحصول على جوائز ونقاط.
+        الرقم الأكاديمي هو رقم خاص بكل طالب يُستخدم لمتابعة تطوره ومستواه ويمكنه استخدامه في متجر الأكاديمية.
       </div>
     </div>
 
     <div class="dropdown">
       <button class="dropbtn">مناسبتنا القادمة</button>
       <div class="dropdown-content">
-        نحن نترقب احتفالنا الكبير بذكرى تأسيس الأكاديمية القادمة، حيث نسعى لمشاركة إنجازاتنا وتكريم طلابنا المميزين. ترقبوا فعالياتنا الرائعة!
+        نترقب احتفالنا القادم بذكرى تأسيس الأكاديمية وتكريم طلابنا المميزين.
       </div>
     </div>
 
     <div class="dropdown">
       <button class="dropbtn">قيمنا</button>
       <div class="dropdown-content">
-        نؤمن بالتميّز، الإبداع، الشفافية، والتمكين. نعمل مع طلابنا لتحقيق بيئة تعليمية تلهمهم ليكونوا أفضل نسخة من أنفسهم.
+        نؤمن بالتميّز والإبداع والشفافية والتمكين.
       </div>
     </div>
 
     <div class="dropdown">
       <button class="dropbtn">فريق العمل</button>
       <div class="dropdown-content">
-        يتكوّن فريقنا من معلمين، مبرمجين، ومصممين متحمسين، يعملون معًا لصناعة تجربة تعليمية فريدة ومتميزة.
+        فريق متكامل من معلمين ومبرمجين ومصممين.
       </div>
     </div>
+
   </div>
 
   <script>
-    let prevValues = { days: '', hours: '', minutes: '', seconds: '' };
-
-    function animateChange(id, newValue) {
-      const el = document.getElementById(id);
-      if (el.textContent !== newValue.toString()) {
-        el.style.transform = 'translateY(-100%)';
-        el.style.opacity = '0';
-        setTimeout(() => {
-          el.textContent = newValue;
-          el.style.transform = 'translateY(0)';
-          el.style.opacity = '1';
-        }, 200);
-      }
-    }
-
     function updateCountdown() {
       const now = new Date();
-      const currentYear = now.getFullYear();
-      let targetDate = new Date(`November 11, ${currentYear} 00:00:00`);
-
-      if (now > targetDate) {
-        targetDate = new Date(`November 11, ${currentYear + 1} 00:00:00`);
-      }
-
+      let targetDate = new Date(`November 11, ${now.getFullYear()} 00:00:00`);
+      if (now > targetDate) targetDate = new Date(`November 11, ${now.getFullYear()+1} 00:00:00`);
       const diff = targetDate - now;
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      animateChange("days", days);
-      animateChange("hours", hours);
-      animateChange("minutes", minutes);
-      animateChange("seconds", seconds);
+      document.getElementById("days").textContent = Math.floor(diff / 86400000);
+      document.getElementById("hours").textContent = Math.floor((diff / 3600000) % 24);
+      document.getElementById("minutes").textContent = Math.floor((diff / 60000) % 60);
+      document.getElementById("seconds").textContent = Math.floor((diff / 1000) % 60);
     }
 
     function updateAnniversary() {
-      const baseYear = 2015;
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      let anniversaryNumber = currentYear - baseYear;
-
-      const targetDate = new Date(`${currentYear}-11-11`);
-      if (now > targetDate) {
-        anniversaryNumber += 1;
-      }
-
-      document.getElementById("anniversary").innerText = `العيد الـ ${anniversaryNumber} للأكاديمية بعد:`;
+      const year = new Date().getFullYear();
+      document.getElementById("anniversary").textContent = `العيد الـ ${year - 2015} للأكاديمية بعد:`;
     }
 
     setInterval(updateCountdown, 1000);
     updateCountdown();
     updateAnniversary();
 
-    const dropdowns = document.querySelectorAll(".dropdown");
-    dropdowns.forEach(drop => {
-      const btn = drop.querySelector(".dropbtn");
-      btn.addEventListener("click", () => {
-        drop.classList.toggle("active");
-        dropdowns.forEach(other => {
-          if (other !== drop) other.classList.remove("active");
+    document.querySelectorAll(".dropbtn").forEach(btn=>{
+      btn.onclick = ()=> {
+        const parent = btn.parentElement;
+        document.querySelectorAll(".dropdown").forEach(d=>{
+          if(d!==parent) d.classList.remove("active");
         });
-      });
+        parent.classList.toggle("active");
+      };
     });
   </script>
+
 </body>
 </html>
