@@ -1,126 +1,122 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <!-- ✅ هذا السطر مهم -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.15">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عن الأكاديمية</title>
 
-  <title>عن الأكاديمية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* إخفاء عناصر بلوجر */
+.header-logo,.sidebar,.search-form,.dark-toggle,.top-bar,
+header,#header-wrapper,footer,.footer-container,#footer-wrapper{
+  display:none !important;
+}
 
-  <style>
-    /* إخفاء عناصر بلوجر */
-    .header-logo,
-    .sidebar,
-    .search-form,
-    .dark-toggle,
-    .top-bar,
-    header,
-    #header-wrapper,
-    footer,
-    .footer-container,
-    #footer-wrapper {
-      display: none !important;
-    }
+/* 🔹 تصغير ذكي للويب فيو */
+.app-scale{
+  transform: scale(0.92);
+  transform-origin: top center;
+  width:108%;
+  margin:0 auto;
+}
 
-    /* ✅ تكبير الصفحة كاملة بدون كسر التصميم */
-    html {
-      transform: scale(1.1);
-      transform-origin: top center;
-    }
+body{
+  margin:0;
+  background:#f9f9f9;
+  font-family:'Cairo',sans-serif;
+  text-align:center;
+  color:#333;
+}
 
-    body {
-      font-family: 'Cairo', sans-serif;
-      background: #f9f9f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+#anniversary{
+  font-size:14px;
+  margin-top:12px;
+  color:#c0392b;
+}
 
-    h1#anniversary {
-      font-size: 14px;
-      margin-top: 12px;
-      color: #c0392b;
-    }
+/* العدّاد */
+.countdown-container{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:20px auto 10px;
+}
 
-    .countdown-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px auto 10px;
-    }
+.time-box{
+  background:#fff;
+  border-radius:14px;
+  padding:12px 18px;
+  box-shadow:0 3px 8px rgba(0,0,0,.1);
+  width:70px;
+}
 
-    .time-box {
-      background: white;
-      border-radius: 12px;
-      padding: 10px 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      font-size: 28px;
-      font-weight: bold;
-      color: #2c3e50;
-      width: 60px;
-    }
+.time-box span{
+  font-size:28px;
+  font-weight:700;
+  color:#2c3e50;
+}
 
-    .time-label {
-      font-size: 12px;
-      color: #555;
-      margin-top: 4px;
-    }
+.time-label{
+  font-size:12px;
+  margin-top:4px;
+  color:#555;
+}
 
-    .buttons-container {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
+/* الأزرار */
+.buttons-container{
+  margin-top:30px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
+}
 
-    .dropdown {
-      width: 80%;
-      max-width: 400px;
-    }
+.dropdown{
+  width:85%;
+  max-width:420px;
+}
 
-    .dropbtn {
-      background: linear-gradient(to left, #2980b9, #8e44ad);
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-    }
+.dropbtn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-size:17px;
+  color:#fff;
+  cursor:pointer;
+  background:linear-gradient(to left,#2980b9,#8e44ad);
+}
 
-    .dropdown-content {
-      display: none;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      padding: 12px;
-      margin-top: 6px;
-      text-align: right;
-      font-size: 15px;
-      line-height: 1.6;
-      color: #2c3e50;
-    }
+.dropdown-content{
+  display:none;
+  background:#fff;
+  margin-top:8px;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  text-align:right;
+  line-height:1.7;
+}
 
-    .dropdown.active .dropdown-content {
-      display: block;
-    }
-  </style>
+.dropdown.active .dropdown-content{
+  display:block;
+}
+</style>
 </head>
 
 <body>
 
-<h1 id="anniversary"></h1>
+<div class="app-scale">
+
+<h1 id="anniversary">العيد الـ 11 للأكاديمية بعد:</h1>
 
 <div class="countdown-container">
-  <div class="time-box"><span id="days">--</span><div class="time-label">يوم</div></div>
-  <div class="time-box"><span id="hours">--</span><div class="time-label">ساعة</div></div>
-  <div class="time-box"><span id="minutes">--</span><div class="time-label">دقيقة</div></div>
   <div class="time-box"><span id="seconds">--</span><div class="time-label">ثانية</div></div>
+  <div class="time-box"><span id="minutes">--</span><div class="time-label">دقيقة</div></div>
+  <div class="time-box"><span id="hours">--</span><div class="time-label">ساعة</div></div>
+  <div class="time-box"><span id="days">--</span><div class="time-label">يوم</div></div>
 </div>
 
 <div class="buttons-container">
@@ -128,21 +124,21 @@
   <div class="dropdown">
     <button class="dropbtn">من نحن؟</button>
     <div class="dropdown-content">
-      نحن أكاديمية تطويرية تهدف لدعم الطلاب في مسيرتهم التعليمية من خلال أدوات مبتكرة.
+      نحن أكاديمية تطويرية تهدف لدعم الطلاب في مسيرتهم التعليمية.
     </div>
   </div>
 
   <div class="dropdown">
     <button class="dropbtn">رؤيتنا</button>
     <div class="dropdown-content">
-      بناء جيل واعٍ ومثقف يستخدم التقنية في تطوير ذاته.
+      بناء جيل واعٍ يستخدم التقنية لتطوير ذاته ومجتمعه.
     </div>
   </div>
 
   <div class="dropdown">
     <button class="dropbtn">رسالتنا</button>
     <div class="dropdown-content">
-      تقديم محتوى تعليمي تفاعلي يعزز مهارات الطالب.
+      تقديم محتوى تعليمي تفاعلي بطرق حديثة.
     </div>
   </div>
 
@@ -156,43 +152,44 @@
   <div class="dropdown">
     <button class="dropbtn">ما هو الرقم الأكاديمي؟</button>
     <div class="dropdown-content">
-      رقم خاص بكل طالب يُستخدم لمتابعة مستواه.
+      رقم خاص بكل طالب لمتابعة تقدمه.
     </div>
   </div>
 
   <div class="dropdown">
     <button class="dropbtn">قيمنا</button>
     <div class="dropdown-content">
-      نؤمن بالتميّز والإبداع والشفافية.
+      التميز – الإبداع – الشفافية – التمكين
     </div>
   </div>
 
 </div>
+</div>
 
 <script>
-  function updateCountdown() {
-    const now = new Date();
-    let target = new Date(`November 11, ${now.getFullYear()} 00:00:00`);
-    if (now > target) target.setFullYear(target.getFullYear() + 1);
+function updateCountdown(){
+  const now=new Date();
+  let target=new Date(`November 11, ${now.getFullYear()} 00:00:00`);
+  if(now>target) target.setFullYear(target.getFullYear()+1);
+  const diff=target-now;
 
-    const diff = target - now;
-    document.getElementById("days").innerText = Math.floor(diff / 86400000);
-    document.getElementById("hours").innerText = Math.floor(diff / 3600000) % 24;
-    document.getElementById("minutes").innerText = Math.floor(diff / 60000) % 60;
-    document.getElementById("seconds").innerText = Math.floor(diff / 1000) % 60;
-  }
+  document.getElementById("days").innerText=Math.floor(diff/86400000);
+  document.getElementById("hours").innerText=Math.floor(diff/3600000)%24;
+  document.getElementById("minutes").innerText=Math.floor(diff/60000)%60;
+  document.getElementById("seconds").innerText=Math.floor(diff/1000)%60;
+}
+setInterval(updateCountdown,1000);
+updateCountdown();
 
-  setInterval(updateCountdown, 1000);
-  updateCountdown();
-
-  document.querySelectorAll(".dropbtn").forEach(btn=>{
-    btn.onclick = ()=>{
-      btn.parentElement.classList.toggle("active");
-      document.querySelectorAll(".dropdown").forEach(d=>{
-        if(d!==btn.parentElement) d.classList.remove("active");
-      });
-    };
-  });
+document.querySelectorAll(".dropbtn").forEach(btn=>{
+  btn.onclick=()=>{
+    const d=btn.parentElement;
+    d.classList.toggle("active");
+    document.querySelectorAll(".dropdown").forEach(o=>{
+      if(o!==d) o.classList.remove("active");
+    });
+  };
+});
 </script>
 
 </body>
