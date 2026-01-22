@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>واجهة الأكاديمية - فيديوهات داخلية</title>
+
+<style>
+/* إخفاء عناصر بلوجر */
+#header-wrapper, header.site-header, header.blog-header, .header-logo, .top-bar, .navbar, .navbar-wrapper,
+#sidebar, .sidebar, .sidebar-wrapper, .sidebar-area,
+#footer-wrapper, footer.site-footer, footer.footer, .footer-container {
+  display: none !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+:root{
+  --bg1:#4e54c8;
+  --bg2:#8f94fb;
+  --card:#ffffff;
+  --muted:#f7f7ff;
+  --primary:#6c63ff;
+  --primary2:#574fdb;
+  --text:#1f2937;
+  --text2:#4e54c8;
+  --overlay:rgba(0,0,0,.65);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:'Cairo',sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px;
+}
+
+/* الكرت الرئيسي */
+.app-container{
+  width:100%;
+  max-width:460px;
+  background:var(--card);
+  border-radius:30px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+  padding:30px;
+}
+
+/* الأزرار الرئيسية (طويلة مثل تصميمك) */
+.dropdown-btn{
+  width:100%;
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:20px;
+  border-radius:16px;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow:0 8px 15px rgba(108,99,255,.3);
+  margin-bottom:18px;
+  user-select:none;
+}
+.dropdown-btn:hover{ background:var(--primary2); }
+
+/* القوائم المنسدلة */
+.dropdown-content{
+  display:none;
+  background:var(--muted);
+  border-radius:16px;
+  padding:18px 18px;
+  margin:-6px 0 18px;
+  box-shadow: 0 15px 25px rgba(110,110,230,0.15);
+}
+.dropdown-content a{
+  display:block;
+  text-align:center;
+  padding:12px 0;
+  color:var(--text2);
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer;
+  border-bottom:1px solid #e1e1ff;
+}
+.dropdown-content a:last-child{border-bottom:none}
+.dropdown-content a:hover{ color:var(--primary); }
+
+/* ===== شاشة البورد (صفحة داخلية Overlay) ===== */
+.board-screen{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  z-index:5000;
+  overflow:auto;
+  padding:22px;
+}
+
+.board-inner{
+  width:100%;
+  max-width:460px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:26px;
+  box-shadow:0 20px 40px rgba(0,0,0,.28);
+  padding:18px;
+}
+
+.board-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  background:rgba(108,99,255,.10);
+  color:var(--text2);
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  user-select:none;
+}
+.board-title{
+  font-weight:800;
+  color:var(--text);
+  font-size:16px;
+}
+
+/* كروت الفيديو (شكل مثل بلوجر: صورة + عنوان) */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.card{
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+  transition:transform .08s ease;
+}
+.card:active{ transform:scale(.99); }
+.thumb{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#111;
+  display:block;
+  position:relative;
+}
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.play-badge{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.play-badge span{
+  width:48px;height:48px;
+  border-radius:14px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter: blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+}
+.card h4{
+  margin:10px 10px 12px;
+  font-size:13px;
+  color:#333;
+  text-align:center;
+  font-weight:800;
+}
+
+/* ===== Modal الفيديو (نفس كودك) ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;              /* مهم: لا يظهر عند فتح الصفحة */
+  place-items:center;
+  padding:18px;
+  background:var(--overlay);
+  z-index:9999;
+}
+.modal.open{ display:grid; }
+.modal__box{
+  width:min(960px, 96vw);
+  aspect-ratio:16/9;
+  background:#000;
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  overflow:hidden;
+  position:relative;
+}
+.modal__close{
+  position:absolute;
+  top:10px;
+  inset-inline-end:10px;
+  width:40px;height:40px;
+  border:0;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  cursor:pointer;
+  font-size:22px;
+  line-height:40px;
+  text-align:center;
+  backdrop-filter: blur(6px);
+}
+.modal__close:hover{ background:rgba(255,255,255,.18); }
+.modal iframe{ width:100%;height:100%;border:0;display:block; }
+body.noscroll{ overflow:hidden; }
+
+@media (max-width:460px){
+  .app-container{ padding:22px; border-radius:26px; }
+  .dropdown-btn{ font-size:16px; padding:18px; }
+}
+</style>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- الدورات -->
+  <button class="dropdown-btn" onclick="toggleDropdown('courses')">
+    <i class="fa-solid fa-graduation-cap"></i> الدورات
+  </button>
+  <div id="courses" class="dropdown-content">
+    <a onclick="openBoard('b_course_1','courses')">دورة الربح من الانترنت</a>
+    <a onclick="openBoard('b_course_2','courses')">دورة تعديل البيكسلاب</a>
+    <a onclick="openBoard('b_course_3','courses')">دورة جرافيكس الكمبيوتر</a>
+    <a onclick="openBoard('b_course_4','courses')">دورة ريادة الاعمال</a>
+    <a onclick="openBoard('b_course_5','courses')">دورة تصميم الثيمات</a>
+  </div>
+
+  <!-- الشروحات -->
+  <button class="dropdown-btn" onclick="toggleDropdown('tutorials')">
+    <i class="fa-solid fa-chalkboard-user"></i> الشروحات
+  </button>
+  <div id="tutorials" class="dropdown-content">
+    <a onclick="openBoard('b_tut_1','tutorials')">تصميم شعارات</a>
+    <a onclick="openBoard('b_tut_2','tutorials')">تصميم بوسترات</a>
+    <a onclick="openBoard('b_tut_3','tutorials')">تعديل التطبيقات</a>
+    <a onclick="openBoard('b_tut_4','tutorials')">شروحات منوعة</a>
+    <a onclick="openBoard('b_tut_5','tutorials')">شروحات برمجة</a>
+    <a onclick="openBoard('b_tut_6','tutorials')">حل المشاكل</a>
+  </div>
+
+  <!-- ورشات تدريبية -->
+  <button class="dropdown-btn" onclick="toggleDropdown('workshops')">
+    <i class="fa-solid fa-chart-line"></i> ورشات تدريبية
+  </button>
+  <div id="workshops" class="dropdown-content">
+    <a onclick="openBoard('b_work_1','workshops')">ورشة الالوان</a>
+    <a onclick="openBoard('b_work_2','workshops')">ورشة التصوير</a>
+  </div>
+
+</div>
+
+<!-- =========================
+     BOARDS (كل عنصر 2 فيديو)
+========================= -->
+
+<!-- الدورات 1 -->
+<div id="b_course_1" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">دورة الربح من الانترنت</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>الربح من الإنترنت 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>الربح من الإنترنت 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الدورات 2 -->
+<div id="b_course_2" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">دورة تعديل البيكسلاب</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>بيكسلاب 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>بيكسلاب 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الدورات 3 -->
+<div id="b_course_3" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">دورة جرافيكس الكمبيوتر</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>جرافيكس 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>جرافيكس 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الدورات 4 -->
+<div id="b_course_4" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">دورة ريادة الاعمال</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>ريادة 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>ريادة 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الدورات 5 -->
+<div id="b_course_5" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">دورة تصميم الثيمات</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>ثيمات 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>ثيمات 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 1 -->
+<div id="b_tut_1" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">تصميم شعارات</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>شعارات 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>شعارات 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 2 -->
+<div id="b_tut_2" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">تصميم بوسترات</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>بوسترات 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>بوسترات 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 3 -->
+<div id="b_tut_3" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">تعديل التطبيقات</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>تعديل 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>تعديل 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 4 -->
+<div id="b_tut_4" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">شروحات منوعة</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>منوعة 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>منوعة 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 5 -->
+<div id="b_tut_5" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">شروحات برمجة</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>برمجة 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>برمجة 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الشروحات 6 -->
+<div id="b_tut_6" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">حل المشاكل</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>حل المشاكل 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>حل المشاكل 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الورش 1 -->
+<div id="b_work_1" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">ورشة الالوان</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A')">
+        <div class="thumb"><img data-thumb="https://youtu.be/GBLpny5P15Q?si=PwWAOOEdjUip4i4A" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>الألوان 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://www.youtube.com/watch?v=aqz-KE-bpKQ')">
+        <div class="thumb"><img data-thumb="https://www.youtube.com/watch?v=aqz-KE-bpKQ" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>الألوان 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الورش 2 -->
+<div id="b_work_2" class="board-screen">
+  <div class="board-inner">
+    <div class="board-head">
+      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
+      <div class="board-title">ورشة التصوير</div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/F0fbzLKjn4U?si=09WR8SBxtyVNM9m5" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>التصوير 1</h4>
+      </div>
+      <div class="card" onclick="openVideo('https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD')">
+        <div class="thumb"><img data-thumb="https://youtube.com/shorts/HuOCgoI0W1Y?si=L0Q05lZmgaNhwoQD" alt=""><div class="play-badge"><span>▶</span></div></div>
+        <h4>التصوير 2</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal الفيديو (بنفس كودك) ===== -->
+<div class="modal" id="videoModal" aria-hidden="true" role="dialog">
+  <div class="modal__box" role="document">
+    <button class="modal__close" id="closeModal" aria-label="إغلاق">×</button>
+    <iframe id="ytFrame"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+</div>
+
+<script>
+/* ===== المنسدلات + البورد ===== */
+let lastSection = null;
+
+function toggleDropdown(id){
+  document.querySelectorAll('.dropdown-content').forEach(d=>{
+    if(d.id !== id) d.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  const show = (el.style.display !== 'block');
+  el.style.display = show ? 'block' : 'none';
+  if(show) lastSection = id;
+}
+
+function openBoard(boardId, sectionId){
+  lastSection = sectionId;
+  document.getElementById(boardId).style.display = 'block';
+}
+
+function closeBoard(){
+  document.querySelectorAll('.board-screen').forEach(b=> b.style.display = 'none');
+  if(lastSection){
+    document.getElementById(lastSection).style.display = 'block';
+  }
+}
+
+/* ===== فيديو مودال: نفس منطق كودك ===== */
+(function () {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('ytFrame');
+  const closeBtn = document.getElementById('closeModal');
+
+  function toEmbedUrl(url) {
+    try {
+      const u = new URL(url);
+      let id = '';
+
+      if (u.hostname.includes('youtu.be')) {
+        id = u.pathname.slice(1);
+      } else if (u.pathname.startsWith('/shorts/')) {
+        id = u.pathname.split('/shorts/')[1].split('?')[0];
+      } else {
+        id = u.searchParams.get('v');
+      }
+
+      const start = u.searchParams.get('t') || u.searchParams.get('start') || 0;
+
+      /* ✅ التعديل الوحيد لإصلاح خطأ 153: origin + mute */
+      const safeOrigin = (location.origin && location.origin !== 'null')
+        ? location.origin
+        : 'https://www.youtube.com';
+
+      const params = new URLSearchParams({
+        autoplay: '1',
+        mute: '1',
+        rel: '0',
+        modestbranding: '1',
+        playsinline: '1',
+        origin: safeOrigin,
+        start: parseInt(start, 10) || 0
+      });
+
+      return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+    } catch {
+      return url;
+    }
+  }
+
+  window.openVideo = function(url){
+    iframe.src = toEmbedUrl(url);
+    modal.classList.add('open');
+    document.body.classList.add('noscroll');
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  function closeModal(){
+    iframe.src = '';
+    modal.classList.remove('open');
+    document.body.classList.remove('noscroll');
+    modal.setAttribute('aria-hidden','true');
+  }
+
+  modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+  closeBtn.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+})();
+
+/* ===== توليد صور الثمبنيل تلقائياً من روابط يوتيوب ===== */
+(function(){
+  function extractId(url){
+    try{
+      const u = new URL(url);
+      if(u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+      if(u.pathname.startsWith('/shorts/')) return u.pathname.split('/shorts/')[1].split('?')[0];
+      return u.searchParams.get('v') || '';
+    }catch{
+      return '';
+    }
+  }
+  document.querySelectorAll('img[data-thumb]').forEach(img=>{
+    const url = img.getAttribute('data-thumb');
+    const id = extractId(url);
+    img.src = id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
+  });
+})();
+</script>
+
+</body>
+</html>
