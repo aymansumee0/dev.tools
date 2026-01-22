@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛒 المتجر بالنقاط</title>
+<style>
+.header-logo,.sidebar,.search-form,.dark-toggle,.top-bar,header,#header-wrapper,footer,.footer-container,#footer-wrapper{display:none !important;}
+body { font-family: Arial, sans-serif; background: #f0f0f0; direction: rtl; margin: 0; padding-bottom: 80px; }
+.store { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; max-width: 900px; margin: 0 auto; padding: 10px; }
+.product { background: #fff; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
+.product img { width: 100%; height: 90px; object-fit: contain; padding: 5px; background: #fff; }
+.product h3 { margin: 5px 0; font-size: 0.95em; }
+.product p { margin: 0; font-size: 0.9em; }
+.btn { background: #2196f3; color: white; padding: 7px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 8px; font-size: 0.9em; }
+.btn:hover { background: #1976d2; }
+.msg { margin-top: 5px; font-size: 0.85em; font-weight: bold; color: green; }
+
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+.modal.show { display: block; }
+.modal-content { background: #fff; margin: 15% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+.modal input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; text-align: center; }
+.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5em; color: #aaa; cursor: pointer; }
+
+/* NEW — مودال معاينة المنتج */
+#previewModal .modal-content img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyByR2B-XISUw_PYh5EeIcbNQwwII0c6xZg",
+  authDomain: "store-points-7d2f4.firebaseapp.com",
+  databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "store-points-7d2f4",
+  storageBucket: "store-points-7d2f4.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+let users = {};
+let products = {};
+let currentProductId = null;
+let currentProduct = null;
+
+window.onload = () => {
+  database.ref('users').once('value').then(snapshot => {
+    users = snapshot.val() || {};
+    loadProducts();
+  });
+};
+
+function loadProducts() {
+  database.ref('products').once('value').then(snapshot => {
+    products = snapshot.val() || {};
+    const storeDiv = document.querySelector('.store');
+    storeDiv.innerHTML = '';
+    for(let pid in products){
+      const product = products[pid];
+      const owner = users[product.ownerCode] || {};
+      const purchaseCount = owner.purchaseCount && owner.purchaseCount[pid] ? owner.purchaseCount[pid] : 0;
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `
+        <img src="${product.image ? product.image : 'https://via.placeholder.com/150'}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>السعر: ${product.price} نقطة</p>
+
+        <!-- تعديل زر الشراء ليعرض المعاينة -->
+        <button class="btn" onclick="openPreview('${pid}')">عرض</button>
+
+        <div class="msg" id="msg${pid}">✅ عدد المشتريات: ${purchaseCount}</div>
+      `;
+      storeDiv.appendChild(div);
+    }
+  });
+}
+
+/* NEW — فتح مودال المعاينة */
+function openPreview(pid){
+    const p = products[pid];
+    currentProductId = pid;
+    currentProduct = p;
+
+    document.getElementById("previewImg").src = p.image || "https://via.placeholder.com/200";
+    document.getElementById("previewName").innerText = p.name;
+    document.getElementById("previewPrice").innerText = p.price;
+
+    document.getElementById("previewModal").classList.add("show");
+}
+
+/* NEW — إغلاق مودال المعاينة */
+function closePreview(){ document.getElementById("previewModal").classList.remove("show"); }
+
+/* NEW — متابعة للشراء */
+function continueToBuy(){
+    closePreview();
+    openPurchaseModal(currentProductId);
+}
+
+function openPurchaseModal(pid) {
+  currentProductId = pid;
+  currentProduct = products[pid];
+  document.getElementById('modalUserCode').value = '';
+  document.getElementById('modalUserPass').value = '';
+  document.getElementById('modalMsg').innerText = '';
+  document.getElementById('purchaseModal').classList.add('show');
+}
+
+function closePurchaseModal() { document.getElementById('purchaseModal').classList.remove('show'); }
+
+function confirmPurchase(){
+  const buyerCode = document.getElementById('modalUserCode').value.trim();
+  const pass = document.getElementById('modalUserPass').value.trim();
+  const msg = document.getElementById('modalMsg');
+
+  if(!buyerCode||!pass){ msg.style.color='red'; msg.innerText='❌ الرجاء إدخال الرقم وكلمة السر!'; return; }
+  const buyer = users[buyerCode];
+  if(!buyer){ msg.style.color='red'; msg.innerText='❌ الرقم غير موجود!'; return; }
+  if(buyer.password!==pass){ msg.style.color='red'; msg.innerText='❌ كلمة السر غير صحيحة!'; return; }
+  if(buyer.points<currentProduct.price){ msg.style.color='red'; msg.innerText='❌ نقاطك غير كافية!'; return; }
+
+  const owner = users[currentProduct.ownerCode];
+  if(!owner){ msg.style.color='red'; msg.innerText='❌ خطأ: صاحب المنتج غير موجود!'; return; }
+
+  const newBuyerPoints = buyer.points - currentProduct.price;
+  const newOwnerPoints = (owner.points || 0) + currentProduct.price;
+  const newPurchaseCount = owner.purchaseCount||{};
+  newPurchaseCount[currentProductId] = (newPurchaseCount[currentProductId]||0)+1;
+
+  database.ref(`users/${currentProduct.ownerCode}`).update({
+    points: newOwnerPoints,
+    purchaseCount: newPurchaseCount
+  }).then(()=> database.ref(`users/${buyerCode}/points`).set(newBuyerPoints))
+  .then(()=>{
+    buyer.points=newBuyerPoints;
+    owner.points=newOwnerPoints;
+    owner.purchaseCount=newPurchaseCount;
+    document.getElementById(`msg${currentProductId}`).innerText=`✅ عدد المشتريات: ${owner.purchaseCount[currentProductId]}`;
+    msg.style.color='green'; msg.innerText='✅ تم الشراء بنجاح!';
+    sendToTelegram(buyerCode,buyer,currentProductId,currentProduct.price,newBuyerPoints);
+    setTimeout(()=>{closePurchaseModal();},1500);
+  }).catch(()=>{msg.style.color='red'; msg.innerText='❌ خطأ في تحديث الرصيد';});
+}
+
+function sendToTelegram(code,userObj,productId,price,remaining){
+  const productName = products[productId].name;
+  let message = `🛒 *طلب شراء جديد*\n📱 *الرقم الخاص:* ${code}\n📦 *المنتج:* ${productName}\n💰 *السعر:* ${price} نقطة\n💳 *الرصيد المتبقي:* ${remaining} نقطة`;
+  let inlineKeyboard={inline_keyboard:[]};
+  if(userObj.telegramId && userObj.telegramId!=="undefined") inlineKeyboard.inline_keyboard.push([{text:"👤 تواصل على التليجرام",url:`tg://user?id=${userObj.telegramId}`}]);
+  else if(userObj.whatsappLink && userObj.whatsappLink!=="undefined") inlineKeyboard.inline_keyboard.push([{text:"📱 تواصل على الواتساب",url:userObj.whatsappLink}]);
+  fetch(`https://api.telegram.org/bot7823121427:AAFAQUIObZPEEhAK18nzWtem9oH7AIqF6ek/sendMessage`,{
+    method:"POST",headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:"-1001573316681",text:message,parse_mode:"Markdown",reply_markup:inlineKeyboard})
+  });
+}
+</script>
+</head>
+<body>
+
+<div class="store"></div>
+
+<!-- NEW — مودال المعاينة -->
+<div class="modal" id="previewModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closePreview()">✖</button>
+    <img id="previewImg" src="">
+    <h3 id="previewName"></h3>
+    <p>السعر: <span id="previewPrice"></span> نقطة</p>
+    <button class="btn" onclick="continueToBuy()">متابعة للشراء</button>
+  </div>
+</div>
+
+<div class="modal" id="purchaseModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closePurchaseModal()">✖</button>
+    <h3>تأكيد الشراء</h3>
+    <input id="modalUserCode" placeholder="رقمك الخاص" />
+    <input type="password" id="modalUserPass" placeholder="كلمة السر" />
+    <div id="modalMsg" class="msg"></div>
+    <button class="btn" onclick="confirmPurchase()">تأكيد</button>
+  </div>
+</div>
+</body>
+</html>
