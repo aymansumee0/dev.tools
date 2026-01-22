@@ -14,7 +14,7 @@ header,#header-wrapper,footer,.footer-container,#footer-wrapper{
   display:none !important;
 }
 
-/* 🔹 تصغير ذكي للويب فيو */
+/* ===== ضبط الحجم للويب فيو فقط ===== */
 .app-scale{
   transform: scale(0.92);
   transform-origin: top center;
@@ -22,21 +22,22 @@ header,#header-wrapper,footer,.footer-container,#footer-wrapper{
   margin:0 auto;
 }
 
+/* ===== التصميم الأصلي بدون أي تعديل ===== */
 body{
-  margin:0;
-  background:#f9f9f9;
   font-family:'Cairo',sans-serif;
-  text-align:center;
+  background:#f9f9f9;
   color:#333;
+  margin:0;
+  padding:0;
+  text-align:center;
 }
 
-#anniversary{
+h1#anniversary{
   font-size:14px;
   margin-top:12px;
   color:#c0392b;
 }
 
-/* العدّاد */
 .countdown-container{
   display:flex;
   justify-content:center;
@@ -46,58 +47,55 @@ body{
 
 .time-box{
   background:#fff;
-  border-radius:14px;
-  padding:12px 18px;
-  box-shadow:0 3px 8px rgba(0,0,0,.1);
-  width:70px;
-}
-
-.time-box span{
+  border-radius:12px;
+  padding:10px 16px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
   font-size:28px;
-  font-weight:700;
+  font-weight:bold;
   color:#2c3e50;
+  width:60px;
 }
 
 .time-label{
   font-size:12px;
-  margin-top:4px;
   color:#555;
+  margin-top:4px;
 }
 
-/* الأزرار */
 .buttons-container{
   margin-top:30px;
   display:flex;
   flex-direction:column;
-  gap:14px;
   align-items:center;
+  gap:12px;
 }
 
 .dropdown{
-  width:85%;
-  max-width:420px;
+  width:80%;
+  max-width:400px;
 }
 
 .dropbtn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-size:17px;
-  color:#fff;
-  cursor:pointer;
   background:linear-gradient(to left,#2980b9,#8e44ad);
+  color:#fff;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+  width:100%;
 }
 
 .dropdown-content{
   display:none;
   background:#fff;
-  margin-top:8px;
-  padding:14px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  padding:12px;
+  margin-top:6px;
   text-align:right;
-  line-height:1.7;
+  font-size:15px;
+  line-height:1.6;
 }
 
 .dropdown.active .dropdown-content{
@@ -121,47 +119,61 @@ body{
 
 <div class="buttons-container">
 
-  <div class="dropdown">
-    <button class="dropbtn">من نحن؟</button>
-    <div class="dropdown-content">
-      نحن أكاديمية تطويرية تهدف لدعم الطلاب في مسيرتهم التعليمية.
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">من نحن؟</button>
+<div class="dropdown-content">
+نحن أكاديمية تطويرية تهدف لدعم الطلاب في مسيرتهم التعليمية من خلال أدوات مبتكرة ومسابقات تحفيزية وتقييمات مستمرة.
+</div>
+</div>
 
-  <div class="dropdown">
-    <button class="dropbtn">رؤيتنا</button>
-    <div class="dropdown-content">
-      بناء جيل واعٍ يستخدم التقنية لتطوير ذاته ومجتمعه.
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">رؤيتنا</button>
+<div class="dropdown-content">
+بناء جيل واعٍ ومثقف يستخدم التقنية في تطوير ذاته ومجتمعه من خلال بيئة تعليمية رقمية ممتعة وآمنة.
+</div>
+</div>
 
-  <div class="dropdown">
-    <button class="dropbtn">رسالتنا</button>
-    <div class="dropdown-content">
-      تقديم محتوى تعليمي تفاعلي بطرق حديثة.
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">رسالتنا</button>
+<div class="dropdown-content">
+تقديم محتوى تعليمي تفاعلي يراعي الفروقات الفردية ويعزز من مهارات الطالب وقدراته بطرق حديثة وإبداعية.
+</div>
+</div>
 
-  <div class="dropdown">
-    <button class="dropbtn">تاريخ التأسيس</button>
-    <div class="dropdown-content">
-      تأسست الأكاديمية في 2015/11/11
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">تاريخ التأسيس</button>
+<div class="dropdown-content">
+تأسست الأكاديمية في 2015/11/11.
+</div>
+</div>
 
-  <div class="dropdown">
-    <button class="dropbtn">ما هو الرقم الأكاديمي؟</button>
-    <div class="dropdown-content">
-      رقم خاص بكل طالب لمتابعة تقدمه.
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">ما هو الرقم الأكاديمي؟</button>
+<div class="dropdown-content">
+الرقم الأكاديمي هو رقم خاص بكل طالب يُستخدم لمتابعة تطوره ومستواه ويمكن استخدامه في متجر الأكاديمية.
+</div>
+</div>
 
-  <div class="dropdown">
-    <button class="dropbtn">قيمنا</button>
-    <div class="dropdown-content">
-      التميز – الإبداع – الشفافية – التمكين
-    </div>
-  </div>
+<div class="dropdown">
+<button class="dropbtn">مناسبتنا القادمة</button>
+<div class="dropdown-content">
+نحن نترقب احتفالنا الكبير بذكرى تأسيس الأكاديمية القادمة وتكريم طلابنا المميزين.
+</div>
+</div>
+
+<div class="dropdown">
+<button class="dropbtn">قيمنا</button>
+<div class="dropdown-content">
+نؤمن بالتميّز، الإبداع، الشفافية، والتمكين.
+</div>
+</div>
+
+<div class="dropdown">
+<button class="dropbtn">فريق العمل</button>
+<div class="dropdown-content">
+يتكوّن فريقنا من معلمين، مبرمجين، ومصممين يعملون بروح الفريق.
+</div>
+</div>
 
 </div>
 </div>
@@ -173,10 +185,10 @@ function updateCountdown(){
   if(now>target) target.setFullYear(target.getFullYear()+1);
   const diff=target-now;
 
-  document.getElementById("days").innerText=Math.floor(diff/86400000);
-  document.getElementById("hours").innerText=Math.floor(diff/3600000)%24;
-  document.getElementById("minutes").innerText=Math.floor(diff/60000)%60;
-  document.getElementById("seconds").innerText=Math.floor(diff/1000)%60;
+  days.innerText=Math.floor(diff/86400000);
+  hours.innerText=Math.floor(diff/3600000)%24;
+  minutes.innerText=Math.floor(diff/60000)%60;
+  seconds.innerText=Math.floor(diff/1000)%60;
 }
 setInterval(updateCountdown,1000);
 updateCountdown();
