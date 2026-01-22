@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>رتبة الطلاب</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+    }
+    .container {
+      width: 100%;
+      max-width: 100%;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+    }
+    .name-box {
+      background-color: #e7f3e7;
+      border: 1px solid #4CAF50;
+      color: #2d662d;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .major-box {
+      background-color: #fef9e7;
+      border: 1px solid #f9e79f;
+      color: #8a6d00;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .box {
+      background-color: #e8f5e9;
+      border: 1px solid #81c784;
+      color: #2e7d32;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .status-ضعيف       { background-color: #f8d7da; border-color: #f5c2c7; color: #a71d2a; }
+    .status-مبتدئ       { background-color: #fff0d6; border-color: #ffe4b3; color: #b36b00; }
+    .status-مقبول       { background-color: #fff7cc; border-color: #ffed99; color: #a67c00; }
+    .status-تحت-المتوسط { background-color: #fff9e6; border-color: #fff0b3; color: #9a8c00; }
+    .status-متوسط       { background-color: #e2f0d9; border-color: #c6e0ad; color: #4d7c19; }
+    .status-جيد         { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+    .status-جيد-جداً    { background-color: #cce5ff; border-color: #99ccff; color: #004085; }
+    .status-متألق       { background-color: #e2e3f3; border-color: #c6c8f0; color: #383d9e; }
+    .status-متفوق       { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+    .status-امتياز      { background-color: #f3e2f3; border-color: #e0c7e0; color: #6f42c1; }
+    .error {
+      color: red;
+      margin-top: 15px;
+    }
+    .stats-box {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      text-align: right;
+    }
+    #totalCount {
+      background: #e0f7fa;
+      border: 1px solid #4dd0e1;
+      color: #007c91;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    /* ✅ كود الإخفاء المدمج */
+    .header-logo,
+    .sidebar,
+    .search-form,
+    .dark-toggle,
+    .top-bar,
+    header,
+    footer,
+    #header-wrapper,
+    .footer-container,
+    #footer-wrapper {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>مستوى رتبتك</h1>
+
+    <!-- خانة الرقم الأكاديمي -->
+    <input id="academicNumber" placeholder="الرقم الأكاديمي" type="text" />
+
+    <!-- زر عرض الرتبة -->
+    <button onclick="checkRank()">عرض الرتبة</button>
+
+    <!-- بيانات الطالب عند الضغط على زر عرض الرتبة -->
+    <div class="result" id="output"></div>
+
+    <!-- قائمة التصفية -->
+    <select id="majorFilter" onchange="updateStatistics()">
+      <option value="">كل التخصصات</option>
+    </select>
+
+    <!-- عدد الطلاب الكلي -->
+    <div id="totalCount">عدد الطلاب الكلي: --</div>
+
+    <!-- إحصائيات الرتب -->
+    <div class="stats-box" id="rankStats"></div>
+  </div>
+
+<script>
+  let studentsData = [];
+
+  const rankOrder = [
+    "امتياز",
+    "متفوق",
+    "متألق",
+    "جيد-جداً",
+    "جيد",
+    "متوسط",
+    "تحت-المتوسط",
+    "مقبول",
+    "مبتدئ",
+    "ضعيف"
+  ];
+
+  function getRank(grade) {
+    const percent = parseFloat(grade);
+    if (percent < 10) return { rank: "ضعيف" };
+    if (percent < 20) return { rank: "مبتدئ" };
+    if (percent < 30) return { rank: "مقبول" };
+    if (percent < 50) return { rank: "تحت-المتوسط" };
+    if (percent < 60) return { rank: "متوسط" };
+    if (percent < 70) return { rank: "جيد" };
+    if (percent < 80) return { rank: "جيد-جداً" };
+    if (percent < 90) return { rank: "متألق" };
+    if (percent < 95) return { rank: "متفوق" };
+    return { rank: "امتياز" };
+  }
+
+  function populateMajorFilter() {
+    const majorFilter = document.getElementById("majorFilter");
+    const selectedMajor = majorFilter.value;
+
+    const majorSet = new Set();
+    studentsData.forEach(s => {
+      if (s.major && s.major.trim() !== "") {
+        majorSet.add(s.major.trim());
+      }
+    });
+
+    majorFilter.innerHTML = '<option value="">كل التخصصات</option>';
+    [...majorSet].sort().forEach(major => {
+      const opt = document.createElement("option");
+      opt.value = major;
+      opt.textContent = major;
+      majorFilter.appendChild(opt);
+    });
+
+    majorFilter.value = selectedMajor;
+  }
+
+  function updateStatistics() {
+    const majorFilter = document.getElementById("majorFilter").value;
+    const filteredStudents = studentsData.filter(s =>
+      s.id && s.grade && (majorFilter === "" || s.major === majorFilter)
+    );
+
+    document.getElementById("totalCount").textContent = "عدد الطلاب الكلي: " + filteredStudents.length;
+
+    const rankCount = {};
+    filteredStudents.forEach(student => {
+      const rank = getRank(student.grade).rank;
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    });
+
+    let statsHTML = "<b>إحصائيات حسب الرتبة:</b><br>";
+    rankOrder.forEach(rank => {
+      if (rankCount[rank]) {
+        statsHTML += `▫️ ${rank.replace(/-/g, " ")}: ${rankCount[rank]}<br>`;
+      }
+    });
+    document.getElementById("rankStats").innerHTML = statsHTML;
+  }
+
+  function checkRank() {
+    const academicNumber = document.getElementById("academicNumber").value.trim();
+    const output = document.getElementById("output");
+    const student = studentsData.find(s => s.id === academicNumber);
+
+    if (student) {
+      const rankData = getRank(student.grade);
+      output.innerHTML = `
+        <div class="name-box">${student.name}</div>
+        <div class="major-box">التخصص: ${student.major}</div>
+        <div class="box">النسبة: ${student.grade}</div>
+        <div class="box status-${rankData.rank}">${rankData.rank.replace(/-/g, " ")}</div>
+      `;
+      output.classList.remove("error");
+    } else {
+      output.innerHTML = "❌ الرقم الأكاديمي غير موجود!";
+      output.classList.add("error");
+    }
+  }
+
+  async function fetchStudentsPeriodically() {
+    try {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbwbu6HvPo_JitIZ7LxlSMXW_y0rOFoSUb_h2yzdY3Ef5nhKLgAE3uAW-1SDe4ysX8QG/exec?action=get");
+      const data = await res.json();
+      studentsData = data;
+      populateMajorFilter();
+      updateStatistics();
+    } catch {
+      document.getElementById("totalCount").textContent = "عدد الطلاب الكلي: ؟";
+    }
+  }
+
+  fetchStudentsPeriodically();
+  setInterval(fetchStudentsPeriodically, 10000);
+</script>
+
+</body>
+</html>
