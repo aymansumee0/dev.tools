@@ -56,22 +56,6 @@ body{
 .screen{display:none}
 .screen.active{display:block}
 
-/* ================= شريط علوي ================= */
-.topbar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px
-}
-.back{
-  border:0;
-  padding:10px 14px;
-  border-radius:12px;
-  cursor:pointer;
-  box-shadow:0 8px 18px rgba(0,0,0,.12);
-}
-.title{font-weight:800;font-size:18px}
-
 /* ================= أداة القياسات ================= */
 .measure-app{
   background:linear-gradient(180deg,#0b1d33,#071423);
@@ -116,7 +100,20 @@ body{
 }
 .templates{margin-top:14px;font-weight:700}
 
-/* ================= مولد التدرج (كما هو) ================= */
+/* زر الإغلاق السفلي */
+.close-btn{
+  margin-top:16px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:#ff4b2b;
+  color:#fff;
+  font-weight:900;
+  font-size:16px;
+}
+
+/* ================= مولد التدرج ================= */
 .grad-wrap{
   background:#fff;
   border-radius:18px;
@@ -150,7 +147,7 @@ body{
 <body>
 <div class="app">
 
-<!-- ================= الرئيسية ================= -->
+<!-- الرئيسية -->
 <div id="home" class="screen active">
   <div class="tools-grid">
     <div class="tool-card gradient-1" onclick="openTool('tool_qyas')">
@@ -170,35 +167,70 @@ body{
   </div>
 </div>
 
-<!-- ================= أداة القياسات (كاملة) ================= -->
+<!-- أداة القياس -->
 <div id="tool_qyas" class="screen">
-  <div class="topbar"><button class="back" onclick="goHome()">رجوع</button><div class="title">تحديد المقاس</div></div>
   <div class="measure-app">
     <div class="measure-row">
       <div><label>DPI</label><input id="dpi" type="number" value="300"></div>
-      <div><label>من</label><select id="fromUnit"><option>px</option><option>cm</option></select></div>
+      <div>
+        <label>من</label>
+        <select id="fromUnit">
+          <option value="cm">سنتيمتر</option>
+          <option value="mm">مليمتر</option>
+          <option value="m">متر</option>
+          <option value="in">بوصة</option>
+          <option value="ft">قدم</option>
+          <option value="px">بكسل</option>
+        </select>
+      </div>
       <div><label>⇄</label><button class="swap-btn" onclick="swapUnits()">⇄</button></div>
-      <div><label>إلى</label><select id="toUnit"><option>cm</option><option>px</option></select></div>
+      <div>
+        <label>إلى</label>
+        <select id="toUnit">
+          <option value="cm">سنتيمتر</option>
+          <option value="mm">مليمتر</option>
+          <option value="m">متر</option>
+          <option value="in">بوصة</option>
+          <option value="ft">قدم</option>
+          <option value="px">بكسل</option>
+        </select>
+      </div>
     </div>
-    <div class="measure-row"><input id="width" placeholder="العرض"><input id="height" placeholder="الطول"></div>
+
+    <div class="measure-row">
+      <input id="width" placeholder="العرض">
+      <input id="height" placeholder="الطول">
+    </div>
+
     <button class="convert-btn" onclick="convert()">تحويل</button>
     <div id="result" class="result-box"></div>
+
     <div class="copy-row">
       <button class="copy-btn" onclick="copyVal('w')">نسخ العرض</button>
       <button class="copy-btn" onclick="copyVal('h')">نسخ الطول</button>
       <button class="copy-btn" onclick="copyAll()">نسخ الكل</button>
     </div>
-    <div class="templates">✨ قوالب المطبوعات
+
+    <div class="templates">
+      ✨ قوالب المطبوعات
       <select onchange="useTemplate(this.value)">
-        <option value="A4">A4</option><option value="A3">A3</option>
+        <option value="">اختر</option>
+        <option value="A4">A4</option>
+        <option value="A3">A3</option>
+        <option value="A2">A2</option>
+        <option value="A1">A1</option>
+        <option value="A0">A0</option>
+        <option value="card">كرت شخصي</option>
+        <option value="roll">رول أب</option>
       </select>
     </div>
+
+    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
   </div>
 </div>
 
-<!-- ================= مولد التدرج ================= -->
+<!-- مولد التدرج -->
 <div id="tool_gradient" class="screen">
-  <div class="topbar"><button class="back" onclick="goHome()">رجوع</button><div class="title">مولد تدرج الألوان</div></div>
   <div class="grad-wrap">
     <div id="gradColors" class="grad-colors">
       <input type="color" value="#ff0055" onchange="updateGradient()">
@@ -209,6 +241,7 @@ body{
     <div id="preview" class="preview"></div>
     <div id="hexList"></div>
     <button class="grad-btn copy-gradient" onclick="copyGradient()">نسخ كود التدرج</button>
+    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
   </div>
 </div>
 
@@ -220,16 +253,19 @@ function goHome(){hideAll();home.classList.add('active')}
 function openTool(id){hideAll();document.getElementById(id).classList.add('active')}
 function soon(){alert("قريباً 🔥")}
 
-/* ===== القياسات ===== */
 function swapUnits(){[fromUnit.value,toUnit.value]=[toUnit.value,fromUnit.value]}
-function convert(){
-  result.innerHTML=`العرض: ${width.value}<br>الطول: ${height.value}`;
-}
+function convert(){result.innerHTML=`العرض: ${width.value}<br>الطول: ${height.value}`}
 function copyVal(t){navigator.clipboard.writeText(t==='w'?width.value:height.value)}
 function copyAll(){navigator.clipboard.writeText(width.value+" x "+height.value)}
-function useTemplate(v){if(v==="A4"){width.value=21;height.value=29.7}}
+function useTemplate(v){
+  const m={
+    A4:[21,29.7],A3:[29.7,42],A2:[42,59.4],A1:[59.4,84.1],A0:[84.1,118.9],
+    card:[8.5,5.5],roll:[80,200]
+  }[v];
+  if(!m)return;
+  width.value=m[0];height.value=m[1];
+}
 
-/* ===== التدرج ===== */
 const gradColors=document.getElementById('gradColors');
 function updateGradient(){
   const colors=[...gradColors.children].map(i=>i.value);
