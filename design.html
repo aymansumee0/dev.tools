@@ -253,19 +253,93 @@ function goHome(){hideAll();home.classList.add('active')}
 function openTool(id){hideAll();document.getElementById(id).classList.add('active')}
 function soon(){alert("قريباً 🔥")}
 
+/* ===== القياسات ===== */
 function swapUnits(){[fromUnit.value,toUnit.value]=[toUnit.value,fromUnit.value]}
-function convert(){result.innerHTML=`العرض: ${width.value}<br>الطول: ${height.value}`}
-function copyVal(t){navigator.clipboard.writeText(t==='w'?width.value:height.value)}
-function copyAll(){navigator.clipboard.writeText(width.value+" x "+height.value)}
+
+/* تحويل إلى سم */
+const toCM = {
+  cm: (v,d)=> v,
+  mm: (v,d)=> v/10,
+  m:  (v,d)=> v*100,
+  in: (v,d)=> v*2.54,
+  ft: (v,d)=> v*30.48,
+  px: (v,d)=> (v/d)*2.54
+};
+/* تحويل من سم */
+const fromCM = {
+  cm: (v,d)=> v,
+  mm: (v,d)=> v*10,
+  m:  (v,d)=> v/100,
+  in: (v,d)=> v/2.54,
+  ft: (v,d)=> v/30.48,
+  px: (v,d)=> (v/2.54)*d
+};
+
+/* نخزن آخر نتيجة تحويل للنسخ */
+let lastW = null;
+let lastH = null;
+
+function convert(){
+  const d = (+dpi.value || 300);
+
+  const w = parseFloat(width.value);
+  const h = parseFloat(height.value);
+
+  if(isNaN(w) || isNaN(h)){
+    result.innerHTML = "❗ أدخل العرض والطول بشكل صحيح";
+    lastW = lastH = null;
+    return;
+  }
+
+  const fu = fromUnit.value;
+  const tu = toUnit.value;
+
+  /* حوّل: من وحدة -> سم -> إلى وحدة */
+  const w_cm = toCM[fu](w, d);
+  const h_cm = toCM[fu](h, d);
+
+  const w_out = fromCM[tu](w_cm, d);
+  const h_out = fromCM[tu](h_cm, d);
+
+  /* تنسيق عرض */
+  const format = (n)=>{
+    const x = Math.round(n*100)/100;
+    return Number.isInteger(x) ? String(x) : String(x);
+  };
+
+  lastW = w_out;
+  lastH = h_out;
+
+  result.innerHTML = `العرض: ${format(w_out)}<br>الطول: ${format(h_out)}`;
+}
+
+function copyVal(t){
+  if(lastW===null || lastH===null){
+    alert("حوّل أولاً ثم انسخ ✅");
+    return;
+  }
+  navigator.clipboard.writeText(String(t==='w' ? lastW : lastH));
+}
+function copyAll(){
+  if(lastW===null || lastH===null){
+    alert("حوّل أولاً ثم انسخ ✅");
+    return;
+  }
+  navigator.clipboard.writeText(String(lastW)+" x "+String(lastH));
+}
+
 function useTemplate(v){
   const m={
     A4:[21,29.7],A3:[29.7,42],A2:[42,59.4],A1:[59.4,84.1],A0:[84.1,118.9],
     card:[8.5,5.5],roll:[80,200]
   }[v];
   if(!m)return;
-  width.value=m[0];height.value=m[1];
+  width.value=m[0];
+  height.value=m[1];
+  /* ما نغيّر وحداتك تلقائياً حتى لا نغيّر سلوكك */
 }
 
+/* ===== التدرج ===== */
 const gradColors=document.getElementById('gradColors');
 function updateGradient(){
   const colors=[...gradColors.children].map(i=>i.value);
