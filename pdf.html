@@ -32,7 +32,6 @@ body{
   padding:25px 15px;
   text-align:center;
   cursor:pointer;
-  user-select:none;
   color:#fff;
   box-shadow:0 8px 18px rgba(0,0,0,.12);
 }
@@ -50,6 +49,7 @@ body{
   border-radius:18px;
   padding:16px;
   box-shadow:0 8px 18px rgba(0,0,0,.12);
+  position:relative;
 }
 
 .close-btn{
@@ -67,21 +67,33 @@ body{
 
 .file-input{
   position:absolute;
-  inset:0;
+  width:100%;
+  height:100%;
   opacity:0;
+  cursor:pointer;
+  z-index:1;
 }
+
 .preview{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
   justify-content:center;
   margin:12px 0;
+  position:relative;
+  z-index:5;
 }
+
 .preview img{
   width:60px;
   height:60px;
   object-fit:cover;
   border-radius:6px;
+}
+
+button{
+  position:relative;
+  z-index:5;
 }
 </style>
 </head>
@@ -89,10 +101,8 @@ body{
 <body>
 <div class="app">
 
-<!-- الصفحة الرئيسية -->
 <div id="home" class="screen active">
   <div class="tools-grid">
-
     <div class="tool-card gradient-1" onclick="openTool('tool_img_pdf')">
       <div class="tool-icon">🖼️</div>
       <div class="tool-label">تحويل الصور إلى PDF</div>
@@ -102,13 +112,13 @@ body{
       <div class="tool-icon">📄</div>
       <div class="tool-label">استخراج الصور من PDF</div>
     </div>
-
   </div>
 </div>
 
-<!-- تحويل الصور إلى PDF -->
+<!-- IMAGE TO PDF -->
 <div id="tool_img_pdf" class="screen">
   <div class="tool-box">
+
     <h3 style="text-align:center">تحويل الصور إلى PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
@@ -125,12 +135,14 @@ body{
     </button>
 
     <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
+
   </div>
 </div>
 
-<!-- استخراج الصور من PDF -->
+<!-- PDF EXTRACT -->
 <div id="tool_pdf_images" class="screen">
   <div class="tool-box">
+
     <h3 style="text-align:center">استخراج الصور من PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
@@ -147,6 +159,7 @@ body{
     </button>
 
     <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
+
   </div>
 </div>
 
@@ -168,100 +181,70 @@ function openTool(id){
   document.getElementById(id).classList.add('active');
 }
 
-/* ===== IMAGE TO PDF (FIX MULTI IMAGE) ===== */
-let images = [];
-const imageInput = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
+/* IMAGE TO PDF */
+let images=[];
+imageInput.onchange=e=>{
+  preview.innerHTML='';
+  images=[...e.target.files];
 
-imageInput.addEventListener("change", function () {
-  preview.innerHTML = "";
-  images = [];
-
-  const files = Array.from(this.files);
-
-  files.forEach(file => {
-    if (!file.type.startsWith("image/")) return;
-
-    images.push(file);
-
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = document.createElement("img");
-      img.src = e.target.result;
+  images.forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=document.createElement('img');
+      img.src=r.result;
       preview.appendChild(img);
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(f);
   });
-});
+};
 
 async function generatePDF(){
-  if(images.length === 0){
-    alert("اختر صور أولاً");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
+  if(!images.length){alert('اختر صور');return;}
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
 
   for(let i=0;i<images.length;i++){
-    const dataUrl = await new Promise(resolve=>{
-      const r = new FileReader();
-      r.onload = ()=>resolve(r.result);
+    const data=await new Promise(res=>{
+      const r=new FileReader();
+      r.onload=()=>res(r.result);
       r.readAsDataURL(images[i]);
     });
-
-    if(i>0) pdf.addPage();
-    pdf.addImage(dataUrl,"JPEG",0,0,210,297);
+    if(i) pdf.addPage();
+    pdf.addImage(data,'JPEG',0,0,210,297);
   }
 
-  const base64 = pdf.output("datauristring");
-  Android.saveBase64File(base64,"images.pdf");
+  pdf.save("images.pdf");
 }
 
-/* ===== PDF EXTRACT ===== */
-let extracted = [];
-const pdfInput = document.getElementById("pdfInput");
-const pdfImages = document.getElementById("pdfImages");
-
-pdfInput.addEventListener("change", async ()=>{
-  pdfImages.innerHTML = "";
-  extracted = [];
-
-  const buf = await pdfInput.files[0].arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+/* PDF EXTRACT */
+let extracted=[];
+pdfInput.onchange=async ()=>{
+  pdfImages.innerHTML='';
+  extracted=[];
+  const buf=await pdfInput.files[0].arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
 
   for(let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const vp = page.getViewport({scale:2});
-    const c = document.createElement("canvas");
-    c.width = vp.width;
-    c.height = vp.height;
+    const page=await pdf.getPage(i);
+    const vp=page.getViewport({scale:2});
+    const c=document.createElement('canvas');
+    c.width=vp.width;c.height=vp.height;
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    const d=c.toDataURL();
+    extracted.push(d);
 
-    await page.render({
-      canvasContext:c.getContext("2d"),
-      viewport:vp
-    }).promise;
-
-    const data = c.toDataURL("image/png");
-    extracted.push(data);
-
-    const img = document.createElement("img");
-    img.src = data;
+    const img=document.createElement('img');
+    img.src=d;
     pdfImages.appendChild(img);
   }
-});
+};
 
 function downloadAllImages(){
-  if(extracted.length === 0){
-    alert("لا توجد صور");
-    return;
-  }
-
-  extracted.forEach((data,i)=>{
-    Android.saveBase64File(
-      data,
-      "image-"+(i+1)+".png"
-    );
+  extracted.forEach((d,i)=>{
+    const a=document.createElement('a');
+    a.href=d;
+    a.download='image-'+(i+1)+'.png';
+    a.click();
   });
 }
 </script>
