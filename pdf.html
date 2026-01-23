@@ -12,17 +12,21 @@ body{
   background:#eef2ff;
   margin:0;
   padding:25px;
-  display:flex;
-  justify-content:center;
   min-height:100vh;
 }
-.app{max-width:460px;width:100%}
+
+.app{
+  max-width:460px;
+  width:100%;
+  margin:0 auto;
+}
 
 .tools-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
   gap:20px;
 }
+
 .tool-card{
   border-radius:18px;
   padding:25px 15px;
@@ -33,6 +37,10 @@ body{
   color:#fff;
   box-shadow:0 8px 18px rgba(0,0,0,.12);
 }
+.tool-card:hover{
+  transform:translateY(-6px);
+}
+
 .tool-icon{font-size:42px;margin-bottom:15px}
 .tool-label{font-weight:700;font-size:18px}
 
@@ -64,9 +72,8 @@ body{
 
 .file-input{
   position:absolute;
+  inset:0;
   opacity:0;
-  width:100%;
-  height:100%;
 }
 </style>
 </head>
@@ -74,6 +81,7 @@ body{
 <body>
 <div class="app">
 
+<!-- الصفحة الرئيسية -->
 <div id="home" class="screen active">
   <div class="tools-grid">
     <div class="tool-card gradient-1" onclick="openTool('tool_img_pdf')">
@@ -140,18 +148,34 @@ body{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
 <script>
-function hideAll(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))}
-function goHome(){hideAll();home.classList.add('active')}
-function openTool(id){hideAll();document.getElementById(id).classList.add('active')}
+function hideAll(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+}
+function goHome(){
+  hideAll();
+  document.getElementById('home').classList.add('active');
+}
+function openTool(id){
+  hideAll();
+  document.getElementById(id).classList.add('active');
+}
 
-/* ===== IMAGE TO PDF (FIXED) ===== */
+/* ===== IMAGE TO PDF ===== */
 let images=[];
 imageInput.onchange=e=>{
   preview.innerHTML='';
   images=[...e.target.files];
   images.forEach(f=>{
-    let r=new FileReader();
-    r.onload=()=>{let i=new Image();i.src=r.result;i.width=60;preview.appendChild(i)};
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=document.createElement('img');
+      img.src=r.result;
+      img.style.width='60px';
+      img.style.height='60px';
+      img.style.objectFit='cover';
+      img.style.display='block';
+      preview.appendChild(img);
+    };
     r.readAsDataURL(f);
   });
 };
@@ -162,13 +186,13 @@ async function generatePDF(){
   const pdf=new jsPDF();
 
   for(let i=0;i<images.length;i++){
-    let d=await new Promise(res=>{
-      let r=new FileReader();
+    const data=await new Promise(res=>{
+      const r=new FileReader();
       r.onload=()=>res(r.result);
       r.readAsDataURL(images[i]);
     });
     if(i) pdf.addPage();
-    pdf.addImage(d,'JPEG',0,0,210,297);
+    pdf.addImage(data,'JPEG',0,0,210,297);
   }
 
   const blob=pdf.output('blob');
@@ -176,13 +200,12 @@ async function generatePDF(){
   const a=document.createElement('a');
   a.href=url;
   a.download='images.pdf';
-  a.target='_self';
   document.body.appendChild(a);
   a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},300);
 }
 
-/* ===== PDF EXTRACT (FIXED) ===== */
+/* ===== PDF EXTRACT ===== */
 let extracted=[];
 pdfInput.onchange=async ()=>{
   pdfImages.innerHTML='';
@@ -198,24 +221,25 @@ pdfInput.onchange=async ()=>{
     await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
     const d=c.toDataURL();
     extracted.push(d);
-    let im=new Image();im.src=d;im.width=60;pdfImages.appendChild(im);
+
+    const img=document.createElement('img');
+    img.src=d;
+    img.style.width='60px';
+    img.style.height='60px';
+    img.style.objectFit='cover';
+    img.style.display='block';
+    pdfImages.appendChild(img);
   }
 };
 
 function downloadAllImages(){
   extracted.forEach((d,i)=>{
-    fetch(d)
-    .then(r=>r.blob())
-    .then(b=>{
-      const u=URL.createObjectURL(b);
-      const a=document.createElement('a');
-      a.href=u;
-      a.download='image-'+(i+1)+'.png';
-      a.target='_self';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},200);
-    });
+    const a=document.createElement('a');
+    a.href=d;
+    a.download='image-'+(i+1)+'.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   });
 }
 </script>
