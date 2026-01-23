@@ -65,6 +65,15 @@ body{
   font-weight:800;
   cursor:pointer;
 }
+
+/* ✅ مهم لـ WebView */
+.file-input{
+  position:absolute;
+  opacity:0;
+  width:100%;
+  height:100%;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -95,9 +104,9 @@ body{
     <h3 style="text-align:center">تحويل الصور إلى PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
-      border-radius:8px;padding:15px;cursor:pointer;">
+      border-radius:8px;padding:15px;cursor:pointer;position:relative;">
       اختر صور
-      <input type="file" id="imageInput" accept="image/*" multiple hidden>
+      <input type="file" id="imageInput" accept="image/*" multiple class="file-input">
     </label>
 
     <div id="preview" style="display:flex;flex-wrap:wrap;gap:8px;
@@ -120,9 +129,9 @@ body{
     <h3 style="text-align:center">استخراج الصور من PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
-      border-radius:8px;padding:15px;cursor:pointer;">
+      border-radius:8px;padding:15px;cursor:pointer;position:relative;">
       اختر ملف PDF
-      <input type="file" id="pdfInput" accept="application/pdf" hidden>
+      <input type="file" id="pdfInput" accept="application/pdf" class="file-input">
     </label>
 
     <div id="pdfImages" style="display:flex;flex-wrap:wrap;gap:8px;
@@ -156,7 +165,7 @@ function openTool(id){
   document.getElementById(id).classList.add('active');
 }
 
-/* ===== PDF IMAGE TO PDF ===== */
+/* ===== IMAGE TO PDF ===== */
 const imageInput = document.getElementById('imageInput');
 const preview = document.getElementById('preview');
 let images = [];
