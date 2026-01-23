@@ -33,10 +33,6 @@ body{
   color:#fff;
   box-shadow:0 8px 18px rgba(0,0,0,.12);
 }
-.tool-card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 15px 35px rgba(0,0,0,.25)
-}
 .tool-icon{font-size:42px;margin-bottom:15px}
 .tool-label{font-weight:700;font-size:18px}
 
@@ -66,13 +62,11 @@ body{
   cursor:pointer;
 }
 
-/* ✅ مهم لـ WebView */
 .file-input{
   position:absolute;
   opacity:0;
   width:100%;
   height:100%;
-  cursor:pointer;
 }
 </style>
 </head>
@@ -80,10 +74,8 @@ body{
 <body>
 <div class="app">
 
-<!-- الصفحة الرئيسية -->
 <div id="home" class="screen active">
   <div class="tools-grid">
-
     <div class="tool-card gradient-1" onclick="openTool('tool_img_pdf')">
       <div class="tool-icon">🖼️</div>
       <div class="tool-label">تحويل الصور إلى PDF</div>
@@ -93,14 +85,12 @@ body{
       <div class="tool-icon">📄</div>
       <div class="tool-label">استخراج الصور من PDF</div>
     </div>
-
   </div>
 </div>
 
 <!-- تحويل الصور إلى PDF -->
 <div id="tool_img_pdf" class="screen">
   <div class="tool-box">
-
     <h3 style="text-align:center">تحويل الصور إلى PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
@@ -118,14 +108,12 @@ body{
     </button>
 
     <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
-
   </div>
 </div>
 
 <!-- استخراج الصور من PDF -->
 <div id="tool_pdf_images" class="screen">
   <div class="tool-box">
-
     <h3 style="text-align:center">استخراج الصور من PDF</h3>
 
     <label style="display:block;text-align:center;border:2px dashed #0c3152;
@@ -143,7 +131,6 @@ body{
     </button>
 
     <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
-
   </div>
 </div>
 
@@ -153,68 +140,54 @@ body{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
 <script>
-function hideAll(){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-}
-function goHome(){
-  hideAll();
-  document.getElementById('home').classList.add('active');
-}
-function openTool(id){
-  hideAll();
-  document.getElementById(id).classList.add('active');
-}
+function hideAll(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))}
+function goHome(){hideAll();home.classList.add('active')}
+function openTool(id){hideAll();document.getElementById(id).classList.add('active')}
 
-/* ===== IMAGE TO PDF ===== */
-const imageInput = document.getElementById('imageInput');
-const preview = document.getElementById('preview');
-let images = [];
-
-imageInput.addEventListener('change', e=>{
+/* ===== IMAGE TO PDF (FIXED) ===== */
+let images=[];
+imageInput.onchange=e=>{
   preview.innerHTML='';
-  images = Array.from(e.target.files);
+  images=[...e.target.files];
   images.forEach(f=>{
-    const r=new FileReader();
-    r.onload=()=>{
-      const img=document.createElement('img');
-      img.src=r.result;
-      img.style.width='60px';
-      img.style.height='60px';
-      img.style.objectFit='cover';
-      preview.appendChild(img);
-    };
+    let r=new FileReader();
+    r.onload=()=>{let i=new Image();i.src=r.result;i.width=60;preview.appendChild(i)};
     r.readAsDataURL(f);
   });
-});
+};
 
 async function generatePDF(){
   if(!images.length){alert('اختر صور');return;}
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF();
+
   for(let i=0;i<images.length;i++){
-    const r=new FileReader();
-    const data=await new Promise(res=>{
+    let d=await new Promise(res=>{
+      let r=new FileReader();
       r.onload=()=>res(r.result);
       r.readAsDataURL(images[i]);
     });
     if(i) pdf.addPage();
-    pdf.addImage(data,'JPEG',0,0,210,297);
+    pdf.addImage(d,'JPEG',0,0,210,297);
   }
-  pdf.save('images.pdf');
+
+  const blob=pdf.output('blob');
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='images.pdf';
+  a.target='_self';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},300);
 }
 
-/* ===== PDF EXTRACT ===== */
-const pdfInput=document.getElementById('pdfInput');
-const pdfImages=document.getElementById('pdfImages');
+/* ===== PDF EXTRACT (FIXED) ===== */
 let extracted=[];
-
-pdfInput.addEventListener('change',async ()=>{
+pdfInput.onchange=async ()=>{
   pdfImages.innerHTML='';
   extracted=[];
-  const file=pdfInput.files[0];
-  if(!file) return;
-
-  const buf=await file.arrayBuffer();
+  const buf=await pdfInput.files[0].arrayBuffer();
   const pdf=await pdfjsLib.getDocument({data:buf}).promise;
 
   for(let i=1;i<=pdf.numPages;i++){
@@ -223,20 +196,26 @@ pdfInput.addEventListener('change',async ()=>{
     const c=document.createElement('canvas');
     c.width=vp.width;c.height=vp.height;
     await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-    const img=c.toDataURL();
-    extracted.push(img);
-    const im=document.createElement('img');
-    im.src=img;
-    im.style.width='60px';
-    pdfImages.appendChild(im);
+    const d=c.toDataURL();
+    extracted.push(d);
+    let im=new Image();im.src=d;im.width=60;pdfImages.appendChild(im);
   }
-});
+};
 
 function downloadAllImages(){
   extracted.forEach((d,i)=>{
-    const a=document.createElement('a');
-    a.href=d;a.download=`image-${i+1}.png`;
-    a.click();
+    fetch(d)
+    .then(r=>r.blob())
+    .then(b=>{
+      const u=URL.createObjectURL(b);
+      const a=document.createElement('a');
+      a.href=u;
+      a.download='image-'+(i+1)+'.png';
+      a.target='_self';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},200);
+    });
   });
 }
 </script>
