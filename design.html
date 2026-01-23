@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>أدوات</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+
+body{
+  font-family:'Cairo',sans-serif;
+  background:#eef2ff;
+  margin:0;
+  padding:25px;
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+}
+.app{max-width:460px;width:100%}
+
+/* ================= الرئيسية ================= */
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:20px;
+}
+.tool-card{
+  border-radius:18px;
+  padding:25px 15px;
+  text-align:center;
+  cursor:pointer;
+  transition:.25s;
+  user-select:none;
+  color:#fff;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+.tool-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 15px 35px rgba(0,0,0,.25)
+}
+.tool-icon{font-size:42px;margin-bottom:15px}
+.tool-label{font-weight:700;font-size:18px}
+
+.gradient-1{background:linear-gradient(135deg,#667eea,#764ba2)}
+.gradient-2{background:linear-gradient(135deg,#f7971e,#ffd200);color:#3a2e00}
+.gradient-3{background:linear-gradient(135deg,#43cea2,#185a9d)}
+.gradient-4{background:linear-gradient(135deg,#ff416c,#ff4b2b)}
+.gradient-5{background:linear-gradient(135deg,#00c6ff,#0072ff)}
+.gradient-6{background:linear-gradient(135deg,#1fbd3f,#12851b)}
+.gradient-7{background:linear-gradient(135deg,#BA0B4E,#C809B1)}
+.gradient-8{background:linear-gradient(135deg,#09005E,#4C2D91)}
+.gradient-9{background:linear-gradient(135deg,#46EFC2,#15D086)}
+.gradient-10{background:linear-gradient(135deg,#DD3212,#573A2F)}
+
+.screen{display:none}
+.screen.active{display:block}
+
+/* ================= شريط علوي ================= */
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px
+}
+.back{
+  border:0;
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+.title{font-weight:800;font-size:18px}
+
+/* ================= أداة القياسات ================= */
+.measure-app{
+  background:linear-gradient(180deg,#0b1d33,#071423);
+  border-radius:20px;
+  padding:18px;
+  color:#fff;
+}
+.measure-row{display:flex;gap:10px;margin-bottom:12px}
+.measure-app label{font-size:13px;color:#cfe3ff;display:block;margin-bottom:4px}
+.measure-app input,
+.measure-app select{
+  width:100%;
+  background:#0f2542;
+  color:#fff;
+  border:1px solid #1f3b63;
+  border-radius:10px;
+  padding:10px
+}
+.swap-btn{
+  width:100%;height:42px;
+  background:#1e88e5;
+  border:none;border-radius:10px;
+  color:#fff;font-size:18px
+}
+.convert-btn{
+  width:100%;padding:12px;
+  border:none;border-radius:14px;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  color:#fff;font-weight:800
+}
+.result-box{
+  background:#08192c;
+  border:1px solid #1f3b63;
+  border-radius:12px;
+  padding:12px;margin-top:10px
+}
+.copy-row{display:flex;gap:8px;margin-top:8px}
+.copy-btn{
+  flex:1;background:#1e88e5;
+  border:none;border-radius:10px;
+  padding:8px;color:#fff;font-weight:700
+}
+.templates{margin-top:14px;font-weight:700}
+
+/* ================= مولد التدرج (كما هو) ================= */
+.grad-wrap{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 8px 18px rgba(0,0,0,.15);
+}
+.grad-colors{display:flex;gap:10px;flex-wrap:wrap}
+.grad-colors input{width:52px;height:52px;border:none;border-radius:12px}
+.grad-btn{
+  width:100%;padding:14px;border:none;border-radius:16px;
+  font-weight:800;margin:8px 0
+}
+.add-btn{background:#0b376b;color:#fff}
+.random-btn{background:linear-gradient(135deg,#ff9800,#ff5722);color:#fff}
+.preview{height:150px;border-radius:14px;margin:12px 0}
+.hex-row{
+  display:flex;justify-content:space-between;
+  background:#f1f1f1;padding:6px 10px;
+  border-radius:8px;margin-bottom:6px;font-family:monospace
+}
+.hex-row button{
+  border:none;background:#007bff;color:#fff;
+  padding:4px 8px;border-radius:6px
+}
+.copy-gradient{
+  background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- ================= الرئيسية ================= -->
+<div id="home" class="screen active">
+  <div class="tools-grid">
+    <div class="tool-card gradient-1" onclick="openTool('tool_qyas')">
+      <div class="tool-icon">📏</div><div class="tool-label">تحديد المقاس</div>
+    </div>
+    <div class="tool-card gradient-5" onclick="openTool('tool_gradient')">
+      <div class="tool-icon">🎨</div><div class="tool-label">مولد التدرج</div>
+    </div>
+    <div class="tool-card gradient-3" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-2" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-6" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-7" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-8" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-9" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-10" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+    <div class="tool-card gradient-4" onclick="soon()"><div class="tool-icon">⏳</div><div class="tool-label">قريباً</div></div>
+  </div>
+</div>
+
+<!-- ================= أداة القياسات (كاملة) ================= -->
+<div id="tool_qyas" class="screen">
+  <div class="topbar"><button class="back" onclick="goHome()">رجوع</button><div class="title">تحديد المقاس</div></div>
+  <div class="measure-app">
+    <div class="measure-row">
+      <div><label>DPI</label><input id="dpi" type="number" value="300"></div>
+      <div><label>من</label><select id="fromUnit"><option>px</option><option>cm</option></select></div>
+      <div><label>⇄</label><button class="swap-btn" onclick="swapUnits()">⇄</button></div>
+      <div><label>إلى</label><select id="toUnit"><option>cm</option><option>px</option></select></div>
+    </div>
+    <div class="measure-row"><input id="width" placeholder="العرض"><input id="height" placeholder="الطول"></div>
+    <button class="convert-btn" onclick="convert()">تحويل</button>
+    <div id="result" class="result-box"></div>
+    <div class="copy-row">
+      <button class="copy-btn" onclick="copyVal('w')">نسخ العرض</button>
+      <button class="copy-btn" onclick="copyVal('h')">نسخ الطول</button>
+      <button class="copy-btn" onclick="copyAll()">نسخ الكل</button>
+    </div>
+    <div class="templates">✨ قوالب المطبوعات
+      <select onchange="useTemplate(this.value)">
+        <option value="A4">A4</option><option value="A3">A3</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ================= مولد التدرج ================= -->
+<div id="tool_gradient" class="screen">
+  <div class="topbar"><button class="back" onclick="goHome()">رجوع</button><div class="title">مولد تدرج الألوان</div></div>
+  <div class="grad-wrap">
+    <div id="gradColors" class="grad-colors">
+      <input type="color" value="#ff0055" onchange="updateGradient()">
+      <input type="color" value="#00aaff" onchange="updateGradient()">
+    </div>
+    <button class="grad-btn add-btn" onclick="addColor()">➕ إضافة لون</button>
+    <button class="grad-btn random-btn" onclick="randomColors()">🎲 ألوان عشوائية</button>
+    <div id="preview" class="preview"></div>
+    <div id="hexList"></div>
+    <button class="grad-btn copy-gradient" onclick="copyGradient()">نسخ كود التدرج</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+function hideAll(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))}
+function goHome(){hideAll();home.classList.add('active')}
+function openTool(id){hideAll();document.getElementById(id).classList.add('active')}
+function soon(){alert("قريباً 🔥")}
+
+/* ===== القياسات ===== */
+function swapUnits(){[fromUnit.value,toUnit.value]=[toUnit.value,fromUnit.value]}
+function convert(){
+  result.innerHTML=`العرض: ${width.value}<br>الطول: ${height.value}`;
+}
+function copyVal(t){navigator.clipboard.writeText(t==='w'?width.value:height.value)}
+function copyAll(){navigator.clipboard.writeText(width.value+" x "+height.value)}
+function useTemplate(v){if(v==="A4"){width.value=21;height.value=29.7}}
+
+/* ===== التدرج ===== */
+const gradColors=document.getElementById('gradColors');
+function updateGradient(){
+  const colors=[...gradColors.children].map(i=>i.value);
+  preview.style.background=`linear-gradient(90deg,${colors.join(',')})`;
+  hexList.innerHTML='';
+  colors.forEach(c=>{
+    hexList.innerHTML+=`<div class="hex-row"><span>${c}</span><button onclick="navigator.clipboard.writeText('${c}')">نسخ</button></div>`;
+  });
+}
+function addColor(){
+  const i=document.createElement('input');
+  i.type='color';
+  i.value='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+  i.onchange=updateGradient;
+  gradColors.appendChild(i);
+  updateGradient();
+}
+function randomColors(){
+  [...gradColors.children].forEach(i=>{
+    i.value='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+  });
+  updateGradient();
+}
+function copyGradient(){
+  const colors=[...gradColors.children].map(i=>i.value);
+  navigator.clipboard.writeText(`background: linear-gradient(90deg, ${colors.join(', ')});`);
+  alert('تم النسخ ✔');
+}
+window.onload=updateGradient;
+</script>
+
+</body>
+</html>
