@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+
+body{
+  font-family:'Cairo',sans-serif;
+  background:#eef2ff;
+  margin:0;
+  padding:25px;
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+}
+.app{max-width:460px;width:100%}
+
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:20px;
+}
+.tool-card{
+  border-radius:18px;
+  padding:25px 15px;
+  text-align:center;
+  cursor:pointer;
+  transition:.25s;
+  user-select:none;
+  color:#fff;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+.tool-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 15px 35px rgba(0,0,0,.25)
+}
+.tool-icon{font-size:42px;margin-bottom:15px}
+.tool-label{font-weight:700;font-size:18px}
+
+.gradient-1{background:linear-gradient(135deg,#43cea2,#185a9d)}
+.gradient-2{background:linear-gradient(135deg,#f7971e,#ffd200);color:#3a2e00}
+
+.screen{display:none}
+.screen.active{display:block}
+
+.tool-box{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+
+.close-btn{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- الصفحة الرئيسية -->
+<div id="home" class="screen active">
+  <div class="tools-grid">
+
+    <div class="tool-card gradient-1" onclick="openTool('tool_img_pdf')">
+      <div class="tool-icon">🖼️</div>
+      <div class="tool-label">تحويل الصور إلى PDF</div>
+    </div>
+
+    <div class="tool-card gradient-2" onclick="openTool('tool_pdf_images')">
+      <div class="tool-icon">📄</div>
+      <div class="tool-label">استخراج الصور من PDF</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- تحويل الصور إلى PDF -->
+<div id="tool_img_pdf" class="screen">
+  <div class="tool-box">
+
+    <h3 style="text-align:center">تحويل الصور إلى PDF</h3>
+
+    <label style="display:block;text-align:center;border:2px dashed #0c3152;
+      border-radius:8px;padding:15px;cursor:pointer;">
+      اختر صور
+      <input type="file" id="imageInput" accept="image/*" multiple hidden>
+    </label>
+
+    <div id="preview" style="display:flex;flex-wrap:wrap;gap:8px;
+      justify-content:center;margin:12px 0;"></div>
+
+    <button onclick="generatePDF()" style="width:100%;padding:10px;
+      background:#0c3152;color:#fff;border:none;border-radius:8px;">
+      تحميل PDF
+    </button>
+
+    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
+
+  </div>
+</div>
+
+<!-- استخراج الصور من PDF -->
+<div id="tool_pdf_images" class="screen">
+  <div class="tool-box">
+
+    <h3 style="text-align:center">استخراج الصور من PDF</h3>
+
+    <label style="display:block;text-align:center;border:2px dashed #0c3152;
+      border-radius:8px;padding:15px;cursor:pointer;">
+      اختر ملف PDF
+      <input type="file" id="pdfInput" accept="application/pdf" hidden>
+    </label>
+
+    <div id="pdfImages" style="display:flex;flex-wrap:wrap;gap:8px;
+      justify-content:center;margin:12px 0;"></div>
+
+    <button onclick="downloadAllImages()" style="width:100%;padding:10px;
+      background:#198754;color:#fff;border:none;border-radius:8px;">
+      تحميل جميع الصور
+    </button>
+
+    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
+
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+
+<script>
+function hideAll(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+}
+function goHome(){
+  hideAll();
+  document.getElementById('home').classList.add('active');
+}
+function openTool(id){
+  hideAll();
+  document.getElementById(id).classList.add('active');
+}
+
+/* ===== PDF IMAGE TO PDF ===== */
+const imageInput = document.getElementById('imageInput');
+const preview = document.getElementById('preview');
+let images = [];
+
+imageInput.addEventListener('change', e=>{
+  preview.innerHTML='';
+  images = Array.from(e.target.files);
+  images.forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=document.createElement('img');
+      img.src=r.result;
+      img.style.width='60px';
+      img.style.height='60px';
+      img.style.objectFit='cover';
+      preview.appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+});
+
+async function generatePDF(){
+  if(!images.length){alert('اختر صور');return;}
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+  for(let i=0;i<images.length;i++){
+    const r=new FileReader();
+    const data=await new Promise(res=>{
+      r.onload=()=>res(r.result);
+      r.readAsDataURL(images[i]);
+    });
+    if(i) pdf.addPage();
+    pdf.addImage(data,'JPEG',0,0,210,297);
+  }
+  pdf.save('images.pdf');
+}
+
+/* ===== PDF EXTRACT ===== */
+const pdfInput=document.getElementById('pdfInput');
+const pdfImages=document.getElementById('pdfImages');
+let extracted=[];
+
+pdfInput.addEventListener('change',async ()=>{
+  pdfImages.innerHTML='';
+  extracted=[];
+  const file=pdfInput.files[0];
+  if(!file) return;
+
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const vp=page.getViewport({scale:2});
+    const c=document.createElement('canvas');
+    c.width=vp.width;c.height=vp.height;
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    const img=c.toDataURL();
+    extracted.push(img);
+    const im=document.createElement('img');
+    im.src=img;
+    im.style.width='60px';
+    pdfImages.appendChild(im);
+  }
+});
+
+function downloadAllImages(){
+  extracted.forEach((d,i)=>{
+    const a=document.createElement('a');
+    a.href=d;a.download=`image-${i+1}.png`;
+    a.click();
+  });
+}
+</script>
+
+</body>
+</html>
