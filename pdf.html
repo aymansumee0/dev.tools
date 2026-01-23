@@ -1,99 +1,49 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
-
 body{
-  font-family:'Cairo',sans-serif;
+  font-family:Arial;
   background:#eef2ff;
   margin:0;
-  padding:25px;
-  min-height:100vh;
+  padding:20px;
 }
-
-.app{
-  max-width:460px;
-  width:100%;
-  margin:0 auto;
-}
-
-.tools-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:20px;
-}
-
-.tool-card{
-  border-radius:18px;
-  padding:25px 15px;
-  text-align:center;
-  cursor:pointer;
-  color:#fff;
-  box-shadow:0 8px 18px rgba(0,0,0,.12);
-}
-.tool-icon{font-size:42px;margin-bottom:15px}
-.tool-label{font-weight:700;font-size:18px}
-
-.gradient-1{background:linear-gradient(135deg,#43cea2,#185a9d)}
-.gradient-2{background:linear-gradient(135deg,#f7971e,#ffd200);color:#3a2e00}
-
+.app{max-width:460px;margin:auto}
 .screen{display:none}
 .screen.active{display:block}
-
-.tool-box{
+.box{
   background:#fff;
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 8px 18px rgba(0,0,0,.12);
-  position:relative;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:15px;
 }
-
-.close-btn{
-  margin-top:20px;
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,#ff416c,#ff4b2b);
-  color:#fff;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.file-input{
-  position:absolute;
-  width:100%;
-  height:100%;
-  opacity:0;
-  cursor:pointer;
-  z-index:1;
-}
-
-.preview{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-  margin:12px 0;
-  position:relative;
-  z-index:5;
-}
-
-.preview img{
-  width:60px;
-  height:60px;
-  object-fit:cover;
-  border-radius:6px;
-}
-
 button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  color:#fff;
+  cursor:pointer;
+}
+.btn-blue{background:#0c3152}
+.btn-green{background:#198754}
+.btn-red{background:#ff4b2b}
+.preview img{width:60px;margin:4px;border-radius:6px}
+.file{
+  border:2px dashed #333;
+  padding:15px;
+  text-align:center;
   position:relative;
-  z-index:5;
+}
+.file input{
+  position:absolute;
+  inset:0;
+  opacity:0;
 }
 </style>
 </head>
@@ -102,64 +52,43 @@ button{
 <div class="app">
 
 <div id="home" class="screen active">
-  <div class="tools-grid">
-    <div class="tool-card gradient-1" onclick="openTool('tool_img_pdf')">
-      <div class="tool-icon">🖼️</div>
-      <div class="tool-label">تحويل الصور إلى PDF</div>
-    </div>
-
-    <div class="tool-card gradient-2" onclick="openTool('tool_pdf_images')">
-      <div class="tool-icon">📄</div>
-      <div class="tool-label">استخراج الصور من PDF</div>
-    </div>
+  <div class="box">
+    <button class="btn-blue" onclick="openTool('imgpdf')">🖼️ صور → PDF</button>
+    <button class="btn-green" onclick="openTool('pdfimg')">📄 PDF → صور</button>
   </div>
 </div>
 
-<!-- IMAGE TO PDF -->
-<div id="tool_img_pdf" class="screen">
-  <div class="tool-box">
+<!-- صور إلى PDF -->
+<div id="imgpdf" class="screen">
+  <div class="box">
+    <h3>تحويل الصور إلى PDF</h3>
 
-    <h3 style="text-align:center">تحويل الصور إلى PDF</h3>
-
-    <label style="display:block;text-align:center;border:2px dashed #0c3152;
-      border-radius:8px;padding:15px;cursor:pointer;position:relative;">
+    <div class="file">
       اختر صور
-      <input type="file" id="imageInput" accept="image/*" multiple class="file-input">
-    </label>
+      <input type="file" id="imageInput" multiple accept="image/*">
+    </div>
 
-    <div id="preview" class="preview"></div>
+    <div class="preview" id="preview"></div>
 
-    <button onclick="generatePDF()" style="width:100%;padding:10px;
-      background:#0c3152;color:#fff;border:none;border-radius:8px;">
-      تحميل PDF
-    </button>
-
-    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
-
+    <button class="btn-blue" onclick="generatePDF()">تحميل PDF</button>
+    <button class="btn-red" onclick="goHome()">رجوع</button>
   </div>
 </div>
 
-<!-- PDF EXTRACT -->
-<div id="tool_pdf_images" class="screen">
-  <div class="tool-box">
+<!-- PDF إلى صور -->
+<div id="pdfimg" class="screen">
+  <div class="box">
+    <h3>استخراج الصور من PDF</h3>
 
-    <h3 style="text-align:center">استخراج الصور من PDF</h3>
-
-    <label style="display:block;text-align:center;border:2px dashed #0c3152;
-      border-radius:8px;padding:15px;cursor:pointer;position:relative;">
+    <div class="file">
       اختر ملف PDF
-      <input type="file" id="pdfInput" accept="application/pdf" class="file-input">
-    </label>
+      <input type="file" id="pdfInput" accept="application/pdf">
+    </div>
 
-    <div id="pdfImages" class="preview"></div>
+    <div class="preview" id="pdfImages"></div>
 
-    <button onclick="downloadAllImages()" style="width:100%;padding:10px;
-      background:#198754;color:#fff;border:none;border-radius:8px;">
-      تحميل جميع الصور
-    </button>
-
-    <button class="close-btn" onclick="goHome()">إغلاق الأداة</button>
-
+    <button class="btn-green" onclick="downloadImages()">تحميل الصور</button>
+    <button class="btn-red" onclick="goHome()">رجوع</button>
   </div>
 </div>
 
@@ -169,28 +98,24 @@ button{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
 <script>
-function hideAll(){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-}
-function goHome(){
-  hideAll();
-  document.getElementById('home').classList.add('active');
-}
 function openTool(id){
-  hideAll();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+function goHome(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  home.classList.add('active');
+}
 
-/* IMAGE TO PDF */
+/* صور → PDF */
 let images=[];
 imageInput.onchange=e=>{
-  preview.innerHTML='';
   images=[...e.target.files];
-
+  preview.innerHTML='';
   images.forEach(f=>{
     const r=new FileReader();
     r.onload=()=>{
-      const img=document.createElement('img');
+      const img=new Image();
       img.src=r.result;
       preview.appendChild(img);
     };
@@ -213,12 +138,17 @@ async function generatePDF(){
     pdf.addImage(data,'JPEG',0,0,210,297);
   }
 
-  pdf.save("images.pdf");
+  if(window.Android){
+    Android.saveBase64File(pdf.output('datauristring'),'images.pdf');
+    alert('تم الحفظ في TatworaAPP');
+  }else{
+    pdf.save('images.pdf');
+  }
 }
 
-/* PDF EXTRACT */
+/* PDF → صور */
 let extracted=[];
-pdfInput.onchange=async ()=>{
+pdfInput.onchange=async()=>{
   pdfImages.innerHTML='';
   extracted=[];
   const buf=await pdfInput.files[0].arrayBuffer();
@@ -230,22 +160,27 @@ pdfInput.onchange=async ()=>{
     const c=document.createElement('canvas');
     c.width=vp.width;c.height=vp.height;
     await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-    const d=c.toDataURL();
+    const d=c.toDataURL('image/png');
     extracted.push(d);
-
-    const img=document.createElement('img');
+    const img=new Image();
     img.src=d;
     pdfImages.appendChild(img);
   }
 };
 
-function downloadAllImages(){
+function downloadImages(){
+  if(!extracted.length){alert('لا توجد صور');return;}
   extracted.forEach((d,i)=>{
-    const a=document.createElement('a');
-    a.href=d;
-    a.download='image-'+(i+1)+'.png';
-    a.click();
+    if(window.Android){
+      Android.saveBase64File(d,`image-${i+1}.png`);
+    }else{
+      const a=document.createElement('a');
+      a.href=d;
+      a.download=`image-${i+1}.png`;
+      a.click();
+    }
   });
+  if(window.Android) alert('تم حفظ الصور');
 }
 </script>
 
