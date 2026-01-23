@@ -3,48 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body{
-  font-family:Arial;
-  background:#eef2ff;
-  margin:0;
-  padding:20px;
-}
+body{font-family:Cairo;background:#eef2ff;margin:0;padding:20px}
 .app{max-width:460px;margin:auto}
 .screen{display:none}
 .screen.active{display:block}
-.box{
-  background:#fff;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:15px;
-}
-button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  color:#fff;
-  cursor:pointer;
-}
-.btn-blue{background:#0c3152}
-.btn-green{background:#198754}
-.btn-red{background:#ff4b2b}
-.preview img{width:60px;margin:4px;border-radius:6px}
-.file{
-  border:2px dashed #333;
-  padding:15px;
-  text-align:center;
-  position:relative;
-}
-.file input{
-  position:absolute;
-  inset:0;
-  opacity:0;
-}
+.tool{background:#fff;padding:15px;border-radius:15px}
+button{width:100%;padding:12px;border:0;border-radius:10px;color:#fff;font-size:16px}
+.close{background:#ff4b2b;margin-top:10px}
+.file{border:2px dashed #333;padding:15px;text-align:center;position:relative}
+.file input{position:absolute;inset:0;opacity:0}
+.preview img{width:60px;margin:4px}
 </style>
 </head>
 
@@ -52,43 +21,32 @@ button{
 <div class="app">
 
 <div id="home" class="screen active">
-  <div class="box">
-    <button class="btn-blue" onclick="openTool('imgpdf')">🖼️ صور → PDF</button>
-    <button class="btn-green" onclick="openTool('pdfimg')">📄 PDF → صور</button>
-  </div>
+  <button style="background:#185a9d" onclick="openTool('imgpdf')">🖼️ صور → PDF</button><br><br>
+  <button style="background:#198754" onclick="openTool('pdfimg')">📄 PDF → صور</button>
 </div>
 
 <!-- صور إلى PDF -->
 <div id="imgpdf" class="screen">
-  <div class="box">
-    <h3>تحويل الصور إلى PDF</h3>
-
+  <div class="tool">
     <div class="file">
       اختر صور
       <input type="file" id="imageInput" multiple accept="image/*">
     </div>
-
-    <div class="preview" id="preview"></div>
-
-    <button class="btn-blue" onclick="generatePDF()">تحميل PDF</button>
-    <button class="btn-red" onclick="goHome()">رجوع</button>
+    <div id="preview" class="preview"></div>
+    <button style="background:#0c3152" onclick="makePDF()">تحميل PDF</button>
+    <button class="close" onclick="goHome()">إغلاق</button>
   </div>
 </div>
 
 <!-- PDF إلى صور -->
 <div id="pdfimg" class="screen">
-  <div class="box">
-    <h3>استخراج الصور من PDF</h3>
-
+  <div class="tool">
     <div class="file">
       اختر ملف PDF
       <input type="file" id="pdfInput" accept="application/pdf">
     </div>
-
-    <div class="preview" id="pdfImages"></div>
-
-    <button class="btn-green" onclick="downloadImages()">تحميل الصور</button>
-    <button class="btn-red" onclick="goHome()">رجوع</button>
+    <div id="pdfImages" class="preview"></div>
+    <button class="close" onclick="goHome()">إغلاق</button>
   </div>
 </div>
 
@@ -98,90 +56,58 @@ button{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+ "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js";
+
 function openTool(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
 }
-function goHome(){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  home.classList.add('active');
-}
+function goHome(){openTool('home');}
 
 /* صور → PDF */
 let images=[];
 imageInput.onchange=e=>{
-  images=[...e.target.files];
-  preview.innerHTML='';
-  images.forEach(f=>{
-    const r=new FileReader();
-    r.onload=()=>{
-      const img=new Image();
-      img.src=r.result;
-      preview.appendChild(img);
-    };
-    r.readAsDataURL(f);
-  });
+ images=[...e.target.files];
+ preview.innerHTML='';
+ images.forEach(f=>{
+  const img=new Image();
+  img.src=URL.createObjectURL(f);
+  preview.appendChild(img);
+ });
 };
 
-async function generatePDF(){
-  if(!images.length){alert('اختر صور');return;}
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF();
-
-  for(let i=0;i<images.length;i++){
-    const data=await new Promise(res=>{
-      const r=new FileReader();
-      r.onload=()=>res(r.result);
-      r.readAsDataURL(images[i]);
-    });
-    if(i) pdf.addPage();
-    pdf.addImage(data,'JPEG',0,0,210,297);
-  }
-
-  if(window.Android){
-    Android.saveBase64File(pdf.output('datauristring'),'images.pdf');
-    alert('تم الحفظ في TatworaAPP');
-  }else{
-    pdf.save('images.pdf');
-  }
+async function makePDF(){
+ if(!images.length){alert('اختر صور');return;}
+ const pdf=new jspdf.jsPDF();
+ for(let i=0;i<images.length;i++){
+  const data=await images[i].arrayBuffer();
+  const b64='data:image/jpeg;base64,'+btoa(
+    new Uint8Array(data).reduce((d,b)=>d+String.fromCharCode(b),'')
+  );
+  if(i) pdf.addPage();
+  pdf.addImage(b64,'JPEG',0,0,210,297);
+ }
+ pdf.save('images.pdf');
 }
 
 /* PDF → صور */
-let extracted=[];
 pdfInput.onchange=async()=>{
-  pdfImages.innerHTML='';
-  extracted=[];
-  const buf=await pdfInput.files[0].arrayBuffer();
-  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+ pdfImages.innerHTML='';
+ const buf=await pdfInput.files[0].arrayBuffer();
+ const pdf=await pdfjsLib.getDocument({data:buf}).promise;
 
-  for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const vp=page.getViewport({scale:2});
-    const c=document.createElement('canvas');
-    c.width=vp.width;c.height=vp.height;
-    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-    const d=c.toDataURL('image/png');
-    extracted.push(d);
-    const img=new Image();
-    img.src=d;
-    pdfImages.appendChild(img);
-  }
+ for(let p=1;p<=pdf.numPages;p++){
+  const page=await pdf.getPage(p);
+  const vp=page.getViewport({scale:2});
+  const c=document.createElement('canvas');
+  c.width=vp.width;c.height=vp.height;
+  await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+  let i=new Image();
+  i.src=c.toDataURL('image/png');
+  pdfImages.appendChild(i);
+ }
 };
-
-function downloadImages(){
-  if(!extracted.length){alert('لا توجد صور');return;}
-  extracted.forEach((d,i)=>{
-    if(window.Android){
-      Android.saveBase64File(d,`image-${i+1}.png`);
-    }else{
-      const a=document.createElement('a');
-      a.href=d;
-      a.download=`image-${i+1}.png`;
-      a.click();
-    }
-  });
-  if(window.Android) alert('تم حفظ الصور');
-}
 </script>
 
 </body>
