@@ -160,7 +160,7 @@ function openTool(id){
   document.getElementById(id).classList.add('active');
 }
 
-/* ===== IMAGE TO PDF ===== */
+/* ===== IMAGE TO PDF (بدون blob) ===== */
 let images=[];
 imageInput.onchange=e=>{
   preview.innerHTML='';
@@ -173,7 +173,6 @@ imageInput.onchange=e=>{
       img.style.width='60px';
       img.style.height='60px';
       img.style.objectFit='cover';
-      img.style.display='block';
       preview.appendChild(img);
     };
     r.readAsDataURL(f);
@@ -195,14 +194,14 @@ async function generatePDF(){
     pdf.addImage(data,'JPEG',0,0,210,297);
   }
 
-  const blob=pdf.output('blob');
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='images.pdf';
+  /* ✅ تحميل آمن داخل WebView */
+  const dataUrl = pdf.output('dataurlstring');
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = 'images.pdf';
   document.body.appendChild(a);
   a.click();
-  setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},300);
+  a.remove();
 }
 
 /* ===== PDF EXTRACT ===== */
@@ -227,7 +226,6 @@ pdfInput.onchange=async ()=>{
     img.style.width='60px';
     img.style.height='60px';
     img.style.objectFit='cover';
-    img.style.display='block';
     pdfImages.appendChild(img);
   }
 };
