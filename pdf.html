@@ -1,199 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
+<title>تحويل الصور و PDF</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>أدوات PDF</title>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
-
 body{
-  font-family:'Cairo',sans-serif;
-  background:#eef2ff;
+  font-family: sans-serif;
+  background:#f2f5fa;
   margin:0;
-  padding:20px;
+  padding:15px;
 }
-.app{max-width:480px;margin:auto}
-
-.card{
+.box{
   background:#fff;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 6px 16px rgba(0,0,0,.15);
-  margin-bottom:20px;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:15px;
 }
-
-h3{text-align:center;margin-top:0}
-
-input[type=file]{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-}
-
-.preview{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-}
-
-.preview img{
-  width:70px;
-  height:70px;
-  object-fit:cover;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
 button{
   width:100%;
   padding:12px;
-  margin-top:10px;
   border:none;
   border-radius:10px;
   font-size:16px;
-  font-weight:bold;
   color:#fff;
   cursor:pointer;
 }
-
-.btn-blue{background:#0c3152}
-.btn-green{background:#198754}
+.blue{background:#123b5d}
+.green{background:#198754}
+.red{background:#dc3545}
+input{display:none}
+.note{
+  font-size:13px;
+  color:#555;
+  margin-top:8px;
+}
 </style>
 </head>
 
 <body>
-<div class="app">
 
-<!-- صور إلى PDF -->
-<div class="card">
-<h3>تحويل الصور إلى PDF</h3>
-
-<input type="file" id="imageInput" accept="image/*" multiple>
-
-<div class="preview" id="imagePreview"></div>
-
-<button class="btn-blue" onclick="makePDF()">تحميل PDF</button>
+<div class="box">
+  <h3>🖼️ تحويل الصور إلى PDF</h3>
+  <label class="blue">
+    <button onclick="pickImages()">اختر صور (متعدد)</button>
+  </label>
+  <br><br>
+  <button class="blue" onclick="makePDF()">حفظ PDF</button>
+  <div class="note">الحفظ في: TataworAPP/PDF</div>
 </div>
 
-<!-- PDF إلى صور -->
-<div class="card">
-<h3>استخراج الصور من PDF</h3>
-
-<input type="file" id="pdfInput" accept="application/pdf">
-
-<div class="preview" id="pdfPreview"></div>
-
-<button class="btn-green" onclick="downloadImages()">تحميل الصور</button>
+<div class="box">
+  <h3>📄 استخراج الصور من PDF</h3>
+  <label>
+    <button class="green" onclick="pickPDF()">اختر ملف PDF</button>
+  </label>
+  <br><br>
+  <button class="green" onclick="extractImages()">حفظ الصور</button>
+  <div class="note">الحفظ في: TataworAPP/صور</div>
 </div>
 
+<div class="box">
+  <button class="red" onclick="history.back()">إغلاق الأداة</button>
 </div>
+
+<input id="imagesInput" type="file" accept="image/*" multiple>
+<input id="pdfInput" type="file" accept="application/pdf">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 <script>
 let images = [];
-let extracted = [];
+let pdfFile = null;
 
-/* ===== صور → PDF (تم الإصلاح) ===== */
-imageInput.onchange = e => {
-  images = [];
-  imagePreview.innerHTML = "";
+function pickImages(){
+  document.getElementById("imagesInput").click();
+}
 
-  [...e.target.files].forEach(file=>{
-    const r = new FileReader();
-    r.onload = ()=>{
-      images.push(r.result);
-      const img = new Image();
-      img.src = r.result;
-      imagePreview.appendChild(img);
-    };
-    r.readAsDataURL(file);
-  });
+function pickPDF(){
+  document.getElementById("pdfInput").click();
+}
+
+document.getElementById("imagesInput").onchange = e=>{
+  images = [...e.target.files];
 };
 
-function makePDF(){
+document.getElementById("pdfInput").onchange = e=>{
+  pdfFile = e.target.files[0];
+};
+
+// ===== صور ➜ PDF (متعدد) =====
+async function makePDF(){
   if(images.length === 0){
     alert("اختر صور أولاً");
     return;
   }
 
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p","mm","a4");
+  const pdf = new jsPDF();
 
-  images.forEach((img,i)=>{
-    if(i > 0) pdf.addPage();
-    pdf.addImage(img,"JPEG",0,0,210,297);
-  });
+  for(let i=0;i<images.length;i++){
+    const img = await fileToBase64(images[i]);
+    const image = new Image();
+    image.src = img;
+    await image.decode();
 
-  const fileName = "PDF_" + Date.now() + ".pdf";
+    const w = pdf.internal.pageSize.getWidth();
+    const h = (image.height * w) / image.width;
 
-  if(window.Android){
-    Android.saveBase64File(
-      pdf.output("datauristring"),
-      "TataworAPP/PDF/" + fileName
-    );
-    alert("تم حفظ PDF");
-  }else{
-    pdf.save(fileName);
+    if(i>0) pdf.addPage();
+    pdf.addImage(img,"PNG",0,0,w,h);
   }
+
+  const base64 = pdf.output("datauristring");
+  Android.savePDF(
+    base64,
+    "images_" + Date.now() + ".pdf"
+  );
 }
 
-/* ===== PDF → صور ===== */
-pdfInput.onchange = async ()=>{
-  extracted = [];
-  pdfPreview.innerHTML = "";
-
-  const buf = await pdfInput.files[0].arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
-
-  for(let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const vp = page.getViewport({scale:2});
-    const c = document.createElement("canvas");
-    c.width = vp.width;
-    c.height = vp.height;
-
-    await page.render({
-      canvasContext:c.getContext("2d"),
-      viewport:vp
-    }).promise;
-
-    const img = c.toDataURL("image/png");
-    extracted.push(img);
-
-    const im = new Image();
-    im.src = img;
-    pdfPreview.appendChild(im);
-  }
-};
-
-function downloadImages(){
-  if(extracted.length === 0){
-    alert("لا توجد صور");
+// ===== PDF ➜ صور =====
+async function extractImages(){
+  if(!pdfFile){
+    alert("اختر ملف PDF");
     return;
   }
 
-  extracted.forEach((img,i)=>{
-    const name = "IMG_" + (i+1) + "_" + Date.now() + ".png";
-    if(window.Android){
-      Android.saveBase64File(
-        img,
-        "TataworAPP/صور/" + name
-      );
-    }else{
-      const a = document.createElement("a");
-      a.href = img;
-      a.download = name;
-      a.click();
-    }
-  });
+  const data = await pdfFile.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data}).promise;
 
-  if(window.Android) alert("تم حفظ الصور");
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale:2});
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({canvasContext:ctx,viewport}).promise;
+
+    const img = canvas.toDataURL("image/png");
+    Android.saveImage(
+      img,
+      "pdf_img_" + i + "_" + Date.now() + ".png"
+    );
+  }
+}
+
+// ===== helper =====
+function fileToBase64(file){
+  return new Promise(res=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result);
+    r.readAsDataURL(file);
+  });
 }
 </script>
 
