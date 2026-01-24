@@ -8,144 +8,119 @@
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
-body {
+body{
   font-family: sans-serif;
-  background:#f5f5f5;
+  background:#f4f4f4;
   margin:0;
   padding:15px;
 }
-
-.card {
+h2{margin-top:0}
+.section{
   background:#fff;
-  padding:20px;
-  margin-bottom:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-  cursor:pointer;
+  padding:15px;
+  border-radius:8px;
+  margin-bottom:20px;
 }
-
-.tool {
-  display:none;
-}
-
-button {
-  padding:10px 15px;
-  margin-top:10px;
+button{
+  padding:10px 14px;
   border:none;
   border-radius:6px;
-  background:#4CAF50;
+  background:#2196F3;
   color:#fff;
-  font-size:16px;
-}
-
-.close {
-  background:#f44336;
-}
-
-input {
+  font-size:15px;
   margin-top:10px;
+}
+button.red{background:#f44336}
+.preview img{
+  width:90px;
+  margin:5px;
+  border-radius:5px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ====== الصفحة الرئيسية ====== -->
-<div id="home">
-  <div class="card" onclick="openTool('img2pdf')">
-    📄 تحويل الصور إلى PDF
-  </div>
+<!-- ================= تحويل الصور إلى PDF ================= -->
+<div class="section">
+<h2>📄 تحويل الصور إلى PDF</h2>
 
-  <div class="card" onclick="openTool('pdf2img')">
-    🖼️ استخراج الصور من PDF
-  </div>
+<input type="file" id="imgInput" multiple accept="image/*"><br>
+<div class="preview" id="imgPreview"></div>
+
+<button onclick="createPDF()">حفظ PDF</button>
 </div>
 
-<!-- ====== أداة الصور إلى PDF ====== -->
-<div id="img2pdf" class="tool">
-  <h3>تحويل الصور إلى PDF</h3>
+<!-- ================= استخراج الصور من PDF ================= -->
+<div class="section">
+<h2>🖼️ استخراج الصور من PDF</h2>
 
-  <input type="file" multiple accept="image/*" onchange="loadImages(this.files)">
-  <br>
+<input type="file" id="pdfInput" accept="application/pdf"><br>
 
-  <button onclick="savePDF()">حفظ PDF</button>
-  <br>
-
-  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
-</div>
-
-<!-- ====== أداة استخراج الصور ====== -->
-<div id="pdf2img" class="tool">
-  <h3>استخراج الصور من PDF</h3>
-
-  <input type="file" accept="application/pdf" onchange="extractImages(this.files[0])">
-  <br>
-
-  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
+<button onclick="extractImages()">استخراج وحفظ الصور</button>
 </div>
 
 <script>
-let images = [];
+let imagesBase64 = [];
 
-// فتح أداة
-function openTool(id) {
-  document.getElementById("home").style.display = "none";
-  document.getElementById(id).style.display = "block";
-}
+// ====== معاينة الصور ======
+document.getElementById("imgInput").onchange = e => {
+  imagesBase64 = [];
+  const preview = document.getElementById("imgPreview");
+  preview.innerHTML = "";
 
-// إغلاق أداة
-function closeTool() {
-  document.querySelectorAll(".tool").forEach(t => t.style.display = "none");
-  document.getElementById("home").style.display = "block";
-  images = [];
-}
-
-// تحميل الصور
-function loadImages(files) {
-  images = [];
-  for (let f of files) {
+  [...e.target.files].forEach(f=>{
     const r = new FileReader();
-    r.onload = e => images.push(e.target.result);
+    r.onload = ev=>{
+      imagesBase64.push(ev.target.result);
+      const img = document.createElement("img");
+      img.src = ev.target.result;
+      preview.appendChild(img);
+    };
     r.readAsDataURL(f);
-  }
-}
+  });
+};
 
-// حفظ PDF
-async function savePDF() {
-  if (images.length === 0) {
+// ====== إنشاء PDF ======
+async function createPDF(){
+  if(imagesBase64.length === 0){
     alert("اختر صور أولاً");
     return;
   }
 
-  const pdfDoc = await PDFLib.PDFDocument.create();
+  const pdf = await PDFLib.PDFDocument.create();
 
-  for (let img of images) {
-    const bytes = await fetch(img).then(r => r.arrayBuffer());
-    const image = await pdfDoc.embedPng(bytes);
-    const page = pdfDoc.addPage([image.width, image.height]);
-    page.drawImage(image, {x:0,y:0,width:image.width,height:image.height});
+  for(const img64 of imagesBase64){
+    const bytes = await fetch(img64).then(r=>r.arrayBuffer());
+    const img = await pdf.embedPng(bytes);
+    const page = pdf.addPage([img.width, img.height]);
+    page.drawImage(img,{x:0,y:0,width:img.width,height:img.height});
   }
 
-  const pdfBytes = await pdfDoc.save();
-
+  const pdfBytes = await pdf.save();
   const base64 =
     "data:application/pdf;base64," +
     btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
 
-  Android.savePDF(base64, "Tatawor_" + Date.now() + ".pdf");
-
+  Android.savePDF(base64,"Images_"+Date.now()+".pdf");
   alert("تم حفظ PDF");
 }
 
-// استخراج الصور (مبسط)
-function extractImages(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    // إرسال الملف للأندرويد (الاستخراج عندك شغال)
-    Android.extractPDF(reader.result, file.name);
+// ====== استخراج الصور ======
+function extractImages(){
+  const f = document.getElementById("pdfInput").files[0];
+  if(!f){
+    alert("اختر ملف PDF");
+    return;
+  }
+
+  const r = new FileReader();
+  r.onload = ()=>{
+    // نرسل الملف للأندرويد (الاستخراج يتم هناك)
+    Android.extractPDF(r.result,"PDF_"+Date.now());
     alert("تم إرسال الملف للاستخراج");
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(f);
 }
 </script>
 
