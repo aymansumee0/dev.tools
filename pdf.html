@@ -15,7 +15,6 @@ body{
   margin:0;
   padding:20px;
 }
-
 .app{max-width:480px;margin:auto}
 
 .card{
@@ -100,14 +99,15 @@ button{
 let images = [];
 let extracted = [];
 
-/* ===== صور → PDF ===== */
+/* ===== صور → PDF (تم الإصلاح) ===== */
 imageInput.onchange = e => {
-  images = [...e.target.files];
+  images = [];
   imagePreview.innerHTML = "";
 
-  images.forEach(file=>{
+  [...e.target.files].forEach(file=>{
     const r = new FileReader();
     r.onload = ()=>{
+      images.push(r.result);
       const img = new Image();
       img.src = r.result;
       imagePreview.appendChild(img);
@@ -116,33 +116,30 @@ imageInput.onchange = e => {
   });
 };
 
-async function makePDF(){
+function makePDF(){
   if(images.length === 0){
     alert("اختر صور أولاً");
     return;
   }
 
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
+  const pdf = new jsPDF("p","mm","a4");
 
-  for(let i=0;i<images.length;i++){
-    const data = await new Promise(res=>{
-      const r = new FileReader();
-      r.onload = ()=>res(r.result);
-      r.readAsDataURL(images[i]);
-    });
-    if(i) pdf.addPage();
-    pdf.addImage(data,"JPEG",0,0,210,297);
-  }
+  images.forEach((img,i)=>{
+    if(i > 0) pdf.addPage();
+    pdf.addImage(img,"JPEG",0,0,210,297);
+  });
+
+  const fileName = "PDF_" + Date.now() + ".pdf";
 
   if(window.Android){
     Android.saveBase64File(
       pdf.output("datauristring"),
-      "images_" + Date.now() + ".pdf"
+      "TataworAPP/PDF/" + fileName
     );
     alert("تم حفظ PDF");
   }else{
-    pdf.save("images.pdf");
+    pdf.save(fileName);
   }
 }
 
@@ -182,9 +179,12 @@ function downloadImages(){
   }
 
   extracted.forEach((img,i)=>{
-    const name = "pdf_img_" + (i+1) + "_" + Date.now() + ".png";
+    const name = "IMG_" + (i+1) + "_" + Date.now() + ".png";
     if(window.Android){
-      Android.saveBase64File(img, name);
+      Android.saveBase64File(
+        img,
+        "TataworAPP/صور/" + name
+      );
     }else{
       const a = document.createElement("a");
       a.href = img;
