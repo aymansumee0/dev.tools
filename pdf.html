@@ -1,225 +1,32 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-body{font-family:'Cairo',sans-serif;background:#eef2ff;margin:0;padding:18px}
-.app{max-width:520px;margin:auto}
-.card{
-  background:#fff;border-radius:18px;padding:16px;margin:12px 0;
-  box-shadow:0 8px 18px rgba(0,0,0,.12)
-}
-h3{margin:0 0 10px;text-align:center}
-label.pick{
-  display:block;border:2px dashed #0c3152;border-radius:10px;padding:14px;
-  text-align:center;position:relative;cursor:pointer;color:#0c3152;font-weight:700
-}
-label.pick input{position:absolute;inset:0;opacity:0}
-.preview{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.preview img{width:72px;height:72px;object-fit:cover;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-.btn{
-  width:100%;border:0;border-radius:12px;padding:12px;margin-top:10px;
-  font-weight:800;font-size:15px;cursor:pointer;color:#fff
-}
-.btn1{background:#0c3152}
-.btn2{background:#198754}
-.btnClose{background:linear-gradient(135deg,#ff416c,#ff4b2b)}
-.note{font-size:13px;color:#555;line-height:1.7;margin-top:8px;text-align:center}
-</style>
+<meta charset="UTF-8">
+<title>أداة الصور</title>
 </head>
-
 <body>
-<div class="app">
 
-<div class="card">
-  <h3>🖼️ تحويل الصور إلى PDF</h3>
+<h3>اختر صور (يدعم متعدد)</h3>
+<input type="file" id="imgs" multiple accept="image/*">
 
-  <label class="pick">
-    اختر صور (يدعم متعدد)
-    <input type="file" id="imgInput" accept="image/*" multiple>
-  </label>
-
-  <div class="preview" id="imgPreview"></div>
-
-  <button class="btn btn1" id="btnMakePdf">حفظ PDF</button>
-
-  <div class="note">
-    الحفظ داخل التطبيق: في <b>/storage/emulated/0/TatworAPP/</b><br>
-    بالمتصفح: تنزيل عادي
-  </div>
-</div>
-
-<div class="card">
-  <h3>📄 استخراج الصور من PDF</h3>
-
-  <label class="pick">
-    اختر ملف PDF
-    <input type="file" id="pdfInput" accept="application/pdf">
-  </label>
-
-  <div class="preview" id="pdfPreview"></div>
-
-  <button class="btn btn2" id="btnSaveImgs">حفظ الصور</button>
-
-  <div class="note">
-    يتم حفظ كل صفحة كصورة PNG (بدون استبدال)
-  </div>
-</div>
-
-<button class="btn btnClose" onclick="window.history.back()">إغلاق الأداة</button>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+<button onclick="sendImages()">حفظ الصور</button>
 
 <script>
-const isWebView = !!window.Android;
+function sendImages(){
+  const files = document.getElementById('imgs').files;
+  if(!files.length){
+    alert("اختر صور أولاً");
+    return;
+  }
 
-// ضروري لـ pdf.js
-if (window.pdfjsLib) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js";
+  for(let i=0;i<files.length;i++){
+    const reader = new FileReader();
+    reader.onload = function(){
+      Android.saveImage(reader.result, "img_"+Date.now()+".png");
+    };
+    reader.readAsDataURL(files[i]);
+  }
 }
-
-const imgInput = document.getElementById('imgInput');
-const imgPreview = document.getElementById('imgPreview');
-const pdfInput = document.getElementById('pdfInput');
-const pdfPreview = document.getElementById('pdfPreview');
-
-const btnMakePdf = document.getElementById('btnMakePdf');
-const btnSaveImgs = document.getElementById('btnSaveImgs');
-
-let imgDataList = [];       // dataURL list
-let extractedImages = [];   // dataURL list
-
-// ✅ قراءة الملفات بشكل تسلسلي عشان WebView ما “يلخبط” مع multiple
-function readFileAsDataURL(file){
-  return new Promise((resolve, reject)=>{
-    const r = new FileReader();
-    r.onload = ()=> resolve(r.result);
-    r.onerror = ()=> reject("FileReader error");
-    r.readAsDataURL(file);
-  });
-}
-
-/* ================== صور -> PDF ================== */
-imgInput.addEventListener('change', async () => {
-  imgDataList = [];
-  imgPreview.innerHTML = "";
-
-  const files = Array.from(imgInput.files || []);
-  if (!files.length) return;
-
-  // اقرأ واحدة واحدة (مهم جدًا للـ WebView)
-  for (const f of files) {
-    if (!f.type.startsWith("image/")) continue;
-    const data = await readFileAsDataURL(f);
-    imgDataList.push(data);
-
-    const im = new Image();
-    im.src = data;
-    imgPreview.appendChild(im);
-  }
-});
-
-btnMakePdf.addEventListener('click', async () => {
-  try{
-    if (!imgDataList.length) { alert("اختر صور أولاً"); return; }
-    if (!window.jspdf || !window.jspdf.jsPDF) { alert("مكتبة PDF لم تُحمّل"); return; }
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: "pt", format: "a4" }); // pt أفضل
-
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-
-    for (let i=0;i<imgDataList.length;i++){
-      const data = imgDataList[i];
-      const img = new Image();
-      img.src = data;
-
-      await new Promise(res=> img.onload = res);
-
-      // الحفاظ على التناسب داخل الصفحة
-      const ratio = Math.min(pageW / img.width, pageH / img.height);
-      const w = img.width * ratio;
-      const h = img.height * ratio;
-      const x = (pageW - w) / 2;
-      const y = (pageH - h) / 2;
-
-      if (i) pdf.addPage();
-      pdf.addImage(data, "JPEG", x, y, w, h);
-    }
-
-    const dataUrl = pdf.output("datauristring");
-
-    if (isWebView) {
-      // حفظ داخل التطبيق
-      window.Android.saveBase64File(dataUrl, "images.pdf");
-      alert("✅ تم حفظ PDF داخل TatworAPP");
-    } else {
-      // تنزيل بالمتصفح
-      pdf.save("images.pdf");
-    }
-
-  }catch(e){
-    alert("خطأ: " + e);
-  }
-});
-
-/* ================== PDF -> صور ================== */
-pdfInput.addEventListener('change', async () => {
-  extractedImages = [];
-  pdfPreview.innerHTML = "";
-
-  const file = (pdfInput.files && pdfInput.files[0]) ? pdfInput.files[0] : null;
-  if (!file) return;
-
-  if (!window.pdfjsLib) { alert("مكتبة PDF.js لم تُحمّل"); return; }
-
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-
-  for (let p=1; p<=pdf.numPages; p++){
-    const page = await pdf.getPage(p);
-    const viewport = page.getViewport({ scale: 2 });
-
-    const canvas = document.createElement("canvas");
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
-
-    const imgData = canvas.toDataURL("image/png");
-    extractedImages.push(imgData);
-
-    const im = new Image();
-    im.src = imgData;
-    pdfPreview.appendChild(im);
-  }
-});
-
-btnSaveImgs.addEventListener('click', () => {
-  if (!extractedImages.length) { alert("اختر PDF أولاً"); return; }
-
-  if (isWebView) {
-    for (let i=0;i<extractedImages.length;i++){
-      window.Android.saveBase64File(extractedImages[i], "pdf_page_" + (i+1) + ".png");
-    }
-    alert("✅ تم حفظ الصور داخل TatworAPP");
-  } else {
-    for (let i=0;i<extractedImages.length;i++){
-      const a = document.createElement("a");
-      a.href = extractedImages[i];
-      a.download = "pdf_page_" + (i+1) + ".png";
-      a.click();
-    }
-  }
-});
 </script>
 
 </body>
