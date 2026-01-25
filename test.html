@@ -1,0 +1,331 @@
+<style>
+  .header-logo,
+  .sidebar,
+  .search-form,
+  .dark-toggle,
+  .top-bar,
+  header,
+  #header-wrapper,
+  footer,
+  .footer-container,
+  #footer-wrapper {
+    display: none !important;
+  }
+</style>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>صفحة الدورات والمستويات</title>
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      direction: rtl;
+    }
+    .course {
+      margin-bottom: 15px;
+    }
+    .course-btn {
+      background: linear-gradient(to left, #667eea, #764ba2);
+      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .levels {
+      display: none;
+      margin-top: 10px;
+      padding-right: 20px;
+    }
+    .level-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 250px;
+      margin: 5px 0;
+      padding: 8px 15px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .count {
+      font-size: 12px;
+      color: #fff;
+      background: #444;
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      right: 0;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+      position: relative;
+    }
+    .modal input {
+      width: 90%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .modal button {
+      padding: 8px 15px;
+      background: #764ba2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #ccc;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="courses-container"></div>
+
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <h3>أدخل الرقم الأكاديمي وكلمة السر</h3>
+      <input type="text" id="studentId" placeholder="الرقم الأكاديمي">
+      <input type="password" id="password" placeholder="كلمة السر">
+      <button onclick="checkLogin()">دخول</button>
+      <p id="loginMessage" style="color: red; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    const courses = [
+      { id: 'graphics', name: 'دورة الجرافيكس', icon: 'fa-paint-brush' },
+      { id: 'programming', name: 'دورة البرمجة', icon: 'fa-code' },
+      { id: 'design', name: 'دورة التصميم', icon: 'fa-pencil-ruler' },
+      { id: 'animation', name: 'دورة الأنيميشن', icon: 'fa-film' },
+      { id: 'ai', name: 'دورة الذكاء الاصطناعي', icon: 'fa-robot' },
+      { id: 'cyber', name: 'دورة الأمن السيبراني', icon: 'fa-shield-alt' },
+      { id: 'office', name: 'دورة تطبيقات الأوفيس', icon: 'fa-file-word' },
+      { id: 'network', name: 'دورة الشبكات', icon: 'fa-network-wired' },
+      { id: 'hardware', name: 'دورة الهاردوير', icon: 'fa-microchip' },
+      { id: 'mobile', name: 'دورة تطوير التطبيقات', icon: 'fa-mobile-alt' },
+      { id: 'web', name: 'دورة تطوير الويب', icon: 'fa-globe' },
+      { id: 'data', name: 'دورة تحليل البيانات', icon: 'fa-chart-bar' }
+    ];
+
+    const studentCounts = {
+      'graphics-1': 4 ,
+      'graphics-2':0 ,
+      'programming-1': 0 ,
+      'programming-2': 0
+    };
+
+    const testLinks = {
+      graphics: [
+        '',
+        'https://tataw0r.blogspot.com/p/level1-test.html',
+        'https://example.com/graphics/level2.html',
+        'https://example.com/graphics/level3.html',
+        'https://example.com/graphics/level4.html',
+        'https://example.com/graphics/level5.html',
+        'https://tataw0r.blogspot.com/p/tools.html?m=1',
+        'https://example.com/graphics/level7.html',
+        'https://example.com/graphics/level8.html',
+        'https://example.com/graphics/level9.html',
+        'https://example.com/graphics/level10.html'
+      ],
+      programming: [
+        '',
+        'https://example.com/programming/level1.html',
+        'https://example.com/programming/level2.html',
+        'https://example.com/programming/level3.html'
+      ],
+      design: [
+        '',
+        'https://example.com/design/level1.html',
+        'https://example.com/design/level2.html',
+        'https://example.com/design/level3.html'
+      ],
+      animation: [
+        '',
+        'https://example.com/animation/level1.html',
+        'https://example.com/animation/level2.html',
+        'https://example.com/animation/level3.html'
+      ],
+      ai: [
+        '',
+        'https://example.com/ai/level1.html',
+        'https://example.com/ai/level2.html',
+        'https://example.com/ai/level3.html'
+      ],
+      cyber: [
+        '',
+        'https://example.com/cyber/level1.html',
+        'https://example.com/cyber/level2.html',
+        'https://example.com/cyber/level3.html'
+      ],
+      office: [
+        '',
+        'https://example.com/office/level1.html',
+        'https://example.com/office/level2.html',
+        'https://example.com/office/level3.html'
+      ],
+      network: [
+        '',
+        'https://example.com/network/level1.html',
+        'https://example.com/network/level2.html',
+        'https://example.com/network/level3.html'
+      ],
+      hardware: [
+        '',
+        'https://example.com/hardware/level1.html',
+        'https://example.com/hardware/level2.html',
+        'https://example.com/hardware/level3.html'
+      ],
+      mobile: [
+        '',
+        'https://example.com/mobile/level1.html',
+        'https://example.com/mobile/level2.html',
+        'https://example.com/mobile/level3.html'
+      ],
+      web: [
+        '',
+        'https://example.com/web/level1.html',
+        'https://example.com/web/level2.html',
+        'https://example.com/web/level3.html'
+      ],
+      data: [
+        '',
+        'https://example.com/data/level1.html',
+        'https://example.com/data/level2.html',
+        'https://example.com/data/level3.html'
+      ]
+    };
+
+    const accessData = {
+      'graphics-1': [
+        { id: '1003', pass: '1003' },
+        { id: '2', pass: 'dev.771944205' },
+        { id: '1004', pass: '200312' },
+        { id: 'gr104', pass: 'pass1d' },
+        { id: 'gr105', pass: 'pass1e' }
+      ],
+      'graphics-2': [
+        { id: 'gr201', pass: 'pass2a' },
+        { id: 'gr202', pass: 'pass2b' },
+        { id: 'gr203', pass: 'pass2c' },
+        { id: 'gr204', pass: 'pass2d' },
+        { id: 'gr205', pass: 'pass2e' }
+      ],
+      'programming-1': [
+        { id: 'pr101', pass: 'code1a' },
+        { id: 'pr102', pass: 'code1b' },
+        { id: 'pr103', pass: 'code1c' }
+      ],
+      'programming-2': [
+        { id: 'pr201', pass: 'code2a' },
+        { id: 'pr202', pass: 'code2b' },
+        { id: 'pr203', pass: 'code2c' }
+      ]
+    };
+
+    let currentKey = '';
+
+    const container = document.getElementById('courses-container');
+    courses.forEach(course => {
+      const courseDiv = document.createElement('div');
+      courseDiv.className = 'course';
+      courseDiv.innerHTML = `
+        <button class="course-btn" onclick="toggleLevels('${course.id}')">
+          <i class="fa ${course.icon}"></i> ${course.name}
+        </button>
+        <div class="levels" id="${course.id}">
+          ${Array.from({ length: 10 }, (_, i) => {
+            const level = i + 1;
+            const key = `${course.id}-${level}`;
+            const count = studentCounts[key] ?? 0;
+            return `
+              <button class="level-btn" onclick="openModal('${course.id}', ${level})">
+                <span>اختبار المستوى ${level}</span>
+                <span class="count">عدد الطلاب (${count} طلاب)</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+      container.appendChild(courseDiv);
+    });
+
+    function toggleLevels(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function openModal(courseId, level) {
+      currentKey = `${courseId}-${level}`;
+      document.getElementById('loginModal').style.display = 'flex';
+      document.getElementById('studentId').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('loginMessage').innerText = '';
+    }
+
+    function closeModal() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    function checkLogin() {
+      const id = document.getElementById('studentId').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      const allowed = accessData[currentKey] || [];
+      const found = allowed.find(item => item.id === id && item.pass === pass);
+
+      if (found) {
+        const [courseId, levelStr] = currentKey.split('-');
+        const level = parseInt(levelStr);
+        const link = testLinks[courseId]?.[level];
+        if (link) {
+          window.location.href = link;
+        } else {
+          document.getElementById('loginMessage').innerText = 'الرابط غير متوفر لهذا المستوى.';
+        }
+      } else {
+        document.getElementById('loginMessage').innerText = 'ما زلت غير مؤهل لدخول هذا الاختبار';
+      }
+    }
+  </script>
+</body>
+</html>
