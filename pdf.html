@@ -13,6 +13,36 @@ body{
   margin:0;
   padding:20px;
 }
+
+/* ===== الصفحة الرئيسية ===== */
+.home{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.tool-card{
+  background:linear-gradient(135deg,#4e54c8,#6c6ff0);
+  color:#fff;
+  border-radius:18px;
+  padding:30px 10px;
+  text-align:center;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+.tool-card span{
+  display:block;
+  font-size:42px;
+  margin-bottom:10px;
+}
+
+/* ===== الأدوات ===== */
+.tool{
+  display:none;
+}
+
 .card{
   background:#fff;
   border-radius:16px;
@@ -20,7 +50,9 @@ body{
   margin-bottom:20px;
   box-shadow:0 6px 16px rgba(0,0,0,.1);
 }
+
 h3{text-align:center}
+
 button{
   width:100%;
   padding:12px;
@@ -31,18 +63,26 @@ button{
   font-size:16px;
   margin-top:10px;
 }
+
+.close{
+  background:#ff4b4b;
+  margin-bottom:12px;
+}
+
 .preview{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
   margin-top:10px;
 }
+
 .preview img{
   width:70px;
   height:70px;
   object-fit:cover;
   border-radius:8px;
 }
+
 input[type=file]{
   width:100%;
   margin-top:10px;
@@ -53,29 +93,52 @@ input[type=file]{
 <body>
 
 <!-- ===================== -->
+<!-- الصفحة الرئيسية -->
+<!-- ===================== -->
+<div class="home" id="home">
+
+  <div class="tool-card" onclick="openTool('imgToPdf')">
+    <span>🖼️</span>
+    تحويل الصور إلى PDF
+  </div>
+
+  <div class="tool-card" onclick="openTool('pdfToImg')">
+    <span>📄</span>
+    استخراج الصور من PDF
+  </div>
+
+</div>
+
+<!-- ===================== -->
 <!-- صور → PDF -->
 <!-- ===================== -->
-<div class="card">
-<h3>تحويل الصور إلى PDF</h3>
+<div class="tool" id="imgToPdf">
+  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
 
-<input type="file" id="imgInput" accept="image/*" multiple>
+  <div class="card">
+    <h3>تحويل الصور إلى PDF</h3>
 
-<div class="preview" id="imgPreview"></div>
+    <input type="file" id="imgInput" accept="image/*" multiple>
+    <div class="preview" id="imgPreview"></div>
 
-<button onclick="makePDF()">حفظ PDF</button>
+    <button onclick="makePDF()">حفظ PDF</button>
+  </div>
 </div>
 
 <!-- ===================== -->
 <!-- PDF → صور -->
 <!-- ===================== -->
-<div class="card">
-<h3>استخراج الصور من PDF</h3>
+<div class="tool" id="pdfToImg">
+  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
 
-<input type="file" id="pdfInput" accept="application/pdf">
+  <div class="card">
+    <h3>استخراج الصور من PDF</h3>
 
-<div class="preview" id="pdfPreview"></div>
+    <input type="file" id="pdfInput" accept="application/pdf">
+    <div class="preview" id="pdfPreview"></div>
 
-<button onclick="saveImages()">حفظ الصور</button>
+    <button onclick="saveImages()">حفظ الصور</button>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -84,6 +147,17 @@ input[type=file]{
 <script>
 let imageList = [];
 let extractedImages = [];
+
+/* ===== فتح / إغلاق ===== */
+function openTool(id){
+  document.getElementById("home").style.display="none";
+  document.getElementById(id).style.display="block";
+}
+
+function closeTool(){
+  document.querySelectorAll(".tool").forEach(t=>t.style.display="none");
+  document.getElementById("home").style.display="grid";
+}
 
 /* =====================
    صور → PDF
@@ -118,18 +192,11 @@ function makePDF(){
     pdf.addImage(img,"JPEG",0,0,210,297);
   });
 
-  // ✅ الحل النهائي لمشكلة WebView
-  const dataUri = pdf.output("datauristring");
-  const base64 = dataUri.split(",")[1]; // إزالة data:application/pdf;base64,
+  const base64 = pdf.output("datauristring");
 
   if(window.Android){
-    Android.savePDF(
-      base64,
-      "images_" + Date.now() + ".pdf"
-    );
+    Android.savePDF(base64,"images_"+Date.now()+".pdf");
     alert("تم حفظ ملف PDF");
-  }else{
-    alert("يعمل داخل التطبيق فقط");
   }
 }
 
@@ -173,12 +240,10 @@ function saveImages(){
   }
 
   extractedImages.forEach((img,i)=>{
-    if(window.Android){
-      Android.saveImage(
-        img,
-        "page_" + (i+1) + "_" + Date.now() + ".png"
-      );
-    }
+    Android.saveImage(
+      img,
+      "page_"+(i+1)+"_"+Date.now()+".png"
+    );
   });
 
   alert("تم حفظ الصور");
