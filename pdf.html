@@ -1,143 +1,187 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>PDF Tools</title>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<title>أدوات PDF</title>
 
 <style>
 body{
   font-family: sans-serif;
-  background:#f4f4f4;
+  background:#f2f4ff;
   margin:0;
-  padding:12px;
+  padding:20px;
 }
-.section{
+.card{
   background:#fff;
-  padding:12px;
-  border-radius:8px;
-  margin-bottom:15px;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+  box-shadow:0 6px 16px rgba(0,0,0,.1);
 }
+h3{text-align:center}
 button{
-  padding:10px;
+  width:100%;
+  padding:12px;
   border:none;
-  border-radius:6px;
-  background:#2196F3;
+  border-radius:10px;
+  background:#4e54c8;
   color:#fff;
-  font-size:15px;
+  font-size:16px;
   margin-top:10px;
 }
 .preview{
   display:flex;
   flex-wrap:wrap;
-  margin-top:8px;
+  gap:8px;
+  margin-top:10px;
 }
 .preview img{
-  width:80px;
-  height:auto;
-  margin:4px;
-  border-radius:5px;
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+}
+input[type=file]{
+  width:100%;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= صور إلى PDF ================= -->
-<div class="section">
-<h3>🖼️ صور → PDF</h3>
+<!-- ===================== -->
+<!-- صور → PDF -->
+<!-- ===================== -->
+<div class="card">
+<h3>تحويل الصور إلى PDF</h3>
 
-<input type="file" id="imgInput" multiple accept="image/*">
+<input type="file" id="imgInput" accept="image/*" multiple>
+
 <div class="preview" id="imgPreview"></div>
 
 <button onclick="makePDF()">حفظ PDF</button>
 </div>
 
-<!-- ================= استخراج الصور ================= -->
-<div class="section">
-<h3>📄 PDF → صور</h3>
+<!-- ===================== -->
+<!-- PDF → صور -->
+<!-- ===================== -->
+<div class="card">
+<h3>استخراج الصور من PDF</h3>
 
 <input type="file" id="pdfInput" accept="application/pdf">
+
 <div class="preview" id="pdfPreview"></div>
 
-<button onclick="extractImages()">حفظ الصور</button>
+<button onclick="saveImages()">حفظ الصور</button>
 </div>
 
-<script>
-let images64 = [];
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
-// ================= معاينة الصور =================
-document.getElementById("imgInput").onchange = e => {
-  images64 = [];
+<script>
+let imageList = [];
+let extractedImages = [];
+
+/* =====================
+   صور → PDF
+===================== */
+imgInput.onchange = () => {
+  imageList = [];
   imgPreview.innerHTML = "";
 
-  [...e.target.files].forEach(f=>{
+  [...imgInput.files].forEach(file=>{
     const r = new FileReader();
-    r.onload = ev=>{
-      images64.push(ev.target.result);
-      const img = document.createElement("img");
-      img.src = ev.target.result;
+    r.onload = () => {
+      imageList.push(r.result);
+      const img = new Image();
+      img.src = r.result;
       imgPreview.appendChild(img);
     };
-    r.readAsDataURL(f);
+    r.readAsDataURL(file);
   });
 };
 
-// ================= إنشاء PDF =================
-async function makePDF(){
-  if(images64.length === 0){
+function makePDF(){
+  if(imageList.length === 0){
     alert("اختر صور أولاً");
     return;
   }
 
-  const pdf = await PDFLib.PDFDocument.create();
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
 
-  for(const img64 of images64){
-    const bytes = await fetch(img64).then(r=>r.arrayBuffer());
-    const img = await pdf.embedPng(bytes);
-    const page = pdf.addPage([img.width, img.height]);
-    page.drawImage(img,{x:0,y:0,width:img.width,height:img.height});
+  imageList.forEach((img,i)=>{
+    if(i) pdf.addPage();
+    pdf.addImage(img,"JPEG",0,0,210,297);
+  });
+
+  // ✅ الحل النهائي لمشكلة WebView
+  const dataUri = pdf.output("datauristring");
+  const base64 = dataUri.split(",")[1]; // إزالة data:application/pdf;base64,
+
+  if(window.Android){
+    Android.savePDF(
+      base64,
+      "images_" + Date.now() + ".pdf"
+    );
+    alert("تم حفظ ملف PDF");
+  }else{
+    alert("يعمل داخل التطبيق فقط");
   }
-
-  const pdfBytes = await pdf.save();
-  const base64 =
-    "data:application/pdf;base64," +
-    btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
-
-  Android.savePDF(base64,"Images_"+Date.now()+".pdf");
-  alert("تم حفظ PDF");
 }
 
-// ================= استخراج الصور =================
-function extractImages(){
-  const file = pdfInput.files[0];
-  if(!file){
-    alert("اختر ملف PDF");
+/* =====================
+   PDF → صور
+===================== */
+pdfInput.onchange = async ()=>{
+  extractedImages = [];
+  pdfPreview.innerHTML = "";
+
+  const buffer = await pdfInput.files[0].arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:buffer}).promise;
+
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const vp = page.getViewport({scale:2});
+    const c = document.createElement("canvas");
+    c.width = vp.width;
+    c.height = vp.height;
+
+    await page.render({
+      canvasContext:c.getContext("2d"),
+      viewport:vp
+    }).promise;
+
+    const img = c.toDataURL("image/png");
+    extractedImages.push(img);
+
+    const im = new Image();
+    im.src = img;
+    pdfPreview.appendChild(im);
+  }
+
+  alert("تم استخراج الصور");
+};
+
+function saveImages(){
+  if(extractedImages.length === 0){
+    alert("لا توجد صور");
     return;
   }
 
-  pdfPreview.innerHTML = "";
+  extractedImages.forEach((img,i)=>{
+    if(window.Android){
+      Android.saveImage(
+        img,
+        "page_" + (i+1) + "_" + Date.now() + ".png"
+      );
+    }
+  });
 
-  const r = new FileReader();
-  r.onload = ()=>{
-    // نرسل الملف للأندرويد
-    Android.extractPDF(r.result,"PDF_"+Date.now());
-
-    // معاينة وهمية (أيقونات)
-    const img = document.createElement("img");
-    img.src =
-      "data:image/svg+xml;base64," +
-      btoa(`<svg xmlns='http://www.w3.org/2000/svg' width='80' height='100'>
-      <rect width='100%' height='100%' fill='#ccc'/>
-      <text x='50%' y='50%' dominant-baseline='middle'
-      text-anchor='middle' fill='#333'>PDF</text></svg>`);
-    pdfPreview.appendChild(img);
-
-    alert("تم حفظ الصور");
-  };
-  r.readAsDataURL(file);
+  alert("تم حفظ الصور");
 }
 </script>
 
