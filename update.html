@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<style>
+  .header-logo,
+  .sidebar,
+  .search-form,
+  .dark-toggle,
+  .top-bar,
+  header,
+  #header-wrapper,
+  footer,
+  .footer-container,
+  #footer-wrapper {
+    display: none !important;
+  }
+</style>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحديث التطبيق</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+      height: 100vh;
+      background: linear-gradient(-45deg, #00c9ff, #92fe9d, #2193b0, #6dd5ed);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+    }
+
+    @keyframes gradientMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px 20px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .typewriter {
+      display: inline-block;
+      overflow: hidden;
+      border-right: .15em solid #fff;
+      white-space: nowrap;
+      animation:
+        typing 3s steps(40, end),
+        blink-caret .75s step-end infinite;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: white; }
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 20px 0 25px;
+      animation: fadeInUp 2s ease;
+    }
+
+    .right-align {
+      text-align: right;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(45deg, #ffffff, #f0f0f0);
+      color: #333;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 30px;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    .btn:hover {
+      transform: scale(1.08);
+      background: linear-gradient(45deg, #f5f5f5, #ccc);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .typewriter { font-size: 18px; }
+      p { font-size: 14px; }
+      .btn { font-size: 14px; padding: 10px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <div class="typewriter">غير متوفر حالياً</div>
+
+
+    <p class="right-align">✅ في حال تم التوفر ستظهر هنا تلقائياً</p>
+    <p class="right-align">✅ سيتم ارسال إشعار اليكم عندما تتوفر</p>
+
+  </div>
+
+</body>
+</html>
