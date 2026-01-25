@@ -102,16 +102,17 @@ input[type=file]{width:100%;margin-top:10px}
   </div>
 </div>
 
-<!-- jsPDF (أونلاين فقط للتحويل صور → PDF) -->
+<!-- jsPDF (صور → PDF) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- pdf.js محلي (أوفلاين) -->
+<!-- pdf.js محلي (بدون إنترنت) -->
 <script src="file:///android_asset/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "file:///android_asset/pdf.worker.min.js";
+</script>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "file:///android_asset/pdf.min.js";
-
 let imageList=[];
 let extractedImages=[];
 
@@ -147,6 +148,7 @@ function makePDF(){
   }
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF();
+
   imageList.forEach((img,i)=>{
     if(i) pdf.addPage();
     pdf.addImage(img,"JPEG",0,0,210,297);
@@ -156,18 +158,15 @@ function makePDF(){
     pdf.output("datauristring")
        .replace("data:application/pdf;base64,","");
 
-  if(window.Android){
-    Android.savePDF(base64,"images_"+Date.now()+".pdf");
-    alert("تم حفظ ملف PDF");
-  }else{
-    alert("يعمل داخل التطبيق فقط");
-  }
+  Android.savePDF(base64,"images_"+Date.now()+".pdf");
+  alert("تم حفظ ملف PDF");
 }
 
 /* ===== PDF → صور ===== */
 pdfInput.onchange=async()=>{
   extractedImages=[];
   pdfPreview.innerHTML="";
+
   const buffer=await pdfInput.files[0].arrayBuffer();
   const pdf=await pdfjsLib.getDocument({data:buffer}).promise;
 
@@ -177,9 +176,15 @@ pdfInput.onchange=async()=>{
     const c=document.createElement("canvas");
     c.width=vp.width;
     c.height=vp.height;
-    await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+
+    await p.render({
+      canvasContext:c.getContext("2d"),
+      viewport:vp
+    }).promise;
+
     const img=c.toDataURL("image/png");
     extractedImages.push(img);
+
     const im=new Image();
     im.src=img;
     pdfPreview.appendChild(im);
