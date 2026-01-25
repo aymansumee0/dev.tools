@@ -14,7 +14,6 @@ body{
   padding:20px;
 }
 
-/* ===== الصفحة الرئيسية ===== */
 .home{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -38,10 +37,7 @@ body{
   margin-bottom:10px;
 }
 
-/* ===== الأدوات ===== */
-.tool{
-  display:none;
-}
+.tool{display:none}
 
 .card{
   background:#fff;
@@ -66,7 +62,6 @@ button{
 
 .close{
   background:#ff4b4b;
-  margin-bottom:12px;
 }
 
 .preview{
@@ -92,52 +87,35 @@ input[type=file]{
 
 <body>
 
-<!-- ===================== -->
 <!-- الصفحة الرئيسية -->
-<!-- ===================== -->
 <div class="home" id="home">
-
   <div class="tool-card" onclick="openTool('imgToPdf')">
-    <span>🖼️</span>
-    تحويل الصور إلى PDF
+    <span>🖼️</span>تحويل الصور إلى PDF
   </div>
-
   <div class="tool-card" onclick="openTool('pdfToImg')">
-    <span>📄</span>
-    استخراج الصور من PDF
+    <span>📄</span>استخراج الصور من PDF
   </div>
-
 </div>
 
-<!-- ===================== -->
 <!-- صور → PDF -->
-<!-- ===================== -->
 <div class="tool" id="imgToPdf">
-  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
-
   <div class="card">
     <h3>تحويل الصور إلى PDF</h3>
-
     <input type="file" id="imgInput" accept="image/*" multiple>
     <div class="preview" id="imgPreview"></div>
-
     <button onclick="makePDF()">حفظ PDF</button>
+    <button class="close" onclick="closeTool()">إغلاق الأداة</button>
   </div>
 </div>
 
-<!-- ===================== -->
 <!-- PDF → صور -->
-<!-- ===================== -->
 <div class="tool" id="pdfToImg">
-  <button class="close" onclick="closeTool()">إغلاق الأداة</button>
-
   <div class="card">
     <h3>استخراج الصور من PDF</h3>
-
     <input type="file" id="pdfInput" accept="application/pdf">
     <div class="preview" id="pdfPreview"></div>
-
     <button onclick="saveImages()">حفظ الصور</button>
+    <button class="close" onclick="closeTool()">إغلاق الأداة</button>
   </div>
 </div>
 
@@ -145,107 +123,72 @@ input[type=file]{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 
 <script>
-let imageList = [];
-let extractedImages = [];
+let imageList=[];
+let extractedImages=[];
 
-/* ===== فتح / إغلاق ===== */
 function openTool(id){
-  document.getElementById("home").style.display="none";
+  home.style.display="none";
   document.getElementById(id).style.display="block";
 }
-
 function closeTool(){
   document.querySelectorAll(".tool").forEach(t=>t.style.display="none");
-  document.getElementById("home").style.display="grid";
+  home.style.display="grid";
 }
 
-/* =====================
-   صور → PDF
-===================== */
-imgInput.onchange = () => {
-  imageList = [];
-  imgPreview.innerHTML = "";
-
-  [...imgInput.files].forEach(file=>{
-    const r = new FileReader();
-    r.onload = () => {
+/* صور → PDF */
+imgInput.onchange=()=>{
+  imageList=[];
+  imgPreview.innerHTML="";
+  [...imgInput.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
       imageList.push(r.result);
-      const img = new Image();
-      img.src = r.result;
-      imgPreview.appendChild(img);
+      const i=new Image();
+      i.src=r.result;
+      imgPreview.appendChild(i);
     };
-    r.readAsDataURL(file);
+    r.readAsDataURL(f);
   });
 };
 
 function makePDF(){
-  if(imageList.length === 0){
-    alert("اختر صور أولاً");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-
+  if(!imageList.length){alert("اختر صور");return;}
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
   imageList.forEach((img,i)=>{
-    if(i) pdf.addPage();
+    if(i)pdf.addPage();
     pdf.addImage(img,"JPEG",0,0,210,297);
   });
 
-  const base64 = pdf.output("datauristring");
-
-  if(window.Android){
-    Android.savePDF(base64,"images_"+Date.now()+".pdf");
-    alert("تم حفظ ملف PDF");
-  }
+  const base64 = pdf.output("datauristring").split(",")[1];
+  Android.savePDF(base64,"images_"+Date.now()+".pdf");
+  alert("تم حفظ ملف PDF");
 }
 
-/* =====================
-   PDF → صور
-===================== */
-pdfInput.onchange = async ()=>{
-  extractedImages = [];
-  pdfPreview.innerHTML = "";
-
-  const buffer = await pdfInput.files[0].arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:buffer}).promise;
+/* PDF → صور */
+pdfInput.onchange=async()=>{
+  extractedImages=[];
+  pdfPreview.innerHTML="";
+  const buffer=await pdfInput.files[0].arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buffer}).promise;
 
   for(let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const vp = page.getViewport({scale:2});
-    const c = document.createElement("canvas");
-    c.width = vp.width;
-    c.height = vp.height;
-
-    await page.render({
-      canvasContext:c.getContext("2d"),
-      viewport:vp
-    }).promise;
-
-    const img = c.toDataURL("image/png");
+    const p=await pdf.getPage(i);
+    const vp=p.getViewport({scale:2});
+    const c=document.createElement("canvas");
+    c.width=vp.width;c.height=vp.height;
+    await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+    const img=c.toDataURL("image/png");
     extractedImages.push(img);
-
-    const im = new Image();
-    im.src = img;
+    const im=new Image();im.src=img;
     pdfPreview.appendChild(im);
   }
-
-  alert("تم استخراج الصور");
 };
 
 function saveImages(){
-  if(extractedImages.length === 0){
-    alert("لا توجد صور");
-    return;
-  }
-
   extractedImages.forEach((img,i)=>{
-    Android.saveImage(
-      img,
-      "page_"+(i+1)+"_"+Date.now()+".png"
-    );
+    Android.saveImage(img,"page_"+(i+1)+"_"+Date.now()+".png");
   });
-
   alert("تم حفظ الصور");
 }
 </script>
