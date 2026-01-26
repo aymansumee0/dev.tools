@@ -1,311 +1,298 @@
 <!DOCTYPE html>
-<style>
-  .header-logo,
-  .sidebar,
-  .search-form,
-  .dark-toggle,
-  .top-bar,
-  header,
-  #header-wrapper,
-  footer,
-  .footer-container,
-  #footer-wrapper {
-    display: none !important;
-  }
-</style>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>بوت إيفو</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Cairo', sans-serif;
-      background: linear-gradient(135deg, #f0f0f8, #fafafe);
-      display: flex;
-      justify-content: center;
-      align-items: stretch;
-      min-height: 100vh;
-    }
-    .chat-wrapper {
-      width: 100%;
-      max-width: 500px;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-    .chat-header {
-      background: #273035;
-      color: white;
-      padding: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-    .chat-box {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 15px 160px;
-      background: #f9f9ff;
-    }
-    .message {
-      max-width: 80%;
-      margin-bottom: 12px;
-      padding: 12px 15px;
-      border-radius: 20px;
-      line-height: 1.6;
-      animation: fadeIn 0.3s ease;
-      word-wrap: break-word;
-      position: relative;
-    }
-    .user {
-      align-self: flex-end;
-      background: #dfe6ff;
-      color: #2d3436;
-      text-align: right;
-      border-bottom-right-radius: 0;
-    }
-    .bot {
-      align-self: flex-start;
-      background: #cce7e1;
-      color: #273035;
-      text-align: left;
-      border-bottom-left-radius: 0;
-    }
-    .chat-input-wrapper {
-      position: fixed;
-      bottom: 20px;
-      left: 7px;
-      right: 7px;
-      max-width: 400px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 6px 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      border-radius: 16px 16px 0 0;
-      z-index: 20;
-    }
-    .chat-input {
-      display: flex;
-      gap: 10px;
-      flex-wrap: nowrap;
-    }
-    .chat-input input {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      outline: none;
-      background: #f1f1f9;
-    }
-    .chat-input button {
-      background: #273035;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 0 12px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .chat-input button:hover {
-      background: #5945c5;
-    }
-    .suggestions {
-      margin-top: 8px;
-      background: #fafaff;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px 12px;
-    }
-    .suggestion-item {
-      background: #273035;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 14px;
-      transition: background-color 0.3s;
-      white-space: nowrap;
-      text-decoration: none;
-    }
-    .suggestion-item:hover {
-      background: #5945c5;
-    }
-    button.button-link {
-      transition: 0.3s;
-    }
-    button.button-link:hover {
-      opacity: 0.85;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</head>
-<body>
-  <div class="chat-wrapper">
-    <div class="chat-header">🤖 بوت إيفو</div>
-    <div class="chat-box" id="chat-box">
-      <div class="message bot">
-        مرحباً بك , انا إيفو 🤖<br/>
-        يمكنك كتابة كلمة:<br/>
-         رد او ردود<br/>
-           لتظهر لك الردود المتوفرة  <br/><br/>
-        اكتب رد او ردود الآن<br/>
-        او اضغط زر ردود الموجود بجانب زر الارسال
-      </div>
-    </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بوت إيفو</title>
 
-    <div class="chat-input-wrapper">
-      <div class="chat-input">
-        <input type="text" id="user-input" placeholder="ضع سؤالك هنا" autocomplete="off" onkeydown="if(event.key==='Enter') sendMessage()"/>
-        <button onclick="sendMessage()" aria-label="إرسال">
-          <i data-lucide="send"></i>
-        </button>
-        <button class="toggle-suggestions-btn" id="toggle-suggestions-btn" onclick="toggleSuggestions()">
-          ردود
-        </button>
-      </div>
-      <div class="suggestions" id="suggestions" style="display: none;"></div>
+<style>
+body{
+  margin:0;
+  font-family:Tahoma,Arial;
+  background:#f2f4ff;
+}
+.chat{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  max-width:500px;
+  margin:auto;
+  background:#fff;
+}
+.header{
+  background:#273035;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+  font-weight:bold;
+}
+.messages{
+  flex:1;
+  overflow-y:auto;
+  padding:15px;
+  background:#f9f9ff;
+  display:flex;
+  flex-direction:column-reverse;
+}
+.msg{
+  max-width:80%;
+  padding:12px;
+  border-radius:14px;
+  margin-top:10px;
+  line-height:1.6;
+}
+.user{background:#dfe6ff;align-self:flex-end}
+.bot{background:#cce7e1;align-self:flex-start}
+
+.input-box{
+  padding:10px;
+  border-top:1px solid #ddd;
+}
+.input-row{
+  display:flex;
+  gap:6px;
+}
+input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#f1f1f9;
+}
+
+/* زر افتراضي */
+button{
+  border:none;
+  border-radius:10px;
+  padding:0 14px;
+  background:#273035;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* زر الإرسال (مربع بحواف) */
+.send-btn{
+  width:44px;
+  height:44px;
+  padding:0;
+  border-radius:10px; /* ✔️ ليس دائري */
+  font-size:32px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* الردود */
+.quick{
+  display:none;
+  margin-top:8px;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.quick div{
+  background:#273035;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:10px;
+  font-size:14px;
+  cursor:pointer;
+}
+.download{
+  display:inline-block;
+  margin-top:6px;
+  padding:8px 14px;
+  border-radius:8px;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat">
+  <div class="header">🤖 بوت إيفو</div>
+
+  <div class="messages" id="messages">
+    <div class="msg bot">
+      مرحبًا بك 🤖<br>
+      اكتب <b>رد</b> أو اضغط زر <b>ردود</b>
     </div>
   </div>
 
-  <script>
-    lucide.createIcons();
+  <div class="input-box">
+    <div class="input-row">
+      <input id="input" placeholder="اكتب هنا"
+        onkeydown="if(event.key==='Enter')send(true)">
 
-    const suggestionsList = [
-      { label: "بيكسلاب" },
-      { label: "كين ماستر" },
-      { label: "كاب كات" },
-      { label: "ريميني" },
-      { label: "ام تي مانجر" },
-      { label: "انشوت" },
-      { label: "بيكسارت" },
-      { label: "الايت موشن" },
-      { label: "فيونميت" },
-      { label: "لايتروم" },
-      { label: "سكتشوير"}, 
-      { label: "ملحقات ايسكريم" }
-    ];
+      <button class="send-btn"
+        onmousedown="event.preventDefault()"
+        onclick="send(true)">➤</button>
 
-    const suggestionsContainer = document.getElementById("suggestions");
-    const inputField = document.getElementById("user-input");
-    const toggleBtn = document.getElementById("toggle-suggestions-btn");
+      <button onmousedown="event.preventDefault()" onclick="toggle()">ردود</button>
+    </div>
+    <div class="quick" id="quick"></div>
+  </div>
+</div>
 
-    function toggleSuggestions() {
-      if(suggestionsContainer.style.display === "none") showSuggestions();
-      else hideSuggestions();
-    }
+<script>
+const messages = document.getElementById("messages");
+const input = document.getElementById("input");
+const quick = document.getElementById("quick");
 
-    function showSuggestions() {
-      suggestionsContainer.innerHTML = "";
-      suggestionsList.forEach(item => {
-        const btn = document.createElement("div");
-        btn.className = "suggestion-item";
-        btn.textContent = item.label;
-        btn.onclick = () => {
-          inputField.value = item.label;
-          sendMessage();
-        };
-        suggestionsContainer.appendChild(btn);
-      });
-      suggestionsContainer.style.display = "flex";
-      toggleBtn.textContent = "إغلاق";
-    }
+/* ===== الردود الجاهزة (12) ===== */
+const replies = [
+ "بيكسلاب","لايتروم","كين ماستر","كاب كات","ام تي مانجر",
+ "ريميني","انشوت","بيكسارت","الايت موشن","فيونميت",
+ "سكتشوير","ملحقات ايسكريم"
+];
 
-    function hideSuggestions() {
-      suggestionsContainer.style.display = "none";
-      toggleBtn.textContent = "ردود";
-    }
+function forceBottom(){
+  messages.scrollTop = 0;
+}
 
-    function sendMessage() {
-      const text = inputField.value.trim();
-      if(text === "") return;
+function toggle(){
+  quick.innerHTML="";
+  replies.forEach(r=>{
+    const d=document.createElement("div");
+    d.textContent=r;
+    d.onclick=()=>{
+      input.value=r;
+      send(false);
+    };
+    quick.appendChild(d);
+  });
+  quick.style.display =
+    quick.style.display==="flex" ? "none" : "flex";
+}
 
-      const chatBox = document.getElementById("chat-box");
+function send(focusInput){
+  const text=input.value.trim();
+  if(!text) return;
 
-      const userMsg = document.createElement("div");
-      userMsg.className = "message user";
-      userMsg.textContent = text;
-      chatBox.appendChild(userMsg);
+  addUser(text);
+  addBot(reply(text));
+  input.value="";
+  forceBottom();
 
-      let botMsgText = "";
+  if(focusInput){
+    input.focus();
+  }
+}
 
-      function createButton(label, url, color = '#5945c5') {
-        return `<button onclick="window.open('${url}','_blank')" 
-          style="background:${color};color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:14px;margin-top:5px;">
-          ${label}
-        </button>`;
-      }
+function addUser(t){
+  const d=document.createElement("div");
+  d.className="msg user";
+  d.textContent=t;
+  messages.prepend(d);
+}
+function addBot(html){
+  const d=document.createElement("div");
+  d.className="msg bot";
+  d.innerHTML=html;
+  messages.prepend(d);
+}
 
-      if(text.includes("ردود") || text.includes("رد")) {
-        botMsgText = `<strong>الردود المتوفرة في البوت :</strong><br><br>` +
-          ["بيكسلاب","لايتروم","كين ماستر","كاب كات","ام تي مانجر","ريميني","انشوت","بيكسارت","الايت موشن","فيونميت","سكتشوير","ملحقات ايسكريم"]
-          .map(item => `<div class="suggestion-item" onclick="inputField.value='${item}'; sendMessage();">${item}</div>`).join('');
-      } 
-      else if (text.includes("بيكسلاب")) {  
-        botMsgText = "👑 تحميل بيكسلاب الملكي:<br>" + 
-          createButton("📥 تحميل بيكسلاب", "https://www.mediafire.com/file/0aori8kuyeov7j8/%25D8%25A7%25D9%2584%25D8%25A8%25D9%258A%25D9%2583%25D8%25B3%25D9%2584%25D8%25A7%25D8%25A8_%25D8%25A7%25D9%2584%25D9%2585%25D9%2584%25D9%2583%25D9%258A_%25D8%25A7%25D9%2584%25D8%25A7%25D8%25B5%25D8%25AF%25D8%25A7%25D8%25B1_%25D8%25A7%25D9%2584%25D8%25B3%25D8%25A7%25D8%25A8%25D8%25B9.apk/file?dkey=xvnxlqblp5q&r=545", "#8e24aa");  
-      } else if (text.includes("ام تي مانجر")) {  
-        botMsgText = "📁 تحميل MT Manager:<br>" + 
-          createButton("📥 تحميل MT Manager", "https://www.dl.farsroid.com/ap/MT-Manager-2.18.3(www.Farsroid.com).apk", "#00695c");  
-      } else if (text.includes("ريميني")) {  
-        botMsgText = "📷 تحميل ريميني:<br>" + 
-          createButton("📥 تحميل ريميني مهكر", "https://up.apkbaba.com/apps/Remini-v3.7.885.202496114-Premium(Apkbaba.org).apk", "#1976d2");  
-      } else if (text.includes("انشوت")) {
-        botMsgText = "🎬 تحميل انشوت:<br>" + 
-          createButton("📥 تحميل انشوت مهكر", "https://up.apkbaba.com/apps/Video-Editor-Maker-InShot-Pro-1.912.1397(Apkbaba.com).apk", "#5945c5");
-      } else if (text.includes("كين ماستر")) {
-        botMsgText = "🎬 تحميل كين ماستر:<br>" + 
-          createButton("📥 تحميل كين ماستر مهكر", "https://s1.traidmod.app/dl/App/KineMaster/KineMaster_v7.6.23.34784.GP_Pro_[TraidMod.Net].apk", "#5945c5");
-      } else if (text.includes("بيكسارت")) {
-        botMsgText = "🎨 تحميل بيكسارت:<br>" + 
-          createButton("📥 تحميل بيكسارت مهكر", "https://dl.picsartmodapk.io/PicsArt_v28.9.5_MOD-picsartmodapk.io.apk", "#5945c5");
-      } else if (text.includes("كاب كات")) {
-        botMsgText = "🎞️ تحميل كاب كات:<br>" + 
-          createButton("📥 تحميل كاب كات مهكر", "https://file.capcutmodapk.com.co/CapCut-Pro-Latest-Version_Capacutmodapk.com.co-2025.apk", "#5945c5");
-      } else if (text.includes("الايت موشن")) {
-        botMsgText = "🎥 تحميل الايت موشن:<br>" + 
-          createButton("📥 تحميل الايت موشن مهكر", "https://s1.traidmod.app/dl/App/Alight_Motion/Alight_Motion_v5.0.276_Pro_[TraidMod.Net].apk", "#5945c5");
-      } else if (text.includes("فيونميت")) {
-        botMsgText = "✨ تحميل فيونميت:<br>" + 
-          createButton("📥 تحميل فيونميت مهكر", "https://s1.traidmod.app/dl/App/Funimate/Funimate_v13.3.3b884%20_Pro_[TraidMod.Net].apk", "#5945c5");
-      } else if (text.includes("لايتروم")) {
-        botMsgText = "📷 تحميل لايتروم:<br>" + 
-          createButton("📥 تحميل لايتروم مهكر", "https://dl.toproid.net/app/lightroom/Lightroom-Premium-10.4.4-Arm64-v8a.apk", "#5945c5");
-      } else if (text.includes("سكتشوير")) {
-        botMsgText = "🛠️ تحميل Sketchware:<br>" + 
-          createButton("📥 تحميل Sketchware Pro مهكر", "https://apkcombo.com/r2?u=https%3A%2F%2Fapks.39b7cb94d40914bac590886981b0ed6e.r2.cloudflarestorage.com%2Fcom.sketchware.remod%2Fv6.4.0-rc05-minApi26%2F150.2b2d540b97983903fcd7594140d983a2ca93c7c0.apk", "#5945c5");
-      } else if (text.includes("ملحقات ايسكريم")) {
-        botMsgText = "🍦 تحميل ملحقات ايسكريم:<br>" + 
-          createButton("📥 تحميل ملحقات ايسكريم", "https://www.mediafire.com/file/pfkuxhijx3oo14e/%25D9%2585%25D9%2584%25D8%25AD%25D9%2582%25D8%25A7%25D8%25AA_%25D8%25A7%25D8%25B9%25D9%2584%25D8%25A7%25D9%2586_%25D8%25A7%25D9%258A%25D8%25B3_%25D9%2583%25D8%25B1%25D9%258A%25D9%2585.zip/file?dkey=bei62hgculb&r=1953", "#4CAF50");
-      } else {
-        botMsgText = "🤔 لم أفهم ذلك تمامًا. هل يمكنك توضيح طلبك أكثر؟";
-      }
+/* ===== ردودك الـ 12 مع الروابط ===== */
+function reply(t){
 
-      const botMsg = document.createElement("div");
-      botMsg.className = "message bot";
-      botMsg.innerHTML = botMsgText;
-      chatBox.appendChild(botMsg);
+  if(t.includes("رد")){
+    return replies.map(r=>`
+      <div class="download" style="background:#273035"
+        onclick="input.value='${r}';send(false)">
+        ${r}
+      </div>`).join(" ");
+  }
 
-      inputField.value = "";
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+  if(t.includes("بيكسلاب")){
+    return `👑 تحميل بيكسلاب<br>
+    <a class="download" style="background:#8e24aa"
+    href="https://www.mediafire.com/file/0aori8kuyeov7j8"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("لايتروم")){
+    return `📷 تحميل لايتروم<br>
+    <a class="download" style="background:#1976d2"
+    href="https://dl.toproid.net/app/lightroom/Lightroom-Premium.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("كين ماستر")){
+    return `🎬 تحميل كين ماستر<br>
+    <a class="download" style="background:#6a1b9a"
+    href="https://s1.traidmod.app/dl/App/KineMaster.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("كاب كات")){
+    return `🎞️ تحميل كاب كات<br>
+    <a class="download" style="background:#4caf50"
+    href="https://file.capcutmodapk.com.co"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("ام تي مانجر")){
+    return `📁 تحميل MT Manager<br>
+    <a class="download" style="background:#00695c"
+    href="https://www.dl.farsroid.com/ap/MT-Manager-2.18.3.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("ريميني")){
+    return `📷 تحميل ريميني<br>
+    <a class="download" style="background:#ff7043"
+    href="https://up.apkbaba.com/apps/Remini-v3.7.885.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("انشوت")){
+    return `🎬 تحميل InShot<br>
+    <a class="download" style="background:#ff5252"
+    href="https://up.apkbaba.com/apps/InShot-Pro.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("بيكسارت")){
+    return `🎨 تحميل PicsArt<br>
+    <a class="download" style="background:#e91e63"
+    href="https://dl.picsartmodapk.io/PicsArt_MOD.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("الايت موشن")){
+    return `🎥 تحميل Alight Motion<br>
+    <a class="download" style="background:#673ab7"
+    href="https://s1.traidmod.app/dl/App/Alight_Motion.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("فيونميت")){
+    return `✨ تحميل Funimate<br>
+    <a class="download" style="background:#00bcd4"
+    href="https://s1.traidmod.app/dl/App/Funimate.apk"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("سكتشوير")){
+    return `🛠️ تحميل Sketchware Pro<br>
+    <a class="download" style="background:#009688"
+    href="https://apkcombo.com/sketchware-pro/"
+    target="_blank">تحميل</a>`;
+  }
+
+  if(t.includes("ملحقات")){
+    return `🍦 ملحقات ايسكريم<br>
+    <a class="download" style="background:#795548"
+    href="https://www.mediafire.com/file/pfkuxhijx3oo14e"
+    target="_blank">تحميل</a>`;
+  }
+
+  return "❓ لم أفهم طلبك، اكتب <b>رد</b>";
+}
+</script>
+
 </body>
 </html>
