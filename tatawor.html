@@ -603,11 +603,21 @@ function toggleDropdown(id){
 
 function openBoard(boardId, sectionId){
   lastSection = sectionId;
+
+  // إغلاق كل القوائم المنسدلة
+  document.querySelectorAll('.dropdown-content')
+    .forEach(d => d.style.display = 'none');
+
+  // فتح البورد
   document.getElementById(boardId).style.display = 'block';
 }
 
 function closeBoard(){
-  document.querySelectorAll('.board-screen').forEach(b=> b.style.display = 'none');
+  // إغلاق كل البوردات
+  document.querySelectorAll('.board-screen')
+    .forEach(b => b.style.display = 'none');
+
+  // إعادة فتح القائمة السابقة
   if(lastSection){
     document.getElementById(lastSection).style.display = 'block';
   }
