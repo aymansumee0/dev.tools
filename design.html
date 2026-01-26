@@ -210,7 +210,8 @@ body{
     <div class="measure-row">
       <div>
         <label>DPI</label>
-        <input id="dpi" type="number" value="300">
+        <!-- التعديل 1: حذف القيمة الافتراضية + placeholder -->
+        <input id="dpi" type="number" placeholder="ادخل الدقة هنا (مثال: 300)">
       </div>
     </div>
 
@@ -234,7 +235,7 @@ body{
         </select>
       </div>
       <div>
-        <label>⇄</label>
+        <label>↔</label>
         <button class="swap-btn" onclick="swapUnits()">⇄</button>
       </div>
       <div>
@@ -410,7 +411,9 @@ const fromCM={
 
 let lastW=null,lastH=null;
 function convert(){
-  const d=(+dpi.value||300);
+  /* التعديل 2: لو ما دخلت DPI نستخدم 300 تلقائيًا */
+  const d = (parseFloat(dpi.value) && parseFloat(dpi.value) > 0) ? parseFloat(dpi.value) : 300;
+
   const w=parseFloat(width.value);
   const h=parseFloat(height.value);
   if(isNaN(w)||isNaN(h)){
@@ -424,8 +427,12 @@ function convert(){
   result.innerHTML=`العرض: ${lastW}<br>الطول: ${lastH}`;
 }
 function copyVal(t){navigator.clipboard.writeText(t==='w'?lastW:lastH)}
-function copyAll(){navigator.clipboard.writeText(lastW+" x "+lastH)}
-
+function copyAll(){
+  navigator.clipboard.writeText(
+    "العرض: " + lastW + "\n" +
+    "الطول: " + lastH
+  );
+}
 function applyPreset(v){
   if(!v) return;
   const [w,h]=v.split(',');
@@ -465,4 +472,4 @@ window.onload=updateGradient;
 </script>
 
 </body>
-  </html>
+</html>
