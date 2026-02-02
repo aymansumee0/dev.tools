@@ -1911,61 +1911,101 @@ function checkout() {
   }, 0);
   
   if (totalPoints > (currentUser?.points || 0)) {
-    alert('رصيدك غير كافي!');
+    showCustomAlert('رصيدك غير كافي!');
     return;
   }
   
-  if (!confirm('تأكيد شراء ' + Object.keys(cart).length + ' منتج بقيمة ' + totalPoints + ' نقطة؟')) {
-    return;
-  }
-  
-  if (!database) return;
-  
-  const updates = {};
-  let newPoints = currentUser.points;
-  
-  Object.entries(cart).forEach(function(item) {
-    const p = products[item[0]];
-    const owner = users[p.ownerCode];
-    const itemTotal = p.price * item[1].quantity;
+  showCustomConfirm('تأكيد شراء ' + Object.keys(cart).length + ' منتج بقيمة ' + totalPoints + ' نقطة؟', function(confirmed) {
+    if (!confirmed) return;
     
-    newPoints -= itemTotal;
+    const updates = {};
+    let newPoints = currentUser.points;
     
-    if (owner) {
-      updates['users/' + p.ownerCode + '/points'] = (owner.points || 0) + itemTotal;
-    }
+    Object.entries(cart).forEach(function(item) {
+      const p = products[item[0]];
+      const owner = users[p.ownerCode];
+      const itemTotal = p.price * item[1].quantity;
+      
+      newPoints -= itemTotal;
+      
+      if (owner) {
+        updates['users/' + p.ownerCode + '/points'] = (owner.points || 0) + itemTotal;
+      }
+      
+      const currentSales = globalSales[item[0]] || 0;
+      updates['globalSales/' + item[0]] = currentSales + item[1].quantity;
+      
+      sendToTelegram(item[0], item[1].quantity);
+    });
     
-    const currentSales = globalSales[item[0]] || 0;
-    updates['globalSales/' + item[0]] = currentSales + item[1].quantity;
+    updates['users/' + currentUserCode + '/points'] = newPoints;
+    updates['userCarts/' + currentUserCode] = null;
     
-    sendToTelegram(item[0], item[1].quantity);
+    database.ref().update(updates).then(function() {
+      showCustomAlert('✅ تم الشراء بنجاح!');
+      cart = {};
+      currentUser.points = newPoints;
+      updateHeader();
+      updateCartBadge();
+      renderHomeSections();
+    });
   });
+}
+
+function showCustomConfirm(message, callback) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
   
-  updates['users/' + currentUserCode + '/points'] = newPoints;
-  updates['userCarts/' + currentUserCode] = null;
+  const box = document.createElement('div');
+  box.style.cssText = 'background:white;border-radius:20px;padding:24px;max-width:320px;width:100%;text-align:center;font-family:Cairo,sans-serif;';
   
-  database.ref().update(updates).then(function() {
-    alert('✅ تم الشراء بنجاح!');
-    cart = {};
-    currentUser.points = newPoints;
-    updateHeader();
-    updateCartBadge();
-    renderHomeSections();
-  }).catch(function(error) {
-    alert('خطأ في إتمام الشراء');
-    console.error(error);
-  });
+  box.innerHTML = 
+    '<h3 style="margin:0 0 12px;font-size:1.1rem;">تأكيد</h3>' +
+    '<p style="margin:0 0 20px;color:#64748b;">' + message + '</p>' +
+    '<div style="display:flex;gap:10px;">' +
+      '<button id="confirmYes" style="flex:1;background:#10b981;color:white;border:none;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">نعم</button>' +
+      '<button id="confirmNo" style="flex:1;background:#f1f5f9;color:#0f172a;border:none;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;">إلغاء</button>' +
+    '</div>';
+  
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  
+  document.getElementById('confirmYes').onclick = function() {
+    document.body.removeChild(overlay);
+    callback(true);
+  };
+  
+  document.getElementById('confirmNo').onclick = function() {
+    document.body.removeChild(overlay);
+    callback(false);
+  };
+}
+
+function showCustomAlert(message) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  
+  const box = document.createElement('div');
+  box.style.cssText = 'background:white;border-radius:20px;padding:24px;max-width:280px;width:100%;text-align:center;font-family:Cairo,sans-serif;';
+  
+  box.innerHTML = 
+    '<p style="margin:0 0 16px;font-size:1rem;">' + message + '</p>' +
+    '<button style="background:#2563eb;color:white;border:none;padding:10px 32px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="this.parentElement.parentElement.remove()">حسناً</button>';
+  
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }
 
 function sendToTelegram(pid, quantity) {
   const p = products[pid];
-  const message = '🛒 *طلب شراء جديد*\\n\\n' +
-    '📱 *الرقم:* ' + currentUserCode + '\\n' +
-    '👤 *الاسم:* ' + (currentUser?.name || 'غير معروف') + '\\n' +
-    '📦 *المنتج:* ' + p.name + '\\n' +
-    '🔢 *الكمية:* ' + quantity + '\\n' +
-    '💰 *السعر:* ' + (p.price * quantity) + ' نقطة\\n' +
-    '💳 *الرصيد المتبقي:* ' + (currentUser?.points || 0) + ' نقطة';
+  const message = '🛒 *طلب شراء جديد*\n\n' +
+  '📱 *الرقم:* ' + currentUserCode + '\n' +
+  '👤 *الاسم:* ' + (currentUser?.name || 'غير معروف') + '\n' +
+  '📦 *المنتج:* ' + p.name + '\n' +
+  '🔢 *الكمية:* ' + quantity + '\n' +
+  '💰 *السعر:* ' + (p.price * quantity) + ' نقطة\n' +
+  '💳 *الرصيد المتبقي:* ' + (currentUser?.points || 0) + ' نقطة';
+
     
   let keyboard = { inline_keyboard: [] };
   
