@@ -2228,4 +2228,79 @@ document.addEventListener('keydown', (e) => {
       <button class="gallery-nav gallery-prev" onclick="nextImage()">
         <i class="fas fa-chevron-right"></i>
       </button>
-      <button class="
+      <button class="gallery-nav gallery-next" onclick="prevImage()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    </div>
+    
+    <div class="detail-info">
+      <h1 class="detail-title" id="detailTitle"></h1>
+      
+      <div class="detail-price-section">
+        <span class="detail-current-price" id="detailCurrentPrice"></span>
+        <span class="detail-original-price" id="detailOriginalPrice"></span>
+        <span class="detail-discount" id="detailDiscount"></span>
+      </div>
+      
+      <div class="detail-rating">
+        <div style="display: flex; align-items: center; gap: 6px; color: var(--secondary); font-size: 1.3rem; font-weight: 800;">
+          <i class="fas fa-star"></i>
+          <span id="detailRatingValue">0.0</span>
+        </div>
+        <span id="detailRatingCount" style="color: var(--text-light); font-size: 0.9rem;">(0 تقييم)</span>
+        <button class="rate-btn" onclick="openRatingModal(currentProduct.id)">
+          <i class="fas fa-star"></i> قيّم المنتج
+        </button>
+      </div>
+      
+      <div class="detail-stats">
+        <div class="stat">
+          <span class="stat-value" id="detailSales">0</span>
+          <span class="stat-label">مباع</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" style="color: var(--success);">متوفر</span>
+          <span class="stat-label">الحالة</span>
+        </div>
+      </div>
+      
+      <div class="detail-description">
+        <h3>الوصف</h3>
+        <p id="detailDesc"></p>
+      </div>
+    </div>
+    
+    <div class="detail-actions">
+      <button class="add-to-cart-btn" onclick="addToCart(currentProduct.id); closeDetail();">
+        <i class="fas fa-shopping-cart"></i> أضف للسلة
+      </button>
+      <button class="buy-now-btn" onclick="addToCart(currentProduct.id); closeDetail(); showCartPage();">
+        <i class="fas fa-bolt"></i> اشترِ الآن
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="gallery-modal" id="galleryModal">
+  <div class="gallery-header">
+    <span class="gallery-title">معرض الصور</span>
+    <button class="gallery-close" onclick="closeGallery()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="gallery-main">
+    <img id="galleryMainImage" src="" class="gallery-image" alt="">
+    <div class="gallery-counter" id="galleryCounter">1 / 4</div>
+    <button class="gallery-nav gallery-prev" onclick="prevGalleryImage()">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <button class="gallery-nav gallery-next" onclick="nextGalleryImage()">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+  </div>
+  <div class="gallery-thumbnails" id="galleryThumbs"></div>
+</div>
+
+</body>
+</html>
