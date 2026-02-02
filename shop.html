@@ -103,6 +103,8 @@ body {
   text-align: center;
   font-family: inherit;
   transition: all 0.3s;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .login-input-group input:focus {
@@ -123,6 +125,8 @@ body {
   cursor: pointer;
   margin-top: 8px;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .login-btn:hover {
@@ -131,11 +135,18 @@ body {
   box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
 }
 
+.login-btn:active {
+  transform: scale(0.98);
+}
+
 .login-error {
   color: var(--danger);
   margin-top: 16px;
   font-weight: 600;
   display: none;
+  padding: 8px;
+  background: #fef2f2;
+  border-radius: 8px;
 }
 
 .login-error.show {
@@ -220,6 +231,8 @@ body {
   font-size: 1rem;
   position: relative;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .icon-btn:hover {
@@ -272,6 +285,8 @@ body {
   align-items: center;
   gap: 10px;
   min-width: 160px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .stat-card:hover {
@@ -338,6 +353,8 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .category-btn:hover, .category-btn.active {
@@ -390,6 +407,8 @@ body {
   padding: 6px 12px;
   border-radius: 8px;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .view-all-btn:hover {
@@ -431,6 +450,8 @@ body {
   flex: 0 0 160px;
   cursor: pointer;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .product-card:hover {
@@ -513,6 +534,8 @@ body {
   font-size: 0.8rem;
   transition: all 0.2s;
   z-index: 5;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .wishlist-btn:hover, .wishlist-btn.active {
@@ -581,6 +604,8 @@ body {
   justify-content: center;
   gap: 4px;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .add-cart-btn:hover {
@@ -644,6 +669,8 @@ body {
   gap: 6px;
   font-size: 0.85rem;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .back-btn:hover {
@@ -718,6 +745,8 @@ body {
   font-weight: 700;
   font-size: 1rem;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .qty-btn:hover {
@@ -744,6 +773,8 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Cart Summary */
@@ -789,6 +820,8 @@ body {
   justify-content: center;
   gap: 8px;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .checkout-btn:hover {
@@ -848,6 +881,8 @@ body {
   color: #e2e8f0;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .star-btn:hover, .star-btn.active {
@@ -867,6 +902,8 @@ body {
   font-weight: 700;
   cursor: pointer;
   border: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .submit-rating {
@@ -961,6 +998,8 @@ body {
   background: rgba(255,255,255,0.5);
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .dot.active {
@@ -983,6 +1022,8 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .gallery-nav {
@@ -1000,6 +1041,8 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .gallery-nav:hover {
@@ -1073,6 +1116,8 @@ body {
   gap: 6px;
   transition: all 0.2s;
   margin-right: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .rate-btn:hover {
@@ -1150,6 +1195,8 @@ body {
   justify-content: center;
   gap: 6px;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .add-to-cart-btn {
@@ -1209,6 +1256,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .gallery-main {
@@ -1254,6 +1303,8 @@ body {
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(4px);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .gallery-nav:hover {
@@ -1281,6 +1332,8 @@ body {
   opacity: 0.6;
   transition: all 0.2s;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .thumbnail.active {
@@ -1365,8 +1418,6 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
 
 // Global Variables
 let currentUser = null;
@@ -1381,6 +1432,7 @@ let currentImageIndex = 0;
 let cart = {};
 let wishlist = {};
 let currentRating = 0;
+let database = null;
 
 // Categories
 const categories = [
@@ -1390,78 +1442,165 @@ const categories = [
   { id: 'projects', name: 'مشاريع بيكسلاب', icon: 'fa-layer-group' }
 ];
 
-window.onload = () => {
-  checkLoginStatus();
-};
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    
+    // Setup login button with both click and touch events
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', handleLogin);
+      loginBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        handleLogin();
+      }, {passive: false});
+    }
+    
+    // Setup enter key on inputs
+    const loginCode = document.getElementById('loginCode');
+    const loginPass = document.getElementById('loginPass');
+    
+    if (loginCode) {
+      loginCode.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogin();
+      });
+    }
+    
+    if (loginPass) {
+      loginPass.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogin();
+      });
+    }
+    
+    // Check login status
+    checkLoginStatus();
+    
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showLoginError('خطأ في تهيئة التطبيق');
+  }
+});
 
 function checkLoginStatus() {
-  const savedUser = localStorage.getItem('academyUser');
-  if (savedUser) {
-    const userData = JSON.parse(savedUser);
-    currentUserCode = userData.code;
-    loadUserData(userData.code);
-  } else {
+  try {
+    const savedUser = localStorage.getItem('academyUser');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      currentUserCode = userData.code;
+      loadUserData(userData.code);
+    } else {
+      showLoginModal();
+    }
+  } catch (e) {
+    console.error('Error checking login:', e);
     showLoginModal();
   }
 }
 
 function showLoginModal() {
-  document.getElementById('loginModal').style.display = 'flex';
+  const modal = document.getElementById('loginModal');
+  if (modal) modal.style.display = 'flex';
 }
 
 function hideLoginModal() {
-  document.getElementById('loginModal').style.display = 'none';
+  const modal = document.getElementById('loginModal');
+  if (modal) modal.style.display = 'none';
 }
 
-function login() {
-  const code = document.getElementById('loginCode').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
+function showLoginError(msg) {
   const errorEl = document.getElementById('loginError');
-  
-  if (!code || !pass) {
-    errorEl.textContent = 'الرجاء إدخال جميع البيانات';
+  if (errorEl) {
+    errorEl.textContent = msg;
     errorEl.classList.add('show');
+    setTimeout(() => errorEl.classList.remove('show'), 3000);
+  }
+}
+
+function handleLogin() {
+  const codeInput = document.getElementById('loginCode');
+  const passInput = document.getElementById('loginPass');
+  
+  if (!codeInput || !passInput) {
+    showLoginError('خطأ في تحميل الحقول');
     return;
   }
   
-  database.ref(`users/${code}`).once('value').then(snapshot => {
-    const user = snapshot.val();
-    if (!user) {
-      errorEl.textContent = 'الرقم غير موجود';
-      errorEl.classList.add('show');
-      return;
-    }
-    
-    if (user.password !== pass) {
-      errorEl.textContent = 'كلمة السر غير صحيحة';
-      errorEl.classList.add('show');
-      return;
-    }
-    
-    currentUserCode = code;
-    currentUser = user;
-    localStorage.setItem('academyUser', JSON.stringify({ code: code, name: user.name }));
-    
-    loadUserData(code);
-    hideLoginModal();
-  });
+  const code = codeInput.value.trim();
+  const pass = passInput.value.trim();
+  
+  if (!code || !pass) {
+    showLoginError('الرجاء إدخال جميع البيانات');
+    return;
+  }
+  
+  if (!database) {
+    showLoginError('خطأ في الاتصال بقاعدة البيانات');
+    return;
+  }
+  
+  // Show loading state
+  const btn = document.getElementById('loginBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
+  btn.disabled = true;
+  
+  database.ref('users/' + code).once('value')
+    .then(function(snapshot) {
+      const user = snapshot.val();
+      
+      if (!user) {
+        throw new Error('الرقم غير موجود');
+      }
+      
+      if (user.password !== pass) {
+        throw new Error('كلمة السر غير صحيحة');
+      }
+      
+      currentUserCode = code;
+      currentUser = user;
+      
+      try {
+        localStorage.setItem('academyUser', JSON.stringify({ 
+          code: code, 
+          name: user.name || '' 
+        }));
+      } catch (e) {
+        console.warn('localStorage not available');
+      }
+      
+      loadUserData(code);
+      hideLoginModal();
+    })
+    .catch(function(error) {
+      console.error('Login error:', error);
+      showLoginError(error.message || 'خطأ في تسجيل الدخول');
+    })
+    .finally(function() {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    });
 }
 
 function loadUserData(code) {
+  if (!database) return;
+  
   Promise.all([
     database.ref('users').once('value'),
     database.ref('products').once('value'),
     database.ref('globalSales').once('value'),
     database.ref('productRatings').once('value'),
-    database.ref(`userCarts/${code}`).once('value'),
-    database.ref(`userWishlists/${code}`).once('value')
-  ]).then(([usersSnap, productsSnap, salesSnap, ratingsSnap, cartSnap, wishlistSnap]) => {
-    users = usersSnap.val() || {};
-    products = productsSnap.val() || {};
-    globalSales = salesSnap.val() || {};
-    productRatings = ratingsSnap.val() || {};
-    cart = cartSnap.val() || {};
-    wishlist = wishlistSnap.val() || {};
+    database.ref('userCarts/' + code).once('value'),
+    database.ref('userWishlists/' + code).once('value')
+  ]).then(function(results) {
+    users = results[0].val() || {};
+    products = results[1].val() || {};
+    globalSales = results[2].val() || {};
+    productRatings = results[3].val() || {};
+    cart = results[4].val() || {};
+    wishlist = results[5].val() || {};
     currentUser = users[code];
     
     calculateProductRatings();
@@ -1469,6 +1608,9 @@ function loadUserData(code) {
     renderTopStats();
     renderCategories();
     renderHomeSections();
+  }).catch(function(error) {
+    console.error('Error loading data:', error);
+    showLoginError('خطأ في تحميل البيانات');
   });
 }
 
@@ -1477,7 +1619,7 @@ function calculateProductRatings() {
     const ratings = productRatings[pid];
     if (ratings) {
       const values = Object.values(ratings);
-      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      const avg = values.reduce(function(a, b) { return a + b; }, 0) / values.length;
       products[pid].avgRating = avg.toFixed(1);
       products[pid].ratingCount = values.length;
     } else {
@@ -1488,7 +1630,9 @@ function calculateProductRatings() {
 }
 
 function logout() {
-  localStorage.removeItem('academyUser');
+  try {
+    localStorage.removeItem('academyUser');
+  } catch (e) {}
   currentUser = null;
   currentUserCode = null;
   cart = {};
@@ -1497,31 +1641,42 @@ function logout() {
 }
 
 function updateHeader() {
-  document.getElementById('userPointsMini').textContent = (currentUser?.points || 0);
+  const pointsEl = document.getElementById('userPointsMini');
+  if (pointsEl) pointsEl.textContent = (currentUser?.points || 0);
   updateCartBadge();
   updateWishlistBadge();
 }
 
 function updateCartBadge() {
-  const count = Object.values(cart).reduce((sum, item) => sum + (item.quantity || 0), 0);
-  document.getElementById('cartBadge').textContent = count;
-  document.getElementById('cartBadge').style.display = count > 0 ? 'flex' : 'none';
+  const count = Object.values(cart).reduce(function(sum, item) { 
+    return sum + (item.quantity || 0); 
+  }, 0);
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
 }
 
 function updateWishlistBadge() {
   const count = Object.keys(wishlist).length;
-  document.getElementById('wishlistBadge').textContent = count;
-  document.getElementById('wishlistBadge').style.display = count > 0 ? 'flex' : 'none';
+  const badge = document.getElementById('wishlistBadge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
 }
 
 function renderTopStats() {
   const topSales = Object.entries(products)
-    .sort((a, b) => (globalSales[b[0]] || 0) - (globalSales[a[0]] || 0))
+    .sort(function(a, b) { 
+      return (globalSales[b[0]] || 0) - (globalSales[a[0]] || 0); 
+    })
     .slice(0, 10);
   
   const topRated = Object.entries(products)
-    .filter(([_, p]) => p.avgRating > 0)
-    .sort((a, b) => b[1].avgRating - a[1].avgRating)
+    .filter(function(item) { return item[1].avgRating > 0; })
+    .sort(function(a, b) { return b[1].avgRating - a[1].avgRating; })
     .slice(0, 10);
   
   window.topSalesProducts = topSales;
@@ -1530,17 +1685,21 @@ function renderTopStats() {
 
 function renderCategories() {
   const list = document.getElementById('categoriesList');
-  list.innerHTML = categories.map(cat => `
-    <li class="category-item">
-      <button class="category-btn ${cat.id === 'all' ? 'active' : ''}" onclick="filterCategory('${cat.id}')">
-        <i class="fas ${cat.icon}"></i> ${cat.name}
-      </button>
-    </li>
-  `).join('');
+  if (!list) return;
+  
+  list.innerHTML = categories.map(function(cat) {
+    return '<li class="category-item">' +
+      '<button class="category-btn ' + (cat.id === 'all' ? 'active' : '') + '" onclick="filterCategory(\'' + cat.id + '\')">' +
+        '<i class="fas ' + cat.icon + '"></i> ' + cat.name +
+      '</button>' +
+    '</li>';
+  }).join('');
 }
 
 function renderHomeSections() {
   const container = document.getElementById('mainContainer');
+  if (!container) return;
+  
   container.innerHTML = '';
   
   if (window.topSalesProducts && window.topSalesProducts.length > 0) {
@@ -1551,9 +1710,11 @@ function renderHomeSections() {
     container.innerHTML += createScrollSection('الأعلى تقييماً ⭐', 'top-rated', window.topRatedProducts);
   }
   
-  categories.forEach(cat => {
+  categories.forEach(function(cat) {
     if (cat.id === 'all') return;
-    const catProducts = Object.entries(products).filter(([_, p]) => p.category === cat.id).slice(0, 6);
+    const catProducts = Object.entries(products).filter(function(item) { 
+      return item[1].category === cat.id; 
+    }).slice(0, 6);
     if (catProducts.length > 0) {
       container.innerHTML += createScrollSection(cat.name, cat.id, catProducts);
     }
@@ -1561,21 +1722,19 @@ function renderHomeSections() {
 }
 
 function createScrollSection(title, catId, items) {
-  return `
-    <div class="section-header">
-      <h2 class="section-title">${title}</h2>
-      <button class="view-all-btn" onclick="showCategoryPage('${catId}')">
-        عرض الكل <i class="fas fa-arrow-left"></i>
-      </button>
-    </div>
-    <div class="scroll-container">
-      <div class="scroll-wrapper">
-        <div class="products-scroll">
-          ${items.map(([pid, p]) => createProductCard(pid, p)).join('')}
-        </div>
-      </div>
-    </div>
-  `;
+  return '<div class="section-header">' +
+    '<h2 class="section-title">' + title + '</h2>' +
+    '<button class="view-all-btn" onclick="showCategoryPage(\'' + catId + '\')">' +
+      'عرض الكل <i class="fas fa-arrow-left"></i>' +
+    '</button>' +
+  '</div>' +
+  '<div class="scroll-container">' +
+    '<div class="scroll-wrapper">' +
+      '<div class="products-scroll">' +
+        items.map(function(item) { return createProductCard(item[0], item[1]); }).join('') +
+      '</div>' +
+    '</div>' +
+  '</div>';
 }
 
 function createProductCard(pid, p) {
@@ -1584,76 +1743,60 @@ function createProductCard(pid, p) {
   const inCart = cart[pid];
   const rating = p.avgRating || 0;
   
-  return `
-    <div class="product-card" onclick="openProductDetail('${pid}')">
-      <div class="product-image-wrapper">
-        <img src="${p.images?.[0] || p.image}" class="product-image" alt="${p.name}">
-        ${p.discount > 0 ? `<div class="discount-badge">-${p.discount}%</div>` : ''}
-        ${rating > 0 ? `
-          <div class="rating-badge">
-            <i class="fas fa-star"></i> ${rating}
-          </div>
-        ` : ''}
-        <div class="sales-badge">${salesCount} مباع</div>
-        <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${pid}')">
-          <i class="fas fa-heart"></i>
-        </button>
-      </div>
-      <div class="card-content">
-        <h3 class="product-title">${p.name}</h3>
-        <div class="price-row">
-          <span class="current-price">${p.price} نقطة</span>
-          ${p.originalPrice ? `<span class="original-price">${p.originalPrice}</span>` : ''}
-        </div>
-        ${rating > 0 ? `
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>${rating}</span>
-            <span style="color: var(--text-light);">(${p.ratingCount})</span>
-          </div>
-        ` : ''}
-        <button class="add-cart-btn ${inCart ? 'added' : ''}" onclick="event.stopPropagation(); addToCart('${pid}')">
-          <i class="fas ${inCart ? 'fa-check' : 'fa-shopping-cart'}"></i>
-          ${inCart ? 'في السلة' : 'أضف للسلة'}
-        </button>
-      </div>
-    </div>
-  `;
+  return '<div class="product-card" onclick="openProductDetail(\'' + pid + '\')">' +
+    '<div class="product-image-wrapper">' +
+      '<img src="' + (p.images?.[0] || p.image) + '" class="product-image" alt="' + p.name + '">' +
+      (p.discount > 0 ? '<div class="discount-badge">-' + p.discount + '%</div>' : '') +
+      (rating > 0 ? '<div class="rating-badge"><i class="fas fa-star"></i> ' + rating + '</div>' : '') +
+      '<div class="sales-badge">' + salesCount + ' مباع</div>' +
+      '<button class="wishlist-btn ' + (isWishlisted ? 'active' : '') + '" onclick="event.stopPropagation(); toggleWishlist(\'' + pid + '\')">' +
+        '<i class="fas fa-heart"></i>' +
+      '</button>' +
+    '</div>' +
+    '<div class="card-content">' +
+      '<h3 class="product-title">' + p.name + '</h3>' +
+      '<div class="price-row">' +
+        '<span class="current-price">' + p.price + ' نقطة</span>' +
+        (p.originalPrice ? '<span class="original-price">' + p.originalPrice + '</span>' : '') +
+      '</div>' +
+      (rating > 0 ? '<div class="rating"><i class="fas fa-star"></i><span>' + rating + '</span><span style="color: var(--text-light);">(' + p.ratingCount + ')</span></div>' : '') +
+      '<button class="add-cart-btn ' + (inCart ? 'added' : '') + '" onclick="event.stopPropagation(); addToCart(\'' + pid + '\')">' +
+        '<i class="fas ' + (inCart ? 'fa-check' : 'fa-shopping-cart') + '"></i> ' +
+        (inCart ? 'في السلة' : 'أضف للسلة') +
+      '</button>' +
+    '</div>' +
+  '</div>';
 }
 
 function showTopSales() {
   const container = document.getElementById('mainContainer');
-  container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h2 class="page-title"><i class="fas fa-fire" style="color: var(--danger);"></i> الأكثر مبيعاً</h2>
-        <button class="back-btn" onclick="renderHomeSections()">
-          <i class="fas fa-arrow-right"></i> رجوع
-        </button>
-      </div>
-      <div class="products-grid">
-        ${window.topSalesProducts.map(([pid, p]) => createProductCard(pid, p)).join('')}
-      </div>
-    </div>
-  `;
+  if (!container) return;
+  
+  container.innerHTML = '<div class="page-container">' +
+    '<div class="page-header">' +
+      '<h2 class="page-title"><i class="fas fa-fire" style="color: var(--danger);"></i> الأكثر مبيعاً</h2>' +
+      '<button class="back-btn" onclick="renderHomeSections()"><i class="fas fa-arrow-right"></i> رجوع</button>' +
+    '</div>' +
+    '<div class="products-grid">' +
+      window.topSalesProducts.map(function(item) { return createProductCard(item[0], item[1]); }).join('') +
+    '</div>' +
+  '</div>';
   window.scrollTo(0, 0);
 }
 
 function showTopRated() {
   const container = document.getElementById('mainContainer');
-  container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h2 class="page-title"><i class="fas fa-star" style="color: var(--secondary);"></i> الأعلى تقييماً</h2>
-        <button class="back-btn" onclick="renderHomeSections()">
-          <i class="fas fa-arrow-right"></i> رجوع
-        </button>
-      </div>
-      <div class="products-grid">
-        ${window.topRatedProducts.map(([pid, p]) => createProductCard(pid, p)).join('')}
-      </div>
-    </div>
-  `;
+  if (!container) return;
+  
+  container.innerHTML = '<div class="page-container">' +
+    '<div class="page-header">' +
+      '<h2 class="page-title"><i class="fas fa-star" style="color: var(--secondary);"></i> الأعلى تقييماً</h2>' +
+      '<button class="back-btn" onclick="renderHomeSections()"><i class="fas fa-arrow-right"></i> رجوع</button>' +
+    '</div>' +
+    '<div class="products-grid">' +
+      window.topRatedProducts.map(function(item) { return createProductCard(item[0], item[1]); }).join('') +
+    '</div>' +
+  '</div>';
   window.scrollTo(0, 0);
 }
 
@@ -1664,7 +1807,9 @@ function toggleWishlist(pid) {
     wishlist[pid] = true;
   }
   
-  database.ref(`userWishlists/${currentUserCode}`).set(wishlist);
+  if (database && currentUserCode) {
+    database.ref('userWishlists/' + currentUserCode).set(wishlist);
+  }
   updateWishlistBadge();
   renderHomeSections();
 }
@@ -1679,14 +1824,18 @@ function addToCart(pid) {
     };
   }
   
-  database.ref(`userCarts/${currentUserCode}`).set(cart);
+  if (database && currentUserCode) {
+    database.ref('userCarts/' + currentUserCode).set(cart);
+  }
   updateCartBadge();
   renderHomeSections();
 }
 
 function removeFromCart(pid) {
   delete cart[pid];
-  database.ref(`userCarts/${currentUserCode}`).set(cart);
+  if (database && currentUserCode) {
+    database.ref('userCarts/' + currentUserCode).set(cart);
+  }
   updateCartBadge();
   showCartPage();
 }
@@ -1699,91 +1848,66 @@ function updateCartQuantity(pid, change) {
     delete cart[pid];
   }
   
-  database.ref(`userCarts/${currentUserCode}`).set(cart);
+  if (database && currentUserCode) {
+    database.ref('userCarts/' + currentUserCode).set(cart);
+  }
   updateCartBadge();
   showCartPage();
 }
 
 function showCartPage() {
   const container = document.getElementById('mainContainer');
+  if (!container) return;
+  
   const cartItems = Object.entries(cart);
-  const totalPoints = cartItems.reduce((sum, [pid, item]) => {
-    return sum + ((products[pid]?.price || 0) * item.quantity);
+  const totalPoints = cartItems.reduce(function(sum, item) {
+    return sum + ((products[item[0]]?.price || 0) * item[1].quantity);
   }, 0);
   
   if (cartItems.length === 0) {
-    container.innerHTML = `
-      <div class="page-container">
-        <button class="back-btn" onclick="renderHomeSections()" style="margin-bottom: 20px;">
-          <i class="fas fa-arrow-right"></i> رجوع للمتجر
-        </button>
-        <div class="empty-state">
-          <i class="fas fa-shopping-cart"></i>
-          <h3>السلة فارغة</h3>
-          <p>أضف بعض المنتجات للبدء</p>
-        </div>
-      </div>
-    `;
+    container.innerHTML = '<div class="page-container">' +
+      '<button class="back-btn" onclick="renderHomeSections()" style="margin-bottom: 20px;"><i class="fas fa-arrow-right"></i> رجوع للمتجر</button>' +
+      '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>السلة فارغة</h3><p>أضف بعض المنتجات للبدء</p></div>' +
+    '</div>';
     return;
   }
   
-  container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h2 class="page-title"><i class="fas fa-shopping-cart" style="color: var(--primary);"></i> سلة التسوق</h2>
-        <button class="back-btn" onclick="renderHomeSections()">
-          <i class="fas fa-arrow-right"></i> متابعة التسوق
-        </button>
-      </div>
-      
-      ${cartItems.map(([pid, item]) => {
-        const p = products[pid];
-        if (!p) return '';
-        return `
-          <div class="cart-item">
-            <img src="${p.images?.[0] || p.image}" class="cart-item-image" alt="${p.name}">
-            <div class="cart-item-details">
-              <div class="cart-item-title">${p.name}</div>
-              <div class="cart-item-price">${p.price} نقطة × ${item.quantity} = ${p.price * item.quantity} نقطة</div>
-              <div class="cart-item-actions">
-                <div class="quantity-control">
-                  <button class="qty-btn" onclick="updateCartQuantity('${pid}', -1)">-</button>
-                  <span class="qty-value">${item.quantity}</span>
-                  <button class="qty-btn" onclick="updateCartQuantity('${pid}', 1)">+</button>
-                </div>
-                <button class="remove-btn" onclick="removeFromCart('${pid}')">
-                  <i class="fas fa-trash"></i> حذف
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('')}
-      
-      <div class="cart-summary">
-        <div class="summary-row">
-          <span>المجموع:</span>
-          <span>${totalPoints} نقطة</span>
-        </div>
-        <div class="summary-row">
-          <span>رصيدك:</span>
-          <span>${currentUser?.points || 0} نقطة</span>
-        </div>
-        <div class="summary-row total">
-          <span>المتبقي بعد الشراء:</span>
-          <span>${(currentUser?.points || 0) - totalPoints} نقطة</span>
-        </div>
-        <button class="checkout-btn" onclick="checkout()">
-          <i class="fas fa-check-circle"></i> تأكيد الشراء
-        </button>
-      </div>
-    </div>
-  `;
+  container.innerHTML = '<div class="page-container">' +
+    '<div class="page-header">' +
+      '<h2 class="page-title"><i class="fas fa-shopping-cart" style="color: var(--primary);"></i> سلة التسوق</h2>' +
+      '<button class="back-btn" onclick="renderHomeSections()"><i class="fas fa-arrow-right"></i> متابعة التسوق</button>' +
+    '</div>' +
+    cartItems.map(function(item) {
+      const p = products[item[0]];
+      if (!p) return '';
+      return '<div class="cart-item">' +
+        '<img src="' + (p.images?.[0] || p.image) + '" class="cart-item-image" alt="' + p.name + '">' +
+        '<div class="cart-item-details">' +
+          '<div class="cart-item-title">' + p.name + '</div>' +
+          '<div class="cart-item-price">' + p.price + ' نقطة × ' + item[1].quantity + ' = ' + (p.price * item[1].quantity) + ' نقطة</div>' +
+          '<div class="cart-item-actions">' +
+            '<div class="quantity-control">' +
+              '<button class="qty-btn" onclick="updateCartQuantity(\'' + item[0] + '\', -1)">-</button>' +
+              '<span class="qty-value">' + item[1].quantity + '</span>' +
+              '<button class="qty-btn" onclick="updateCartQuantity(\'' + item[0] + '\', 1)">+</button>' +
+            '</div>' +
+            '<button class="remove-btn" onclick="removeFromCart(\'' + item[0] + '\')"><i class="fas fa-trash"></i> حذف</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+    '<div class="cart-summary">' +
+      '<div class="summary-row"><span>المجموع:</span><span>' + totalPoints + ' نقطة</span></div>' +
+      '<div class="summary-row"><span>رصيدك:</span><span>' + (currentUser?.points || 0) + ' نقطة</span></div>' +
+      '<div class="summary-row total"><span>المتبقي بعد الشراء:</span><span>' + ((currentUser?.points || 0) - totalPoints) + ' نقطة</span></div>' +
+      '<button class="checkout-btn" onclick="checkout()"><i class="fas fa-check-circle"></i> تأكيد الشراء</button>' +
+    '</div>' +
+  '</div>';
 }
 
 function checkout() {
-  const totalPoints = Object.entries(cart).reduce((sum, [pid, item]) => {
-    return sum + ((products[pid]?.price || 0) * item.quantity);
+  const totalPoints = Object.entries(cart).reduce(function(sum, item) {
+    return sum + ((products[item[0]]?.price || 0) * item[1].quantity);
   }, 0);
   
   if (totalPoints > (currentUser?.points || 0)) {
@@ -1791,52 +1915,57 @@ function checkout() {
     return;
   }
   
-  if (!confirm(`تأكيد شراء ${Object.keys(cart).length} منتج بقيمة ${totalPoints} نقطة؟`)) {
+  if (!confirm('تأكيد شراء ' + Object.keys(cart).length + ' منتج بقيمة ' + totalPoints + ' نقطة؟')) {
     return;
   }
+  
+  if (!database) return;
   
   const updates = {};
   let newPoints = currentUser.points;
   
-  Object.entries(cart).forEach(([pid, item]) => {
-    const p = products[pid];
+  Object.entries(cart).forEach(function(item) {
+    const p = products[item[0]];
     const owner = users[p.ownerCode];
-    const itemTotal = p.price * item.quantity;
+    const itemTotal = p.price * item[1].quantity;
     
     newPoints -= itemTotal;
     
     if (owner) {
-      updates[`users/${p.ownerCode}/points`] = (owner.points || 0) + itemTotal;
+      updates['users/' + p.ownerCode + '/points'] = (owner.points || 0) + itemTotal;
     }
     
-    const currentSales = globalSales[pid] || 0;
-    updates[`globalSales/${pid}`] = currentSales + item.quantity;
+    const currentSales = globalSales[item[0]] || 0;
+    updates['globalSales/' + item[0]] = currentSales + item[1].quantity;
     
-    sendToTelegram(pid, item.quantity);
+    sendToTelegram(item[0], item[1].quantity);
   });
   
-  updates[`users/${currentUserCode}/points`] = newPoints;
-  updates[`userCarts/${currentUserCode}`] = null;
+  updates['users/' + currentUserCode + '/points'] = newPoints;
+  updates['userCarts/' + currentUserCode] = null;
   
-  database.ref().update(updates).then(() => {
+  database.ref().update(updates).then(function() {
     alert('✅ تم الشراء بنجاح!');
     cart = {};
     currentUser.points = newPoints;
     updateHeader();
     updateCartBadge();
     renderHomeSections();
+  }).catch(function(error) {
+    alert('خطأ في إتمام الشراء');
+    console.error(error);
   });
 }
 
 function sendToTelegram(pid, quantity) {
   const p = products[pid];
-  const message = `🛒 *طلب شراء جديد*\n\n` +
-    `📱 *الرقم:* ${currentUserCode}\n` +
-    `👤 *الاسم:* ${currentUser?.name || 'غير معروف'}\n` +
-    `📦 *المنتج:* ${p.name}\n` +
-    `🔢 *الكمية:* ${quantity}\n` +
-    `💰 *السعر:* ${p.price * quantity} نقطة\n` +
-    `💳 *الرصيد المتبقي:* ${currentUser?.points || 0} نقطة`;
+  const message = '🛒 *طلب شراء جديد*\\n\\n' +
+    '📱 *الرقم:* ' + currentUserCode + '\\n' +
+    '👤 *الاسم:* ' + (currentUser?.name || 'غير معروف') + '\\n' +
+    '📦 *المنتج:* ' + p.name + '\\n' +
+    '🔢 *الكمية:* ' + quantity + '\\n' +
+    '💰 *السعر:* ' + (p.price * quantity) + ' نقطة\\n' +
+    '💳 *الرصيد المتبقي:* ' + (currentUser?.points || 0) + ' نقطة';
     
   let keyboard = { inline_keyboard: [] };
   
@@ -1850,11 +1979,11 @@ function sendToTelegram(pid, quantity) {
   if (currentUser?.telegramId) {
     keyboard.inline_keyboard.push([{
       text: "👤 تواصل عبر تليجرام",
-      url: `tg://user?id=${currentUser.telegramId}`
+      url: 'tg://user?id=' + currentUser.telegramId
     }]);
   }
   
-  fetch(`https://api.telegram.org/bot7823121427:AAFAQUIObZPEEhAK18nzWtem9oH7AIqF6ek/sendMessage`, {
+  fetch('https://api.telegram.org/bot7823121427:AAFAQUIObZPEEhAK18nzWtem9oH7AIqF6ek/sendMessage', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1863,63 +1992,55 @@ function sendToTelegram(pid, quantity) {
       parse_mode: "Markdown",
       reply_markup: keyboard.inline_keyboard.length > 0 ? keyboard : undefined
     })
-  }).catch(console.error);
+  }).catch(function(e) { console.error(e); });
 }
 
 function showWishlistPage() {
   const container = document.getElementById('mainContainer');
+  if (!container) return;
+  
   const wishlistItems = Object.keys(wishlist);
   
   if (wishlistItems.length === 0) {
-    container.innerHTML = `
-      <div class="page-container">
-        <button class="back-btn" onclick="renderHomeSections()" style="margin-bottom: 20px;">
-          <i class="fas fa-arrow-right"></i> رجوع للمتجر
-        </button>
-        <div class="empty-state">
-          <i class="fas fa-heart"></i>
-          <h3>المفضلة فارغة</h3>
-          <p>أضف منتجات للمفضلة لرؤيتها هنا</p>
-        </div>
-      </div>
-    `;
+    container.innerHTML = '<div class="page-container">' +
+      '<button class="back-btn" onclick="renderHomeSections()" style="margin-bottom: 20px;"><i class="fas fa-arrow-right"></i> رجوع للمتجر</button>' +
+      '<div class="empty-state"><i class="fas fa-heart"></i><h3>المفضلة فارغة</h3><p>أضف منتجات للمفضلة لرؤيتها هنا</p></div>' +
+    '</div>';
     return;
   }
   
-  container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h2 class="page-title"><i class="fas fa-heart" style="color: var(--danger);"></i> المفضلة</h2>
-        <button class="back-btn" onclick="renderHomeSections()">
-          <i class="fas fa-arrow-right"></i> رجوع للمتجر
-        </button>
-      </div>
-      <div class="products-grid">
-        ${wishlistItems.map(pid => {
-          const p = products[pid];
-          if (!p) return '';
-          return createProductCard(pid, p);
-        }).join('')}
-      </div>
-    </div>
-  `;
+  container.innerHTML = '<div class="page-container">' +
+    '<div class="page-header">' +
+      '<h2 class="page-title"><i class="fas fa-heart" style="color: var(--danger);"></i> المفضلة</h2>' +
+      '<button class="back-btn" onclick="renderHomeSections()"><i class="fas fa-arrow-right"></i> رجوع للمتجر</button>' +
+    '</div>' +
+    '<div class="products-grid">' +
+      wishlistItems.map(function(pid) {
+        const p = products[pid];
+        if (!p) return '';
+        return createProductCard(pid, p);
+      }).join('') +
+    '</div>' +
+  '</div>';
 }
 
 function openRatingModal(pid) {
   currentProduct = { id: pid, ...products[pid] };
   currentRating = 0;
-  document.getElementById('ratingModal').classList.add('show');
+  const modal = document.getElementById('ratingModal');
+  if (modal) modal.classList.add('show');
   updateStars(0);
 }
 
 function closeRatingModal() {
-  document.getElementById('ratingModal').classList.remove('show');
+  const modal = document.getElementById('ratingModal');
+  if (modal) modal.classList.remove('show');
 }
 
 function updateStars(rating) {
   currentRating = rating;
   const stars = document.querySelectorAll('.star-btn');
-  stars.forEach((star, index) => {
+  stars.forEach(function(star, index) {
     if (index < rating) {
       star.classList.add('active');
       star.innerHTML = '<i class="fas fa-star"></i>';
@@ -1931,12 +2052,12 @@ function updateStars(rating) {
 }
 
 function submitRating() {
-  if (currentRating === 0) return;
+  if (currentRating === 0 || !database) return;
   
   const updates = {};
-  updates[`productRatings/${currentProduct.id}/${currentUserCode}`] = currentRating;
+  updates['productRatings/' + currentProduct.id + '/' + currentUserCode] = currentRating;
   
-  database.ref().update(updates).then(() => {
+  database.ref().update(updates).then(function() {
     if (!productRatings[currentProduct.id]) {
       productRatings[currentProduct.id] = {};
     }
@@ -1946,7 +2067,8 @@ function submitRating() {
     closeRatingModal();
     renderHomeSections();
     
-    if (document.getElementById('detailModal').classList.contains('show')) {
+    const detailModal = document.getElementById('detailModal');
+    if (detailModal && detailModal.classList.contains('show')) {
       openProductDetail(currentProduct.id);
     }
   });
@@ -1960,35 +2082,46 @@ function openProductDetail(pid) {
   currentImages = p.images || [p.image];
   currentImageIndex = 0;
   
-  document.getElementById('detailTitle').textContent = p.name;
-  document.getElementById('detailCurrentPrice').textContent = (p.price || 0) + ' نقطة';
-  document.getElementById('detailOriginalPrice').textContent = (p.originalPrice || 0) + ' نقطة';
-  document.getElementById('detailDiscount').textContent = '-' + (p.discount || 0) + '%';
-  document.getElementById('detailSales').textContent = globalSales[pid] || 0;
-  document.getElementById('detailDesc').textContent = p.description || 'منتج مميز من متجر الأكاديمية';
+  const titleEl = document.getElementById('detailTitle');
+  const currentPriceEl = document.getElementById('detailCurrentPrice');
+  const originalPriceEl = document.getElementById('detailOriginalPrice');
+  const discountEl = document.getElementById('detailDiscount');
+  const salesEl = document.getElementById('detailSales');
+  const descEl = document.getElementById('detailDesc');
+  const ratingValueEl = document.getElementById('detailRatingValue');
+  const ratingCountEl = document.getElementById('detailRatingCount');
   
-  const ratingValue = document.getElementById('detailRatingValue');
-  const ratingCount = document.getElementById('detailRatingCount');
-  if (ratingValue && ratingCount) {
-    ratingValue.textContent = p.avgRating || '0.0';
-    ratingCount.textContent = `(${p.ratingCount || 0} تقييم)`;
-  }
+  if (titleEl) titleEl.textContent = p.name;
+  if (currentPriceEl) currentPriceEl.textContent = (p.price || 0) + ' نقطة';
+  if (originalPriceEl) originalPriceEl.textContent = (p.originalPrice || 0) + ' نقطة';
+  if (discountEl) discountEl.textContent = '-' + (p.discount || 0) + '%';
+  if (salesEl) salesEl.textContent = globalSales[pid] || 0;
+  if (descEl) descEl.textContent = p.description || 'منتج مميز من متجر الأكاديمية';
+  if (ratingValueEl) ratingValueEl.textContent = p.avgRating || '0.0';
+  if (ratingCountEl) ratingCountEl.textContent = '(' + (p.ratingCount || 0) + ' تقييم)';
   
   updateDetailImage();
   renderImageDots();
   
-  document.getElementById('detailModal').classList.add('show');
-  document.body.style.overflow = 'hidden';
+  const modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function updateDetailImage() {
-  document.getElementById('detailImage').src = currentImages[currentImageIndex];
+  const img = document.getElementById('detailImage');
+  if (img) img.src = currentImages[currentImageIndex];
 }
 
 function renderImageDots() {
-  document.getElementById('imageDots').innerHTML = currentImages.map((_, i) => `
-    <div class="dot ${i === currentImageIndex ? 'active' : ''}" onclick="goToImage(${i})"></div>
-  `).join('');
+  const dots = document.getElementById('imageDots');
+  if (dots) {
+    dots.innerHTML = currentImages.map(function(_, i) {
+      return '<div class="dot ' + (i === currentImageIndex ? 'active' : '') + '" onclick="goToImage(' + i + ')"></div>';
+    }).join('');
+  }
 }
 
 function goToImage(i) {
@@ -2010,26 +2143,35 @@ function prevImage() {
 }
 
 function openFullGallery() {
-  document.getElementById('galleryModal').classList.add('show');
-  renderGallery();
-  updateGalleryImage();
+  const modal = document.getElementById('galleryModal');
+  if (modal) {
+    modal.classList.add('show');
+    renderGallery();
+    updateGalleryImage();
+  }
 }
 
 function closeGallery() {
-  document.getElementById('galleryModal').classList.remove('show');
+  const modal = document.getElementById('galleryModal');
+  if (modal) modal.classList.remove('show');
 }
 
 function renderGallery() {
-  document.getElementById('galleryThumbs').innerHTML = currentImages.map((img, i) => `
-    <div class="thumbnail ${i === currentImageIndex ? 'active' : ''}" onclick="setGalleryImage(${i})">
-      <img src="${img}" alt="">
-    </div>
-  `).join('');
+  const thumbs = document.getElementById('galleryThumbs');
+  if (thumbs) {
+    thumbs.innerHTML = currentImages.map(function(img, i) {
+      return '<div class="thumbnail ' + (i === currentImageIndex ? 'active' : '') + '" onclick="setGalleryImage(' + i + ')">' +
+        '<img src="' + img + '" alt="">' +
+      '</div>';
+    }).join('');
+  }
 }
 
 function updateGalleryImage() {
-  document.getElementById('galleryMainImage').src = currentImages[currentImageIndex];
-  document.getElementById('galleryCounter').textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+  const mainImg = document.getElementById('galleryMainImage');
+  const counter = document.getElementById('galleryCounter');
+  if (mainImg) mainImg.src = currentImages[currentImageIndex];
+  if (counter) counter.textContent = (currentImageIndex + 1) + ' / ' + currentImages.length;
   renderGallery();
 }
 
@@ -2049,13 +2191,22 @@ function prevGalleryImage() {
 }
 
 function closeDetail() {
-  document.getElementById('detailModal').classList.remove('show');
-  document.body.style.overflow = 'auto';
+  const modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
 }
 
 function filterCategory(catId) {
-  document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.closest('.category-btn').classList.add('active');
+  document.querySelectorAll('.category-btn').forEach(function(btn) { 
+    btn.classList.remove('active'); 
+  });
+  
+  if (event && event.target) {
+    const btn = event.target.closest('.category-btn');
+    if (btn) btn.classList.add('active');
+  }
   
   if (catId === 'all') {
     renderHomeSections();
@@ -2065,33 +2216,41 @@ function filterCategory(catId) {
 }
 
 function showCategoryPage(catId) {
-  const cat = categories.find(c => c.id === catId);
-  const items = Object.entries(products).filter(([_, p]) => 
-    catId === 'top-sales' ? window.topSalesProducts.some(([id]) => id === _) :
-    catId === 'top-rated' ? window.topRatedProducts.some(([id]) => id === _) :
-    p.category === catId
-  );
+  const container = document.getElementById('mainContainer');
+  if (!container) return;
   
-  document.getElementById('mainContainer').innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <button class="back-btn" onclick="renderHomeSections()">
-          <i class="fas fa-arrow-right"></i> رجوع
-        </button>
-        <h2 class="page-title">${cat?.name || 'المنتجات'}</h2>
-        <span style="color: var(--text-light);">${items.length} منتج</span>
-      </div>
-      <div class="products-grid">
-        ${items.map(([pid, p]) => createProductCard(pid, p)).join('')}
-      </div>
-    </div>
-  `;
+  const cat = categories.find(function(c) { return c.id === catId; });
+  let items;
+  
+  if (catId === 'top-sales') {
+    items = Object.entries(products).filter(function(item) {
+      return window.topSalesProducts.some(function(topItem) { return topItem[0] === item[0]; });
+    });
+  } else if (catId === 'top-rated') {
+    items = Object.entries(products).filter(function(item) {
+      return window.topRatedProducts.some(function(topItem) { return topItem[0] === item[0]; });
+    });
+  } else {
+    items = Object.entries(products).filter(function(item) { return item[1].category === catId; });
+  }
+  
+  container.innerHTML = '<div class="page-container">' +
+    '<div class="page-header">' +
+      '<button class="back-btn" onclick="renderHomeSections()"><i class="fas fa-arrow-right"></i> رجوع</button>' +
+      '<h2 class="page-title">' + (cat?.name || 'المنتجات') + '</h2>' +
+      '<span style="color: var(--text-light);">' + items.length + ' منتج</span>' +
+    '</div>' +
+    '<div class="products-grid">' +
+      items.map(function(item) { return createProductCard(item[0], item[1]); }).join('') +
+    '</div>' +
+  '</div>';
   window.scrollTo(0, 0);
 }
 
 // Keyboard navigation
-document.addEventListener('keydown', (e) => {
-  if (document.getElementById('galleryModal').classList.contains('show')) {
+document.addEventListener('keydown', function(e) {
+  const galleryModal = document.getElementById('galleryModal');
+  if (galleryModal && galleryModal.classList.contains('show')) {
     if (e.key === 'ArrowRight') nextGalleryImage();
     if (e.key === 'ArrowLeft') prevGalleryImage();
     if (e.key === 'Escape') closeGallery();
@@ -2110,17 +2269,17 @@ document.addEventListener('keydown', (e) => {
     
     <div class="login-input-group">
       <label>الرقم الأكاديمي</label>
-      <input type="text" id="loginCode" placeholder="أدخل رقمك">
+      <input type="text" id="loginCode" placeholder="أدخل رقمك" autocomplete="off">
     </div>
     
     <div class="login-input-group">
       <label>كلمة السر</label>
-      <input type="password" id="loginPass" placeholder="••••••">
+      <input type="password" id="loginPass" placeholder="••••••" autocomplete="off">
     </div>
     
     <div class="login-error" id="loginError"></div>
     
-    <button class="login-btn" onclick="login()">
+    <button class="login-btn" id="loginBtn" type="button">
       <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
     </button>
   </div>
