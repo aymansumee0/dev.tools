@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>واجهة الأكاديمية - فيديوهات داخلية</title>
+<title>الأكاديمية - نظام الدورات</title>
 
 <style>
 /* إخفاء عناصر بلوجر */
@@ -13,697 +13,1168 @@
   display: none !important;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
 
 :root{
-  --bg1:#4e54c8;
-  --bg2:#8f94fb;
-  --card:#ffffff;
-  --muted:#f7f7ff;
-  --primary:#6c63ff;
-  --primary2:#574fdb;
-  --text:#1f2937;
-  --text2:#4e54c8;
-  --overlay:rgba(0,0,0,.65);
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #ec4899;
+  --accent: #8b5cf6;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --text-light: #f8fafc;
+  --text-muted: #cbd5e1;
+  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --danger: #ef4444;
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body{
-  margin:0;
-  font-family:'Cairo',sans-serif;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:30px;
+  font-family: 'Cairo', sans-serif;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  direction: rtl;
 }
 
-/* الكرت الرئيسي */
-.app-container{
-  width:100%;
-  max-width:460px;
-  background:var(--card);
-  border-radius:30px;
-  box-shadow:0 20px 40px rgba(0,0,0,.25);
-  padding:30px;
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* الأزرار الرئيسية (طويلة مثل تصميمك) */
+.glass-container{
+  width: 100%;
+  max-width: 480px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
+  box-shadow: var(--glass-shadow);
+  padding: 40px 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-container::before{
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.academy-header{
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.academy-logo{
+  width: 80px;
+  height: 80px;
+  background: var(--gradient-1);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 40px;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.academy-header h1{
+  color: var(--text-light);
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.academy-header p{
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.login-section{
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  padding: 25px;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 20px;
+}
+
+.input-group{
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-group label{
+  display: block;
+  color: var(--text-light);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-group input{
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  color: var(--text-light);
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus{
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.input-group input::placeholder{
+  color: rgba(255,255,255,0.4);
+}
+
+.glass-btn{
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--gradient-1);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-btn::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.glass-btn:hover::before{
+  left: 100%;
+}
+
+.glass-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.5);
+}
+
+.glass-btn.secondary{
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: none;
+}
+
+.glass-btn.secondary:hover{
+  background: rgba(255,255,255,0.2);
+}
+
+.user-badge{
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-avatar{
+  width: 60px;
+  height: 60px;
+  background: var(--gradient-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.user-info h3{
+  color: var(--text-light);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.user-info p{
+  color: var(--text-muted);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.major-tag{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.dropdown-container{
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
 .dropdown-btn{
-  width:100%;
-  background:var(--primary);
-  color:#fff;
-  border:none;
-  padding:20px;
-  border-radius:16px;
-  font-size:18px;
-  font-weight:700;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  box-shadow:0 8px 15px rgba(108,99,255,.3);
-  margin-bottom:18px;
-  user-select:none;
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text-light);
+  padding: 18px 22px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
-.dropdown-btn:hover{ background:var(--primary2); }
 
-/* القوائم المنسدلة */
+.dropdown-btn:hover{
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateX(-5px);
+}
+
+.dropdown-btn i{
+  transition: transform 0.3s ease;
+}
+
+.dropdown-btn.active i{
+  transform: rotate(180deg);
+}
+
 .dropdown-content{
-  display:none;
-  background:var(--muted);
-  border-radius:16px;
-  padding:18px 18px;
-  margin:-6px 0 18px;
-  box-shadow: 0 15px 25px rgba(110,110,230,0.15);
+  display: none;
+  background: rgba(0,0,0,0.2);
+  border-radius: 16px;
+  padding: 8px;
+  margin: -8px 0 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.dropdown-content a{
-  display:block;
-  text-align:center;
-  padding:12px 0;
-  color:var(--text2);
-  font-weight:600;
-  text-decoration:none;
-  cursor:pointer;
-  border-bottom:1px solid #e1e1ff;
-}
-.dropdown-content a:last-child{border-bottom:none}
-.dropdown-content a:hover{ color:var(--primary); }
 
-/* ===== شاشة البورد (صفحة داخلية Overlay) ===== */
+.dropdown-content.show{
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item{
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-item:hover{
+  background: rgba(255,255,255,0.1);
+  padding-right: 25px;
+}
+
+.dropdown-item i{
+  color: var(--primary);
+  font-size: 16px;
+}
+
 .board-screen{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  z-index:5000;
-  overflow:auto;
-  padding:22px;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  z-index: 5000;
+  overflow: auto;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
 }
 
 .board-inner{
-  width:100%;
-  max-width:460px;
-  margin:0 auto;
-  background:#fff;
-  border-radius:26px;
-  box-shadow:0 20px 40px rgba(0,0,0,.28);
-  padding:18px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  backdrop-filter: blur(20px);
 }
 
-.board-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:12px;
+.board-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.back-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:10px 12px;
-  background:rgba(108,99,255,.10);
-  color:var(--text2);
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:700;
-  user-select:none;
-}
+
 .board-title{
-  font-weight:800;
-  color:var(--text);
-  font-size:16px;
+  color: var(--text-light);
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* كروت الفيديو (شكل مثل بلوجر: صورة + عنوان) */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.card{
-  background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 8px 18px rgba(0,0,0,.12);
-  transition:transform .08s ease;
-}
-.card:active{ transform:scale(.99); }
-.thumb{
-  width:100%;
-  aspect-ratio:16/9;
-  background:#111;
-  display:block;
-  position:relative;
-}
-.thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-.play-badge{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-}
-.play-badge span{
-  width:48px;height:48px;
-  border-radius:14px;
-  background:rgba(255,255,255,.18);
-  backdrop-filter: blur(6px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:20px;
-  font-weight:900;
-}
-.card h4{
-  margin:10px 10px 12px;
-  font-size:13px;
-  color:#333;
-  text-align:center;
-  font-weight:800;
+.back-btn{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-light);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-/* ===== Modal الفيديو (نفس كودك) ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;              /* مهم: لا يظهر عند فتح الصفحة */
-  place-items:center;
-  padding:18px;
-  background:var(--overlay);
-  z-index:9999;
+.back-btn:hover{
+  background: rgba(255,255,255,0.2);
+  transform: translateX(-5px);
 }
-.modal.open{ display:grid; }
-.modal__box{
-  width:min(960px, 96vw);
-  aspect-ratio:16/9;
-  background:#000;
-  border-radius:16px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-  overflow:hidden;
-  position:relative;
-}
-.modal__close{
-  position:absolute;
-  top:10px;
-  inset-inline-end:10px;
-  width:40px;height:40px;
-  border:0;border-radius:50%;
-  background:rgba(255,255,255,.1);
-  color:#fff;
-  cursor:pointer;
-  font-size:22px;
-  line-height:40px;
-  text-align:center;
-  backdrop-filter: blur(6px);
-}
-.modal__close:hover{ background:rgba(255,255,255,.18); }
-.modal iframe{ width:100%;height:100%;border:0;display:block; }
-body.noscroll{ overflow:hidden; }
 
-@media (max-width:460px){
-  .app-container{ padding:22px; border-radius:26px; }
-  .dropdown-btn{ font-size:16px; padding:18px; }
+.video-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.video-card{
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.video-card:hover{
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+}
+
+.video-thumb{
+  width: 100%;
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.video-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover .video-thumb img{
+  transform: scale(1.05);
+}
+
+.play-overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-card:hover .play-overlay{
+  opacity: 1;
+}
+
+.play-btn{
+  width: 60px;
+  height: 60px;
+  background: var(--gradient-1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover .play-btn{
+  transform: scale(1);
+}
+
+.video-info{
+  padding: 16px;
+}
+
+.video-info h4{
+  color: var(--text-light);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.video-modal{
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 9999;
+  place-items: center;
+  padding: 20px;
+}
+
+.video-modal.active{
+  display: grid;
+  animation: fadeIn 0.3s ease;
+}
+
+.video-container{
+  width: 100%;
+  max-width: 1000px;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+.close-video{
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 45px;
+  height: 45px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-video:hover{
+  background: var(--danger);
+  transform: rotate(90deg);
+}
+
+.video-container iframe{
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.alert-modal{
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+  place-items: center;
+  padding: 20px;
+}
+
+.alert-modal.active{
+  display: grid;
+  animation: fadeIn 0.3s ease;
+}
+
+.alert-box{
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+.alert-icon{
+  width: 70px;
+  height: 70px;
+  background: rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.alert-icon.success{
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.alert-title{
+  color: var(--text-light);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.alert-message{
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.alert-btn{
+  padding: 12px 32px;
+  background: var(--gradient-1);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.alert-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+}
+
+.spinner{
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: none;
+}
+
+.glass-btn.loading .spinner{
+  display: inline-block;
+}
+
+.glass-btn.loading .btn-text{
+  display: none;
+}
+
+@keyframes spin{
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px){
+  .glass-container{
+    padding: 30px 20px;
+    border-radius: 24px;
+  }
+  
+  .academy-header h1{
+    font-size: 24px;
+  }
+  
+  .video-grid{
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
 
-<div class="app-container">
-
-  <!-- الدورات -->
-  <button class="dropdown-btn" onclick="toggleDropdown('courses')">
-    <i class="fa-solid fa-graduation-cap"></i> الدورات
-  </button>
-  <div id="courses" class="dropdown-content">
-    <a onclick="openBoard('b_course_1','courses')">دورة الربح من الانترنت</a>
-    <a onclick="openBoard('b_course_2','courses')">دورة جرافيكس الجوال</a>
-    <a onclick="openBoard('b_course_3','courses')">دورة جرافيكس الكمبيوتر</a>
-    <a onclick="openBoard('b_course_4','courses')">دورة ريادة الاعمال</a>
-    <a onclick="openBoard('b_course_5','courses')">دورة تصميم الثيمات</a>
-    <a onclick="openBoard('b_course_6','courses')">دورة كتابة الروايات</a>
+<div class="glass-container" id="mainContainer">
+  <!-- Header -->
+  <div class="academy-header">
+    <div class="academy-logo">🎓</div>
+    <h1>أكاديمية التعلم</h1>
+    <p>منصة الدورات والشروحات التفاعلية</p>
   </div>
 
-  <!-- الشروحات -->
-  <button class="dropdown-btn" onclick="toggleDropdown('tutorials')">
-    <i class="fa-solid fa-chalkboard-user"></i> الشروحات
-  </button>
-  <div id="tutorials" class="dropdown-content">
-    <a onclick="openBoard('b_tut_1','tutorials')">تصميم شعارات</a>
-    <a onclick="openBoard('b_tut_2','tutorials')"> الذكاء الاصطناعي </a>
-    <a onclick="openBoard('b_tut_3','tutorials')">شروحات برمجة</a>
-    <a onclick="openBoard('b_tut_4','tutorials')">شروحات منوعة</a>
+  <!-- Login Section -->
+  <div id="loginSection" class="login-section">
+    <div class="input-group">
+      <label><i class="fas fa-id-card"></i> الرقم الأكاديمي</label>
+      <input type="text" id="academicId" placeholder="أدخل رقمك الأكاديمي" />
+    </div>
+    
+    <div class="input-group">
+      <label><i class="fas fa-lock"></i> كلمة المرور</label>
+      <input type="password" id="password" placeholder="أدخل كلمة المرور" />
+    </div>
+    
+    <button class="glass-btn" id="loginBtn" onclick="login()">
+      <span class="spinner"></span>
+      <span class="btn-text"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</span>
+    </button>
   </div>
 
-  <!-- ورشات تدريبية -->
-  <button class="dropdown-btn" onclick="toggleDropdown('workshops')">
-    <i class="fa-solid fa-chart-line"></i> ورشات تدريبية
-  </button>
-  <div id="workshops" class="dropdown-content">
-    <a onclick="openBoard('b_work_1','workshops')">ورشة التصوير</a>
-    <a onclick="openBoard('b_work_2','workshops')">ورشة المونتاج</a>
+  <!-- User Badge -->
+  <div id="userBadge" class="user-badge" style="display: none;">
+    <div class="user-avatar">👤</div>
+    <div class="user-info">
+      <h3 id="userName">اسم الطالب</h3>
+      <p>
+        <span class="major-tag" id="userMajor">التخصص</span>
+        <span id="userPoints">⭐ 0 نقطة</span>
+      </p>
+    </div>
+    <button class="glass-btn secondary" style="width: auto; padding: 8px 16px; font-size: 12px;" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> خروج
+    </button>
   </div>
 
+  <!-- Dropdowns Container -->
+  <div id="dropdownsContainer" class="dropdown-container">
+    <!-- الدورات -->
+    <button class="dropdown-btn" onclick="toggleDropdown('coursesDropdown')">
+      <span><i class="fas fa-graduation-cap"></i> الدورات</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <div id="coursesDropdown" class="dropdown-content">
+      <button class="dropdown-item" onclick="checkAccess('b_course_1', 'الربح من الإنترنت')">
+        <i class="fas fa-laptop-dollar"></i> دورة الربح من الإنترنت
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_course_2', 'جرافيكس الجوال')">
+        <i class="fas fa-mobile-alt"></i> دورة جرافيكس الجوال
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_course_3', 'جرافيكس الكمبيوتر')">
+        <i class="fas fa-desktop"></i> دورة جرافيكس الكمبيوتر
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_course_4', 'ريادة الأعمال')">
+        <i class="fas fa-chart-line"></i> دورة ريادة الأعمال
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_course_5', 'تصميم الثيمات')">
+        <i class="fas fa-paint-brush"></i> دورة تصميم الثيمات
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_course_6', 'كتابة الروايات')">
+        <i class="fas fa-book"></i> دورة كتابة الروايات
+      </button>
+    </div>
+
+    <!-- الشروحات -->
+    <button class="dropdown-btn" onclick="toggleDropdown('tutorialsDropdown')">
+      <span><i class="fas fa-chalkboard-user"></i> الشروحات</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <div id="tutorialsDropdown" class="dropdown-content">
+      <button class="dropdown-item" onclick="checkAccess('b_tut_1', 'تصميم شعارات')">
+        <i class="fas fa-pen-nib"></i> تصميم شعارات
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_tut_2', 'الذكاء الاصطناعي')">
+        <i class="fas fa-robot"></i> الذكاء الاصطناعي
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_tut_3', 'شروحات برمجة')">
+        <i class="fas fa-code"></i> شروحات برمجة
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_tut_4', 'شروحات منوعة')">
+        <i class="fas fa-lightbulb"></i> شروحات منوعة
+      </button>
+    </div>
+
+    <!-- الورشات -->
+    <button class="dropdown-btn" onclick="toggleDropdown('workshopsDropdown')">
+      <span><i class="fas fa-users-cog"></i> ورشات تدريبية</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <div id="workshopsDropdown" class="dropdown-content">
+      <button class="dropdown-item" onclick="checkAccess('b_work_1', 'ورشة التصوير')">
+        <i class="fas fa-camera"></i> ورشة التصوير
+      </button>
+      <button class="dropdown-item" onclick="checkAccess('b_work_2', 'ورشة المونتاج')">
+        <i class="fas fa-film"></i> ورشة المونتاج
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- =========================
-     BOARDS (كل عنصر 2 فيديو)
-========================= -->
-
-<!-- الدورات 1 -->
-<div id="b_course_1" class="board-screen">
+<!-- Board Screen -->
+<div id="boardScreen" class="board-screen">
   <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة الربح من الانترنت</div>
+    <div class="board-header">
+      <button class="back-btn" onclick="closeBoard()">
+        <i class="fas fa-arrow-right"></i> رجوع
+      </button>
+      <div class="board-title">
+        <i class="fas fa-play-circle"></i>
+        <span id="boardTitle">عنوان القسم</span>
+      </div>
     </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/V1UNRL5IVLg?si=KGp7LXJLcqWZ_6_h')">
-        <div class="thumb"><img data-thumb="https://youtu.be/V1UNRL5IVLg?si=KGp7LXJLcqWZ_6_h" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/7eYxkklSTQU?si=KFAYbJSGpKfq-tu6')">
-        <div class="thumb"><img data-thumb="https://youtu.be/7eYxkklSTQU?si=KFAYbJSGpKfq-tu6" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثانية</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/RPXjiOjLdZ4?si=upIJ5FGUF2xC0hqF')">
-        <div class="thumb"><img data-thumb="https://youtu.be/RPXjiOjLdZ4?si=upIJ5FGUF2xC0hqF" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثالثة</h4>
-      </div>
+    <div id="videoGrid" class="video-grid">
+      <!-- Videos will be loaded here -->
     </div>
   </div>
 </div>
 
-<!-- الدورات 2 -->
-<div id="b_course_2" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة جرافيكس الجوال</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/H_M15YH8wTs?si=GL6Chnty1WeX2NAD')">
-        <div class="thumb"><img data-thumb="https://youtu.be/H_M15YH8wTs?si=GL6Chnty1WeX2NAD" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/NF6Z652g3LU?si=yOi2ScwpeI5FT6Iz')">
-        <div class="thumb"><img data-thumb="https://youtu.be/NF6Z652g3LU?si=yOi2ScwpeI5FT6Iz" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثانية</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/bKWT8rPM__g?si=okr2t4so_9eWZAYn')">
-        <div class="thumb"><img data-thumb="https://youtu.be/bKWT8rPM__g?si=okr2t4so_9eWZAYn" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثالثه</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/CHrFAtsCO1o?si=rti0vTOeHie0_KJu')">
-        <div class="thumb"><img data-thumb="https://youtu.be/CHrFAtsCO1o?si=rti0vTOeHie0_KJu" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الرابعه</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/Y9kv5ECSHUA?si=8qxsTyBqxJh8yoYt')">
-        <div class="thumb"><img data-thumb="https://youtu.be/Y9kv5ECSHUA?si=8qxsTyBqxJh8yoYt" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الخامسه</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/JWMV8YqHVJE?si=nA-m-xe__u1uPZ07')">
-        <div class="thumb"><img data-thumb="https://youtu.be/JWMV8YqHVJE?si=nA-m-xe__u1uPZ07" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة السادسه</h4>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- الدورات 3 -->
-<div id="b_course_3" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة جرافيكس الكمبيوتر</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/6ZUv2bMH8UU?si=uegdNfWPhj2LIEkQ')">
-        <div class="thumb"><img data-thumb="https://youtu.be/6ZUv2bMH8UU?si=uegdNfWPhj2LIEkQ" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/Hxq_UFuTRfM?si=ShNoC7dlOKYK6iCR')">
-        <div class="thumb"><img data-thumb="https://youtu.be/Hxq_UFuTRfM?si=ShNoC7dlOKYK6iCR" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثانية</h4>
-      </div>
+<!-- Video Modal -->
+<div id="videoModal" class="video-modal">
+  <div style="position: relative; width: 100%; max-width: 1000px;">
+    <button class="close-video" onclick="closeVideo()">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="video-container">
+      <iframe id="videoFrame" allowfullscreen></iframe>
     </div>
   </div>
 </div>
 
-<!-- الدورات 4 -->
-<div id="b_course_4" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة ريادة الاعمال</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/4VpDV7lmyMo?si=dJYR4e6QJDVSPVGY')">
-        <div class="thumb"><img data-thumb="https://youtu.be/4VpDV7lmyMo?si=dJYR4e6QJDVSPVGY" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/Y32ZeltX92w?si=QKn7XTu9aXcP88yJ')">
-        <div class="thumb"><img data-thumb="https://youtu.be/Y32ZeltX92w?si=QKn7XTu9aXcP88yJ" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثانية</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/KmLBk1nh_Hk?si=NRVatnRLfM8i15Kn')">
-        <div class="thumb"><img data-thumb="https://youtu.be/KmLBk1nh_Hk?si=NRVatnRLfM8i15Kn" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثالثة</h4>
-      </div>
-    </div>
+<!-- Alert Modal -->
+<div id="alertModal" class="alert-modal">
+  <div class="alert-box">
+    <div class="alert-icon" id="alertIcon">⚠️</div>
+    <div class="alert-title" id="alertTitle">تنبيه</div>
+    <div class="alert-message" id="alertMessage">رسالة التنبيه</div>
+    <button class="alert-btn" onclick="closeAlert()">حسناً</button>
   </div>
 </div>
 
-<!-- الدورات 5 -->
-<div id="b_course_5" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة تصميم الثيمات</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/tG2XmP81Fo0?si=kUckSCOuI_8NcrWN')">
-        <div class="thumb"><img data-thumb="https://youtu.be/tG2XmP81Fo0?si=kUckSCOuI_8NcrWN" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/vR7TquL684o?si=VlUSqK6MoJYnp9Sf')">
-        <div class="thumb"><img data-thumb="https://youtu.be/vR7TquL684o?si=VlUSqK6MoJYnp9Sf" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثانية</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/_b_jeDyGp7Q?si=7U_yjP7EF2UDbbM9')">
-        <div class="thumb"><img data-thumb="https://youtu.be/_b_jeDyGp7Q?si=7U_yjP7EF2UDbbM9" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الثالثة</h4>
-      </div>
-    </div>
-  </div>
-</div>
-  <!-- الدورات 6 -->
-<div id="b_course_6" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">دورة كتابة الروايات</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/Oyqecp8lkj0?si=o2DwH8Q0VcCIy5MC')">
-        <div class="thumb"><img data-thumb="https://youtu.be/Oyqecp8lkj0?si=o2DwH8Q0VcCIy5MC" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>المحاضرة الاولى</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الشروحات 1 -->
-<div id="b_tut_1" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">تصميم شعارات</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/UbZadAyYlQM?si=eHh9N-lLEqrRlGSg')">
-        <div class="thumb"><img data-thumb="https://youtu.be/UbZadAyYlQM?si=eHh9N-lLEqrRlGSg" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم شعار مختبر</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/0DL4e6MNsv8?si=nmm_dM0guE0OnAAQ')">
-        <div class="thumb"><img data-thumb="https://youtu.be/0DL4e6MNsv8?si=nmm_dM0guE0OnAAQ" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم شعار صرافه</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/Hj_Hx4oKOR4?si=iLGBc5YWpiAH_K2-')">
-        <div class="thumb"><img data-thumb="https://youtu.be/Hj_Hx4oKOR4?si=iLGBc5YWpiAH_K2-" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم شعار وردة</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الشروحات 2 -->
-<div id="b_tut_2" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title"> الذكاء الاصطناعي</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/i5jYrMmzPy0?si=VRYnjvHbN4vvZRGw')">
-        <div class="thumb"><img data-thumb="https://youtu.be/i5jYrMmzPy0?si=VRYnjvHbN4vvZRGw" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>انشاء الاغاني بالذكاء الاصطناعي</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/c7WiTwqTueA?si=fDRZa8vf0fhYy-UK')">
-        <div class="thumb"><img data-thumb="https://youtu.be/c7WiTwqTueA?si=fDRZa8vf0fhYy-UK" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>استخدام الذكاء الاصطناعي المدغوعة</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/40CKFkIywCM?si=_oJzdnK_tRBwq_Gt')">
-        <div class="thumb"><img data-thumb="https://youtu.be/40CKFkIywCM?si=_oJzdnK_tRBwq_Gt" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4> انشاء الفيديوهات بالذكاء الاصطناعي</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/PuwWwJIdjbw?si=VgDVzjZONYBVG62T')">
-        <div class="thumb"><img data-thumb="https://youtu.be/PuwWwJIdjbw?si=VgDVzjZONYBVG62T" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>فيديو اكثر من دقيقة بالذكاء الاصطناعي</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/ypT0cZl9sE8?si=ADtN28dnY1pl07Hs')">
-        <div class="thumb"><img data-thumb="https://youtu.be/ypT0cZl9sE8?si=ADtN28dnY1pl07Hs" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4> استخدام النموذج الصوتي ChatGPT</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الشروحات 3 -->
-<div id="b_tut_3" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title"> شروحات برمجه</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/gv9kJm_iaSY?si=BoPikoi5ln3JEFWX')">
-        <div class="thumb"><img data-thumb="https://youtu.be/gv9kJm_iaSY?si=BoPikoi5ln3JEFWX" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>اختراق التطبيق واستخراج كلمة السر</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/brSgJFHqku4?si=-4FDC_znuYay7RUi')">
-        <div class="thumb"><img data-thumb="https://youtu.be/brSgJFHqku4?si=-4FDC_znuYay7RUi" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>حماية هاتفك من الاختراق</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الشروحات 4 -->
-<div id="b_tut_4" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">شروحات منوعة</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/kvU2Zf8-Zck?si=ir6_YS7dkK19ite0')">
-        <div class="thumb"><img data-thumb="https://youtu.be/kvU2Zf8-Zck?si=ir6_YS7dkK19ite0" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>إخفاء الملفات بدةن برامج</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/vVAMT2uqgMs?si=tFPdwhwijI12nNJy')">
-        <div class="thumb"><img data-thumb="https://youtu.be/vVAMT2uqgMs?si=tFPdwhwijI12nNJy" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>رفع دقه الصور</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/NEXPdiKvqEw?si=GWtiVO-IBraTVseP')">
-        <div class="thumb"><img data-thumb="https://youtu.be/NEXPdiKvqEw?si=GWtiVO-IBraTVseP" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم تأثير الزجاج - بيكسلاب</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/UCrrCYdU3nY?si=KzsdgfOLnGe3jMxc')">
-        <div class="thumb"><img data-thumb="https://youtu.be/UCrrCYdU3nY?si=KzsdgfOLnGe3jMxc" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم غلاف كتاب او مجلة</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/l1jJNimHFUo?si=8souvZ250M3tdLdM')">
-        <div class="thumb"><img data-thumb="https://youtu.be/l1jJNimHFUo?si=8souvZ250M3tdLdM" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>تصميم نجمة احترافية</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الشروحات 5 -->
-
-
-<!-- الشروحات 6 -->
-
-<!-- الورش 1 -->
-<div id="b_work_1" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">ورشة التصوير الاحترافي</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/zewIpp2JLwY?si=n9Te4xe96aItWN8H')">
-        <div class="thumb"><img data-thumb="https://youtu.be/zewIpp2JLwY?si=n9Te4xe96aItWN8H" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>التصوير بالجوال الجزء الاول</h4>
-      </div>
-      <div class="card" onclick="openVideo('https://youtu.be/v0x3xshZm0g?si=NmR1Wul8fqNrJITN')">
-        <div class="thumb"><img data-thumb="https://youtu.be/v0x3xshZm0g?si=NmR1Wul8fqNrJITN" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>التصوير بالجوال الجزء الثاني</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- الورش 2 -->
-<div id="b_work_2" class="board-screen">
-  <div class="board-inner">
-    <div class="board-head">
-      <div class="back-btn" onclick="closeBoard()">⬅ رجوع</div>
-      <div class="board-title">ورشة المونتاج</div>
-    </div>
-    <div class="grid">
-      <div class="card" onclick="openVideo('https://youtu.be/3Zd9EAqXEEY?si=kPOmI7-aYudRtE6j')">
-        <div class="thumb"><img data-thumb="https://youtu.be/3Zd9EAqXEEY?si=kPOmI7-aYudRtE6j" alt=""><div class="play-badge"><span>▶</span></div></div>
-        <h4>اساسيات المونتاج</h4>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== Modal الفيديو (بنفس كودك) ===== -->
-<div class="modal" id="videoModal" aria-hidden="true" role="dialog">
-  <div class="modal__box" role="document">
-    <button class="modal__close" id="closeModal" aria-label="إغلاق">×</button>
-    <iframe id="ytFrame"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-  </div>
-</div>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <script>
-/* ===== المنسدلات + البورد ===== */
-let lastSection = null;
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAEXAMPLEnY", 
+  authDomain: "store-points-7d2f4.firebaseapp.com",
+  databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "store-points-7d2f4",
+  storageBucket: "store-points-7d2f4.appspot.com",
+  messagingSenderId: "105011111111",
+  appId: "1:105011111111:web:abc123example"
+};
 
-function toggleDropdown(id){
-  document.querySelectorAll('.dropdown-content').forEach(d=>{
-    if(d.id !== id) d.style.display = 'none';
-  });
-  const el = document.getElementById(id);
-  const show = (el.style.display !== 'block');
-  el.style.display = show ? 'block' : 'none';
-  if(show) lastSection = id;
-}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-function openBoard(boardId, sectionId){
-  lastSection = sectionId;
+let currentUser = null;
 
-  // إغلاق كل القوائم المنسدلة
-  document.querySelectorAll('.dropdown-content')
-    .forEach(d => d.style.display = 'none');
+// جميع الدورات والشروحات والورشات مع تخصصاتها
+const allContent = {
+  // الدورات
+  'b_course_1': {
+    title: 'دورة الربح من الإنترنت',
+    major: 'الربح من الإنترنت',
+    videos: [
+      {url: 'https://youtu.be/V1UNRL5IVLg?si=KGp7LXJLcqWZ_6_h', title: 'المحاضرة الأولى'},
+      {url: 'https://youtu.be/7eYxkklSTQU?si=KFAYbJSGpKfq-tu6', title: 'المحاضرة الثانية'},
+      {url: 'https://youtu.be/RPXjiOjLdZ4?si=upIJ5FGUF2xC0hqF', title: 'المحاضرة الثالثة'}
+    ]
+  },
+  'b_course_2': {
+    title: 'دورة جرافيكس الجوال',
+    major: 'جرافيكس الجوال',
+    videos: [
+      {url: 'https://youtu.be/H_M15YH8wTs?si=GL6Chnty1WeX2NAD', title: 'المحاضرة الأولى'},
+      {url: 'https://youtu.be/NF6Z652g3LU?si=yOi2ScwpeI5FT6Iz', title: 'المحاضرة الثانية'},
+      {url: 'https://youtu.be/bKWT8rPM__g?si=okr2t4so_9eWZAYn', title: 'المحاضرة الثالثة'},
+      {url: 'https://youtu.be/CHrFAtsCO1o?si=rti0vTOeHie0_KJu', title: 'المحاضرة الرابعة'},
+      {url: 'https://youtu.be/Y9kv5ECSHUA?si=8qxsTyBqxJh8yoYt', title: 'المحاضرة الخامسة'},
+      {url: 'https://youtu.be/JWMV8YqHVJE?si=nA-m-xe__u1uPZ07', title: 'المحاضرة السادسة'}
+    ]
+  },
+  'b_course_3': {
+    title: 'دورة جرافيكس الكمبيوتر',
+    major: 'جرافيكس الكمبيوتر',
+    videos: [
+      {url: 'https://youtu.be/6ZUv2bMH8UU?si=uegdNfWPhj2LIEkQ', title: 'المحاضرة الأولى'},
+      {url: 'https://youtu.be/Hxq_UFuTRfM?si=ShNoC7dlOKYK6iCR', title: 'المحاضرة الثانية'}
+    ]
+  },
+  'b_course_4': {
+    title: 'دورة ريادة الأعمال',
+    major: 'ريادة الأعمال',
+    videos: [
+      {url: 'https://youtu.be/4VpDV7lmyMo?si=dJYR4e6QJDVSPVGY', title: 'المحاضرة الأولى'},
+      {url: 'https://youtu.be/Y32ZeltX92w?si=QKn7XTu9aXcP88yJ', title: 'المحاضرة الثانية'},
+      {url: 'https://youtu.be/KmLBk1nh_Hk?si=NRVatnRLfM8i15Kn', title: 'المحاضرة الثالثة'}
+    ]
+  },
+  'b_course_5': {
+    title: 'دورة تصميم الثيمات',
+    major: 'تصميم الثيمات',
+    videos: [
+      {url: 'https://youtu.be/tG2XmP81Fo0?si=kUckSCOuI_8NcrWN', title: 'المحاضرة الأولى'},
+      {url: 'https://youtu.be/vR7TquL684o?si=VlUSqK6MoJYnp9Sf', title: 'المحاضرة الثانية'},
+      {url: 'https://youtu.be/_b_jeDyGp7Q?si=7U_yjP7EF2UDbbM9', title: 'المحاضرة الثالثة'}
+    ]
+  },
+  'b_course_6': {
+    title: 'دورة كتابة الروايات',
+    major: 'كتابة الروايات',
+    videos: [
+      {url: 'https://youtu.be/Oyqecp8lkj0?si=o2DwH8Q0VcCIy5MC', title: 'المحاضرة الأولى'}
+    ]
+  },
+  // الشروحات
+  'b_tut_1': {
+    title: 'تصميم شعارات',
+    major: 'تصميم شعارات',
+    videos: [
+      {url: 'https://youtu.be/UbZadAyYlQM?si=eHh9N-lLEqrRlGSg', title: 'تصميم شعار مختبر'},
+      {url: 'https://youtu.be/0DL4e6MNsv8?si=nmm_dM0guE0OnAAQ', title: 'تصميم شعار صرافة'},
+      {url: 'https://youtu.be/Hj_Hx4oKOR4?si=iLGBc5YWpiAH_K2-', title: 'تصميم شعار وردة'}
+    ]
+  },
+  'b_tut_2': {
+    title: 'الذكاء الاصطناعي',
+    major: 'الذكاء الاصطناعي',
+    videos: [
+      {url: 'https://youtu.be/i5jYrMmzPy0?si=VRYnjvHbN4vvZRGw', title: 'إنشاء الأغاني بالذكاء الاصطناعي'},
+      {url: 'https://youtu.be/c7WiTwqTueA?si=fDRZa8vf0fhYy-UK', title: 'استخدام الذكاء الاصطناعي المدفوع'},
+      {url: 'https://youtu.be/40CKFkIywCM?si=_oJzdnK_tRBwq_Gt', title: 'إنشاء الفيديوهات بالذكاء الاصطناعي'},
+      {url: 'https://youtu.be/PuwWwJIdjbw?si=VgDVzjZONYBVG62T', title: 'فيديو أكثر من دقيقة بالذكاء الاصطناعي'},
+      {url: 'https://youtu.be/ypT0cZl9sE8?si=ADtN28dnY1pl07Hs', title: 'استخدام النموذج الصوتي ChatGPT'}
+    ]
+  },
+  'b_tut_3': {
+    title: 'شروحات برمجة',
+    major: 'شروحات برمجة',
+    videos: [
+      {url: 'https://youtu.be/gv9kJm_iaSY?si=BoPikoi5ln3JEFWX', title: 'اختراق التطبيق واستخراج كلمة السر'},
+      {url: 'https://youtu.be/brSgJFHqku4?si=-4FDC_znuYay7RUi', title: 'حماية هاتفك من الاختراق'}
+    ]
+  },
+  'b_tut_4': {
+    title: 'شروحات منوعة',
+    major: 'شروحات منوعة',
+    videos: [
+      {url: 'https://youtu.be/kvU2Zf8-Zck?si=ir6_YS7dkK19ite0', title: 'إخفاء الملفات بدون برامج'},
+      {url: 'https://youtu.be/vVAMT2uqgMs?si=tFPdwhwijI12nNJy', title: 'رفع دقة الصور'},
+      {url: 'https://youtu.be/NEXPdiKvqEw?si=GWtiVO-IBraTVseP', title: 'تصميم تأثير الزجاج - بيكسلاب'},
+      {url: 'https://youtu.be/UCrrCYdU3nY?si=KzsdgfOLnGe3jMxc', title: 'تصميم غلاف كتاب أو مجلة'},
+      {url: 'https://youtu.be/l1jJNimHFUo?si=8souvZ250M3tdLdM', title: 'تصميم نجمة احترافية'}
+    ]
+  },
+  // الورشات
+  'b_work_1': {
+    title: 'ورشة التصوير الاحترافي',
+    major: 'ورشة التصوير',
+    videos: [
+      {url: 'https://youtu.be/zewIpp2JLwY?si=n9Te4xe96aItWN8H', title: 'التصوير بالجوال الجزء الأول'},
+      {url: 'https://youtu.be/v0x3xshZm0g?si=NmR1Wul8fqNrJITN', title: 'التصوير بالجوال الجزء الثاني'}
+    ]
+  },
+  'b_work_2': {
+    title: 'ورشة المونتاج',
+    major: 'ورشة المونتاج',
+    videos: [
+      {url: 'https://youtu.be/3Zd9EAqXEEY?si=kPOmI7-aYudRtE6j', title: 'أساسيات المونتاج'}
+    ]
+  }
+};
 
-  // فتح البورد
-  document.getElementById(boardId).style.display = 'block';
-}
-
-function closeBoard(){
-  // إغلاق كل البوردات
-  document.querySelectorAll('.board-screen')
-    .forEach(b => b.style.display = 'none');
-
-  // إعادة فتح القائمة السابقة
-  if(lastSection){
-    document.getElementById(lastSection).style.display = 'block';
+// Login Function
+async function login() {
+  const academicId = document.getElementById('academicId').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const btn = document.getElementById('loginBtn');
+  
+  if (!academicId || !password) {
+    showAlert('⚠️', 'تنبيه', 'الرجاء إدخال الرقم الأكاديمي وكلمة المرور');
+    return;
+  }
+  
+  btn.classList.add('loading');
+  
+  try {
+    const snapshot = await db.ref('users/' + academicId).once('value');
+    const userData = snapshot.val();
+    
+    if (!userData) {
+      showAlert('❌', 'خطأ', 'الرقم الأكاديمي غير موجود');
+      return;
+    }
+    
+    if (userData.password !== password) {
+      showAlert('❌', 'خطأ', 'كلمة المرور غير صحيحة');
+      return;
+    }
+    
+    currentUser = {
+      id: academicId,
+      ...userData
+    };
+    
+    showUserInterface();
+    showAlert('✅', 'مرحباً', 'تم تسجيل الدخول بنجاح! أهلاً ' + userData.name, true);
+    
+  } catch (error) {
+    console.error(error);
+    showAlert('❌', 'خطأ', 'حدث خطأ في الاتصال: ' + error.message);
+  } finally {
+    btn.classList.remove('loading');
   }
 }
 
-/* ===== فيديو مودال: نفس منطق كودك ===== */
-(function () {
-  const modal = document.getElementById('videoModal');
-  const iframe = document.getElementById('ytFrame');
-  const closeBtn = document.getElementById('closeModal');
+function showUserInterface() {
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('userBadge').style.display = 'flex';
+  document.getElementById('dropdownsContainer').style.display = 'block';
+  
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userMajor').innerHTML = '<i class="fas fa-graduation-cap"></i> ' + (currentUser.major || 'غير محدد');
+  document.getElementById('userPoints').textContent = '⭐ ' + (currentUser.points || 0) + ' نقطة';
+}
 
-  function toEmbedUrl(url) {
-    try {
-      const u = new URL(url);
-      let id = '';
+function logout() {
+  currentUser = null;
+  document.getElementById('loginSection').style.display = 'block';
+  document.getElementById('userBadge').style.display = 'none';
+  document.getElementById('dropdownsContainer').style.display = 'none';
+  document.getElementById('academicId').value = '';
+  document.getElementById('password').value = '';
+  
+  document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('.dropdown-btn').forEach(b => b.classList.remove('active'));
+}
 
-      if (u.hostname.includes('youtu.be')) {
-        id = u.pathname.slice(1);
-      } else if (u.pathname.startsWith('/shorts/')) {
-        id = u.pathname.split('/shorts/')[1].split('?')[0];
-      } else {
-        id = u.searchParams.get('v');
-      }
+// Check Access - نفس المنطق للكل
+function checkAccess(contentId, requiredMajor) {
+  if (!currentUser) {
+    showAlert('⚠️', 'تنبيه', 'الرجاء تسجيل الدخول أولاً');
+    return;
+  }
+  
+  const userMajor = (currentUser.major || '').trim();
+  
+  // مقارنة مباشرة (مطابقة نصية كاملة)
+  if (userMajor === requiredMajor) {
+    openBoard(contentId);
+  } else {
+    showAlert('🚫', 'غير مؤهل', 
+      'عذراً، أنت غير مسجل في هذا القسم.<br>' +
+      'هذا القسم مخصص لطلاب: <strong>' + requiredMajor + '</strong><br>' +
+      'تخصصك الحالي: <strong>' + (userMajor || 'غير محدد') + '</strong>');
+  }
+}
 
-      const start = u.searchParams.get('t') || u.searchParams.get('start') || 0;
+// Toggle Dropdown
+function toggleDropdown(dropdownId) {
+  document.querySelectorAll('.dropdown-content').forEach(d => {
+    if (d.id !== dropdownId) d.classList.remove('show');
+  });
+  document.querySelectorAll('.dropdown-btn').forEach(b => {
+    if (!b.onclick.toString().includes(dropdownId)) b.classList.remove('active');
+  });
+  
+  const dropdown = document.getElementById(dropdownId);
+  const btn = event.currentTarget;
+  
+  dropdown.classList.toggle('show');
+  btn.classList.toggle('active');
+}
 
-      /* ✅ التعديل الوحيد لإصلاح خطأ 153: origin + mute */
-      const safeOrigin = (location.origin && location.origin !== 'null')
-        ? location.origin
-        : 'https://www.youtube.com';
+// Open Board
+function openBoard(contentId) {
+  const content = allContent[contentId];
+  if (!content) return;
+  
+  document.getElementById('boardTitle').textContent = content.title;
+  
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = content.videos.map((video) => `
+    <div class="video-card" onclick="openVideo('${video.url}')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/${extractVideoId(video.url)}/mqdefault.jpg" alt="${video.title}">
+        <div class="play-overlay">
+          <div class="play-btn"><i class="fas fa-play"></i></div>
+        </div>
+      </div>
+      <div class="video-info">
+        <h4>${video.title}</h4>
+      </div>
+    </div>
+  `).join('');
+  
+  document.getElementById('boardScreen').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
 
-      const params = new URLSearchParams({
-        autoplay: '1',
-        mute: '0',
-        rel: '0',
-        modestbranding: '1',
-        playsinline: '1',
-        origin: safeOrigin,
-        start: parseInt(start, 10) || 0
-      });
+function closeBoard() {
+  document.getElementById('boardScreen').style.display = 'none';
+  document.body.style.overflow = '';
+}
 
-      return `https://www.youtube.com/embed/${id}?${params.toString()}`;
-    } catch {
-      return url;
+// Video Functions
+function extractVideoId(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+    if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/shorts/')[1].split('?')[0];
+    return u.searchParams.get('v') || '';
+  } catch {
+    return '';
+  }
+}
+
+function toEmbedUrl(url) {
+  const id = extractVideoId(url);
+  if (!id) return url;
+  
+  const params = new URLSearchParams({
+    autoplay: '1',
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1'
+  });
+  
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+}
+
+function openVideo(url) {
+  const frame = document.getElementById('videoFrame');
+  frame.src = toEmbedUrl(url);
+  document.getElementById('videoModal').classList.add('active');
+}
+
+function closeVideo() {
+  document.getElementById('videoFrame').src = '';
+  document.getElementById('videoModal').classList.remove('active');
+}
+
+// Alert Modal
+function showAlert(icon, title, message, isSuccess = false) {
+  document.getElementById('alertIcon').textContent = icon;
+  document.getElementById('alertIcon').className = 'alert-icon' + (isSuccess ? ' success' : '');
+  document.getElementById('alertTitle').textContent = title;
+  document.getElementById('alertMessage').innerHTML = message;
+  document.getElementById('alertModal').classList.add('active');
+}
+
+function closeAlert() {
+  document.getElementById('alertModal').classList.remove('active');
+}
+
+// Event Listeners
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('videoModal').classList.contains('active')) {
+      closeVideo();
+    } else if (document.getElementById('alertModal').classList.contains('active')) {
+      closeAlert();
+    } else if (document.getElementById('boardScreen').style.display === 'block') {
+      closeBoard();
     }
   }
+});
 
-  window.openVideo = function(url){
-    iframe.src = toEmbedUrl(url);
-    modal.classList.add('open');
-    document.body.classList.add('noscroll');
-    modal.setAttribute('aria-hidden','false');
-  }
+document.getElementById('videoModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeVideo();
+});
 
-  function closeModal(){
-    iframe.src = '';
-    modal.classList.remove('open');
-    document.body.classList.remove('noscroll');
-    modal.setAttribute('aria-hidden','true');
-  }
+document.getElementById('alertModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeAlert();
+});
 
-  modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
-  closeBtn.addEventListener('click', closeModal);
-  document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
-  });
-})();
+document.getElementById('academicId').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
 
-/* ===== توليد صور الثمبنيل تلقائياً من روابط يوتيوب ===== */
-(function(){
-  function extractId(url){
-    try{
-      const u = new URL(url);
-      if(u.hostname.includes('youtu.be')) return u.pathname.slice(1);
-      if(u.pathname.startsWith('/shorts/')) return u.pathname.split('/shorts/')[1].split('?')[0];
-      return u.searchParams.get('v') || '';
-    }catch{
-      return '';
-    }
-  }
-  document.querySelectorAll('img[data-thumb]').forEach(img=>{
-    const url = img.getAttribute('data-thumb');
-    const id = extractId(url);
-    img.src = id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
-  });
-})();
+document.getElementById('password').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') login();
+});
 </script>
 
 </body>
