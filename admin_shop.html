@@ -158,7 +158,7 @@ body {
   gap: 4px;
 }
 
-/* Collapsible Form */
+/* Collapsible Form - FIXED */
 .form-collapsible {
   max-height: 0;
   overflow: hidden;
@@ -166,7 +166,23 @@ body {
 }
 
 .form-collapsible.show {
-  max-height: 600px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.form-collapsible::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-collapsible::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 3px;
+}
+
+.form-collapsible::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
 }
 
 .form-row {
@@ -205,7 +221,51 @@ textarea {
   resize: vertical;
 }
 
-/* Image Section Compact */
+/* Discount Section */
+.discount-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fef3c7;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--secondary);
+}
+
+.discount-row input[type="checkbox"] {
+  width: auto;
+}
+
+.discount-inputs {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.discount-inputs input {
+  flex: 1;
+}
+
+.price-display {
+  background: var(--bg);
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.price-display .original {
+  text-decoration: line-through;
+  color: var(--text-light);
+  font-size: 0.75rem;
+}
+
+.price-display .final {
+  color: var(--success);
+  font-weight: 700;
+}
+
+/* Image Section Compact - FIXED */
 .img-section {
   background: var(--bg);
   padding: 8px;
@@ -242,14 +302,21 @@ textarea {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 5px;
+  background: white;
+  border-radius: 6px;
+  margin-top: 8px;
 }
 
 .img-thumb {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 5px;
   object-fit: cover;
   border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 /* Buttons */
@@ -269,9 +336,18 @@ textarea {
 }
 
 .btn-primary { background: var(--primary); color: white; }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-primary:hover { background: var(--primary-hover); }
+
 .btn-success { background: var(--success); color: white; }
 .btn-danger { background: var(--danger); color: white; }
+.btn-secondary { 
+  background: var(--bg); 
+  color: var(--text); 
+  border: 1px solid var(--border);
+  width: auto;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
 
 /* Accordion Products */
 .accordion-item {
@@ -379,8 +455,8 @@ textarea {
   display: flex;
   gap: 6px;
   font-size: 0.7rem;
-  color: var(--text-light);
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .product-meta span {
@@ -392,6 +468,18 @@ textarea {
 .product-meta .price {
   color: var(--success);
   font-weight: 700;
+}
+
+.product-meta .discount {
+  background: var(--danger);
+  color: white;
+  font-size: 0.65rem;
+}
+
+.product-meta .original-price {
+  text-decoration: line-through;
+  color: var(--text-light);
+  font-size: 0.65rem;
 }
 
 .product-actions {
@@ -454,6 +542,31 @@ textarea {
   padding: 12px;
 }
 
+/* Delete Confirm Modal */
+.delete-modal-content {
+  text-align: center;
+  padding: 24px;
+}
+
+.delete-modal-content h3 {
+  margin-bottom: 12px;
+  color: var(--danger);
+}
+
+.delete-modal-content p {
+  margin-bottom: 20px;
+  color: var(--text-light);
+}
+
+.delete-modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-modal-buttons button {
+  flex: 1;
+}
+
 /* Message */
 .msg {
   padding: 8px;
@@ -485,6 +598,7 @@ textarea {
   .form-row { grid-template-columns: 1fr; }
   .product-item { flex-wrap: wrap; }
   .product-actions { width: 100%; justify-content: center; }
+  .discount-inputs { flex-direction: column; }
 }
 </style>
 
@@ -506,60 +620,154 @@ const database = firebase.database();
 let products = {};
 let categories = [];
 let editProductId = null;
+let deleteCategoryId = null;
+let deleteProductId = null;
 
+// تحميل التصنيفات من Firebase
 function loadCategories() {
   return database.ref('categories').once('value').then(snap => {
-    categories = snap.val() || [
-      { id: 'apps', name: 'تطبيقات وبرامج' },
-      { id: 'fonts', name: 'خطوط' },
-      { id: 'projects', name: 'مشاريع بيكسلاب' }
-    ];
+    const data = snap.val();
+    if (data) {
+      // تحويل الكائن إلى مصفوفة مرتبة
+      categories = Object.entries(data).map(([key, value]) => ({
+        id: key,
+        name: value.name || value,
+        icon: value.icon || 'fa-tag',
+        order: value.order || 0
+      })).sort((a, b) => a.order - b.order);
+    } else {
+      // تصنيفات افتراضية إذا لم تكن موجودة
+      categories = [
+        { id: 'apps', name: 'تطبيقات وبرامج', icon: 'fa-mobile-alt', order: 1 },
+        { id: 'fonts', name: 'خطوط', icon: 'fa-font', order: 2 },
+        { id: 'projects', name: 'مشاريع بيكسلاب', icon: 'fa-layer-group', order: 3 }
+      ];
+      // حفظ التصنيفات الافتراضية في Firebase
+      saveCategoriesToFirebase();
+    }
     renderCategories();
     updateCategorySelects();
   });
 }
 
+// حفظ التصنيفات في Firebase ككائن
+function saveCategoriesToFirebase() {
+  const categoriesObj = {};
+  categories.forEach(cat => {
+    categoriesObj[cat.id] = {
+      name: cat.name,
+      icon: cat.icon,
+      order: cat.order
+    };
+  });
+  return database.ref('categories').set(categoriesObj);
+}
+
+// عرض التصنيفات
 function renderCategories() {
   const container = document.getElementById('categoryTags');
-  container.innerHTML = categories.map((cat, idx) => `
+  container.innerHTML = categories.map((cat) => `
     <span class="cat-tag">
-      ${cat.name}
-      <button onclick="deleteCategory(${idx})"><i class="fas fa-times"></i></button>
+      <i class="fas ${cat.icon}"></i> ${cat.name}
+      <button onclick="confirmDeleteCategory('${cat.id}')"><i class="fas fa-times"></i></button>
     </span>
   `).join('');
 }
 
+// تحديث قوائم اختيار التصنيفات
 function updateCategorySelects() {
   const options = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   document.getElementById('productCategory').innerHTML = '<option value="">اختر...</option>' + options;
   document.getElementById('editCategory').innerHTML = '<option value="">اختر...</option>' + options;
 }
 
+// إضافة تصنيف جديد
 function addCategory() {
   const input = document.getElementById('newCategory');
   const name = input.value.trim();
   if (!name) return;
   
   const id = 'cat_' + Date.now();
-  categories.push({ id, name });
+  const newCategory = {
+    id: id,
+    name: name,
+    icon: 'fa-tag',
+    order: categories.length + 1
+  };
   
-  database.ref('categories').set(categories).then(() => {
+  categories.push(newCategory);
+  
+  // حفظ في Firebase
+  const categoriesObj = {};
+  categories.forEach(cat => {
+    categoriesObj[cat.id] = {
+      name: cat.name,
+      icon: cat.icon,
+      order: cat.order
+    };
+  });
+  
+  database.ref('categories').set(categoriesObj).then(() => {
     input.value = '';
     renderCategories();
     updateCategorySelects();
-    showMsg('تم إضافة التصنيف', 'success');
+    showMsg('✅ تم إضافة التصنيف', 'success');
+    // إعادة تحميل المنتجات لتحديث العرض
+    loadProducts();
+  }).catch(err => {
+    showMsg('❌ خطأ في الحفظ: ' + err.message, 'error');
   });
 }
 
-function deleteCategory(index) {
-  if (!confirm('حذف التصنيف؟')) return;
-  categories.splice(index, 1);
-  database.ref('categories').set(categories).then(() => {
+// تأكيد حذف التصنيف - عرض المودال المخصص
+function confirmDeleteCategory(catId) {
+  deleteCategoryId = catId;
+  const cat = categories.find(c => c.id === catId);
+  document.getElementById('deleteCategoryName').textContent = cat ? cat.name : '';
+  document.getElementById('deleteCategoryModal').classList.add('show');
+}
+
+// تنفيذ حذف التصنيف
+function executeDeleteCategory() {
+  if (!deleteCategoryId) return;
+  
+  // حذف التصنيف من المصفوفة
+  categories = categories.filter(c => c.id !== deleteCategoryId);
+  
+  // إعادة ترتيب التصنيفات
+  categories.forEach((cat, idx) => {
+    cat.order = idx + 1;
+  });
+  
+  // حفظ في Firebase
+  const categoriesObj = {};
+  categories.forEach(cat => {
+    categoriesObj[cat.id] = {
+      name: cat.name,
+      icon: cat.icon,
+      order: cat.order
+    };
+  });
+  
+  database.ref('categories').set(categoriesObj).then(() => {
+    hideDeleteCategoryModal();
     renderCategories();
     updateCategorySelects();
+    showMsg('✅ تم حذف التصنيف', 'success');
+    // إعادة تحميل المنتجات لتحديث العرض
+    loadProducts();
+  }).catch(err => {
+    showMsg('❌ خطأ في الحذف: ' + err.message, 'error');
   });
 }
 
+// إخفاء مودال حذف التصنيف
+function hideDeleteCategoryModal() {
+  document.getElementById('deleteCategoryModal').classList.remove('show');
+  deleteCategoryId = null;
+}
+
+// تبديل إظهار/إخفاء نموذج الإضافة
 function toggleAddForm() {
   const form = document.getElementById('addForm');
   const btn = document.getElementById('toggleFormBtn');
@@ -569,6 +777,7 @@ function toggleAddForm() {
     '<i class="fas fa-plus"></i> إظهار النموذج';
 }
 
+// تحميل المنتجات
 function loadProducts() {
   database.ref('products').once('value').then(snap => {
     products = snap.val() || {};
@@ -577,32 +786,50 @@ function loadProducts() {
   });
 }
 
+// تحديث الإحصائيات
 function updateStats() {
   document.getElementById('totalProducts').textContent = Object.keys(products).length;
   document.getElementById('totalCats').textContent = categories.length;
 }
 
+// عرض المنتجات في أكورديون
 function renderAccordion() {
   const container = document.getElementById('productsAccordion');
+  container.innerHTML = '';
+  
+  const productsByCategory = {};
   
   categories.forEach(cat => {
-    const catProducts = Object.entries(products).filter(([pid, p]) => p.category === cat.id);
-    
+    productsByCategory[cat.id] = {
+      name: cat.name,
+      icon: cat.icon,
+      products: []
+    };
+  });
+  
+  Object.entries(products).forEach(([pid, p]) => {
+    const catId = p.category;
+    if (productsByCategory[catId]) {
+      productsByCategory[catId].products.push([pid, p]);
+    }
+  });
+  
+  Object.entries(productsByCategory).forEach(([catId, data]) => {
     const section = document.createElement('div');
     section.className = 'accordion-item';
     section.innerHTML = `
       <div class="accordion-header" onclick="toggleAccordion(this)">
-        <h4><i class="fas fa-folder"></i> ${cat.name}</h4>
+        <h4><i class="fas ${data.icon}"></i> ${data.name}</h4>
         <div style="display:flex;align-items:center;gap:10px;">
-          <span class="count">${catProducts.length} منتج</span>
+          <span class="count">${data.products.length} منتج</span>
           <i class="fas fa-chevron-down"></i>
         </div>
       </div>
       <div class="accordion-body">
-        <div class="accordion-content" id="cat-${cat.id}">
-          ${catProducts.length === 0 ? 
+        <div class="accordion-content" id="cat-${catId}">
+          ${data.products.length === 0 ? 
             '<div class="empty-state"><i class="fas fa-box-open"></i><p>لا توجد منتجات</p></div>' :
-            catProducts.map(([pid, p]) => renderProductItem(pid, p)).join('')
+            data.products.map(([pid, p]) => renderProductItem(pid, p)).join('')
           }
         </div>
       </div>
@@ -611,18 +838,27 @@ function renderAccordion() {
   });
 }
 
+// عرض عنصر منتج
 function renderProductItem(pid, p) {
   const imgs = p.images || [p.image].filter(Boolean) || ['https://via.placeholder.com/40'];
+  const hasDiscount = p.discount > 0;
+  const originalPrice = hasDiscount ? (p.originalPrice || Math.round(p.price / (1 - p.discount/100))) : p.price;
   
   return `
     <div class="product-item">
       <div class="product-imgs">
-        ${imgs.slice(0, 3).map(src => `<img src="${src}">`).join('')}
+        ${imgs.slice(0, 3).map(src => `<img src="${src}" onerror="this.src='https://via.placeholder.com/40'">`).join('')}
       </div>
       <div class="product-info">
         <h5>${p.name}</h5>
         <div class="product-meta">
-          <span class="price">${p.price} نقطة</span>
+          ${hasDiscount ? `
+            <span class="original-price">${originalPrice} نقطة</span>
+            <span class="price">${p.price} نقطة</span>
+            <span class="discount">خصم ${p.discount}%</span>
+          ` : `
+            <span class="price">${p.price} نقطة</span>
+          `}
           <span>${p.ownerCode}</span>
         </div>
       </div>
@@ -630,7 +866,7 @@ function renderProductItem(pid, p) {
         <button class="btn btn-primary btn-small" onclick="openEdit('${pid}')">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="btn btn-danger btn-small" onclick="deleteProduct('${pid}')">
+        <button class="btn btn-danger btn-small" onclick="confirmDeleteProduct('${pid}')">
           <i class="fas fa-trash"></i>
         </button>
       </div>
@@ -638,11 +874,13 @@ function renderProductItem(pid, p) {
   `;
 }
 
+// تبديل حالة الأكورديون
 function toggleAccordion(header) {
   const item = header.parentElement;
   item.classList.toggle('active');
 }
 
+// إضافة حقل صورة
 function addImgInput(containerId, value = '') {
   const container = document.getElementById(containerId);
   const div = document.createElement('div');
@@ -656,49 +894,127 @@ function addImgInput(containerId, value = '') {
   container.appendChild(div);
 }
 
+// تحديث معاينة الصور
 function updatePreview(containerId) {
   const previewId = containerId === 'imgInputs' ? 'imgPreview' : 'editImgPreview';
   const inputs = document.querySelectorAll(`#${containerId} input`);
   const urls = Array.from(inputs).map(i => i.value).filter(Boolean);
   
   document.getElementById(previewId).innerHTML = urls.map(url => 
-    `<img src="${url}" class="img-thumb" onerror="this.src='https://via.placeholder.com/40'">`
+    `<img src="${url}" class="img-thumb" onerror="this.src='https://via.placeholder.com/50'">`
   ).join('');
 }
 
+// الحصول على الصور
 function getImages(containerId) {
   return Array.from(document.querySelectorAll(`#${containerId} input`))
     .map(i => i.value.trim()).filter(Boolean);
 }
 
+// حساب السعر النهائي
+function calculateFinalPrice() {
+  const hasDiscount = document.getElementById('hasDiscount').checked;
+  const originalPrice = parseInt(document.getElementById('originalPrice').value) || 0;
+  const discount = parseInt(document.getElementById('discountPercent').value) || 0;
+  
+  const finalPriceDisplay = document.getElementById('finalPriceDisplay');
+  
+  if (!hasDiscount || !originalPrice) {
+    finalPriceDisplay.innerHTML = '';
+    return originalPrice || 0;
+  }
+  
+  const finalPrice = Math.round(originalPrice * (1 - discount/100));
+  
+  finalPriceDisplay.innerHTML = `
+    <div class="price-display">
+      <div class="original">${originalPrice} نقطة</div>
+      <div class="final">${finalPrice} نقطة (-${discount}%)</div>
+    </div>
+  `;
+  
+  return finalPrice;
+}
+
+// تبديل خصم التعديل
+function toggleDiscountEdit() {
+  const hasDiscount = document.getElementById('editHasDiscount').checked;
+  document.getElementById('editDiscountInputs').style.display = hasDiscount ? 'flex' : 'none';
+  calculateEditFinalPrice();
+}
+
+// حساب السعر النهائي للتعديل
+function calculateEditFinalPrice() {
+  const hasDiscount = document.getElementById('editHasDiscount').checked;
+  const originalPrice = parseInt(document.getElementById('editOriginalPrice').value) || 0;
+  const discount = parseInt(document.getElementById('editDiscountPercent').value) || 0;
+  
+  const finalPriceDisplay = document.getElementById('editFinalPriceDisplay');
+  
+  if (!hasDiscount || !originalPrice) {
+    finalPriceDisplay.innerHTML = '';
+    return originalPrice || 0;
+  }
+  
+  const finalPrice = Math.round(originalPrice * (1 - discount/100));
+  
+  finalPriceDisplay.innerHTML = `
+    <div class="price-display">
+      <div class="original">${originalPrice} نقطة</div>
+      <div class="final">${finalPrice} نقطة (-${discount}%)</div>
+    </div>
+  `;
+  
+  return finalPrice;
+}
+
+// إضافة منتج جديد
 function addProduct() {
   const name = document.getElementById('productName').value.trim();
-  const price = parseInt(document.getElementById('productPrice').value);
   const category = document.getElementById('productCategory').value;
   const owner = document.getElementById('ownerCode').value.trim();
   const desc = document.getElementById('productDesc').value.trim();
   const images = getImages('imgInputs');
   
-  if (!name || !price || !owner || !category || images.length === 0) {
-    showMsg('❌ أكمل جميع الحقول', 'error');
+  const hasDiscount = document.getElementById('hasDiscount').checked;
+  const originalPrice = parseInt(document.getElementById('originalPrice').value) || 0;
+  const discount = hasDiscount ? (parseInt(document.getElementById('discountPercent').value) || 0) : 0;
+  const finalPrice = hasDiscount ? Math.round(originalPrice * (1 - discount/100)) : originalPrice;
+  
+  if (!name || !finalPrice || !owner || !category || images.length === 0) {
+    showMsg('❌ أكمل جميع الحقول المطلوبة', 'error');
     return;
   }
   
   const newRef = database.ref('products').push();
   newRef.set({
-    name, price, category, ownerCode: owner,
-    description: desc, images, image: images[0],
+    name,
+    price: finalPrice,
+    originalPrice: hasDiscount ? originalPrice : null,
+    discount: discount,
+    category,
+    ownerCode: owner,
+    description: desc,
+    images,
+    image: images[0],
     createdAt: Date.now()
   }).then(() => {
-    showMsg('✅ تم الإضافة', 'success');
+    showMsg('✅ تم إضافة المنتج بنجاح', 'success');
     clearForm();
     loadProducts();
+  }).catch(err => {
+    showMsg('❌ خطأ: ' + err.message, 'error');
   });
 }
 
+// مسح النموذج
 function clearForm() {
   document.getElementById('productName').value = '';
-  document.getElementById('productPrice').value = '';
+  document.getElementById('originalPrice').value = '';
+  document.getElementById('discountPercent').value = '';
+  document.getElementById('hasDiscount').checked = false;
+  document.getElementById('discountInputs').style.display = 'none';
+  document.getElementById('finalPriceDisplay').innerHTML = '';
   document.getElementById('ownerCode').value = '';
   document.getElementById('productDesc').value = '';
   document.getElementById('imgInputs').innerHTML = '';
@@ -706,15 +1022,22 @@ function clearForm() {
   updatePreview('imgInputs');
 }
 
+// فتح مودال التعديل
 function openEdit(pid) {
   editProductId = pid;
   const p = products[pid];
   
   document.getElementById('editName').value = p.name;
-  document.getElementById('editPrice').value = p.price;
   document.getElementById('editCategory').value = p.category || '';
   document.getElementById('editOwner').value = p.ownerCode;
   document.getElementById('editDesc').value = p.description || '';
+  
+  const hasDiscount = p.discount > 0;
+  document.getElementById('editHasDiscount').checked = hasDiscount;
+  document.getElementById('editDiscountInputs').style.display = hasDiscount ? 'flex' : 'none';
+  document.getElementById('editOriginalPrice').value = p.originalPrice || p.price;
+  document.getElementById('editDiscountPercent').value = p.discount || 0;
+  calculateEditFinalPrice();
   
   document.getElementById('editImgInputs').innerHTML = '';
   const imgs = p.images || [p.image].filter(Boolean) || [];
@@ -724,10 +1047,18 @@ function openEdit(pid) {
   document.getElementById('editModal').classList.add('show');
 }
 
+// حفظ التعديلات
 function saveEdit() {
+  const hasDiscount = document.getElementById('editHasDiscount').checked;
+  const originalPrice = parseInt(document.getElementById('editOriginalPrice').value) || 0;
+  const discount = hasDiscount ? (parseInt(document.getElementById('editDiscountPercent').value) || 0) : 0;
+  const finalPrice = hasDiscount ? Math.round(originalPrice * (1 - discount/100)) : originalPrice;
+  
   const updates = {
     name: document.getElementById('editName').value.trim(),
-    price: parseInt(document.getElementById('editPrice').value),
+    price: finalPrice,
+    originalPrice: hasDiscount ? originalPrice : null,
+    discount: discount,
     category: document.getElementById('editCategory').value,
     ownerCode: document.getElementById('editOwner').value.trim(),
     description: document.getElementById('editDesc').value.trim(),
@@ -736,7 +1067,7 @@ function saveEdit() {
   };
   
   if (!updates.name || !updates.price || !updates.ownerCode || updates.images.length === 0) {
-    alert('❌ أكمل جميع الحقول');
+    showMsg('❌ أكمل جميع الحقول المطلوبة', 'error');
     return;
   }
   
@@ -744,34 +1075,61 @@ function saveEdit() {
   
   database.ref(`products/${editProductId}`).update(updates).then(() => {
     closeModal('editModal');
-    showMsg('✅ تم التعديل', 'success');
+    showMsg('✅ تم التعديل بنجاح', 'success');
     loadProducts();
+  }).catch(err => {
+    showMsg('❌ خطأ: ' + err.message, 'error');
   });
 }
 
-function deleteProduct(pid) {
-  if (!confirm('حذف المنتج؟')) return;
-  database.ref(`products/${pid}`).remove().then(() => {
-    showMsg('✅ تم الحذف', 'success');
+// تأكيد حذف المنتج
+function confirmDeleteProduct(pid) {
+  deleteProductId = pid;
+  const p = products[pid];
+  document.getElementById('deleteProductName').textContent = p ? p.name : '';
+  document.getElementById('deleteProductModal').classList.add('show');
+}
+
+// تنفيذ حذف المنتج
+function executeDeleteProduct() {
+  if (!deleteProductId) return;
+  
+  database.ref(`products/${deleteProductId}`).remove().then(() => {
+    hideDeleteProductModal();
+    showMsg('✅ تم حذف المنتج', 'success');
     loadProducts();
+  }).catch(err => {
+    showMsg('❌ خطأ في الحذف: ' + err.message, 'error');
   });
 }
 
+// إخفاء مودال حذف المنتج
+function hideDeleteProductModal() {
+  document.getElementById('deleteProductModal').classList.remove('show');
+  deleteProductId = null;
+}
+
+// عرض رسالة
 function showMsg(text, type) {
   const msg = document.getElementById('msg');
   msg.innerHTML = text;
   msg.className = `msg ${type} show`;
-  setTimeout(() => msg.classList.remove('show'), 2000);
+  setTimeout(() => msg.classList.remove('show'), 3000);
 }
 
+// إغلاق مودال
 function closeModal(id) {
   document.getElementById(id).classList.remove('show');
 }
 
+// إغلاق المودالات عند النقر خارجها
 window.onclick = e => {
-  if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+  if (e.target.classList.contains('modal')) {
+    e.target.classList.remove('show');
+  }
 };
 
+// التحميل الأولي
 window.onload = () => {
   loadCategories().then(() => {
     loadProducts();
@@ -831,25 +1189,35 @@ window.onload = () => {
           <input type="text" id="productName">
         </div>
         <div class="form-group">
-          <label>السعر *</label>
-          <input type="number" id="productPrice">
+          <label>التصنيف *</label>
+          <select id="productCategory"><option value="">اختر...</option></select>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group full">
+          <label>السعر الأصلي *</label>
+          <div class="discount-row">
+            <input type="checkbox" id="hasDiscount" onchange="document.getElementById('discountInputs').style.display=this.checked?'flex':'none';calculateFinalPrice()">
+            <span style="font-size:0.8rem;">تخفيض</span>
+            <div class="discount-inputs" id="discountInputs" style="display:none;">
+              <input type="number" id="originalPrice" placeholder="السعر قبل الخصم" oninput="calculateFinalPrice()">
+              <input type="number" id="discountPercent" placeholder="نسبة %" min="0" max="99" oninput="calculateFinalPrice()">
+            </div>
+          </div>
+          <div id="finalPriceDisplay" style="margin-top:8px;"></div>
         </div>
       </div>
       
       <div class="form-row">
         <div class="form-group">
-          <label>التصنيف *</label>
-          <select id="productCategory"><option value="">اختر...</option></select>
-        </div>
-        <div class="form-group">
           <label>الصاحب *</label>
           <input type="text" id="ownerCode" placeholder="الرقم الأكاديمي">
         </div>
-      </div>
-      
-      <div class="form-group full">
-        <label>الوصف</label>
-        <textarea id="productDesc" placeholder="وصف مختصر..."></textarea>
+        <div class="form-group">
+          <label>الوصف</label>
+          <input type="text" id="productDesc" placeholder="وصف مختصر...">
+        </div>
       </div>
       
       <div class="form-group full">
@@ -892,24 +1260,37 @@ window.onload = () => {
           <input type="text" id="editName">
         </div>
         <div class="form-group">
-          <label>السعر</label>
-          <input type="number" id="editPrice">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
           <label>التصنيف</label>
           <select id="editCategory"></select>
         </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group full">
+          <label>السعر</label>
+          <div class="discount-row">
+            <input type="checkbox" id="editHasDiscount" onchange="toggleDiscountEdit()">
+            <span style="font-size:0.8rem;">تخفيض</span>
+            <div class="discount-inputs" id="editDiscountInputs" style="display:none;">
+              <input type="number" id="editOriginalPrice" placeholder="السعر قبل الخصم" oninput="calculateEditFinalPrice()">
+              <input type="number" id="editDiscountPercent" placeholder="نسبة %" min="0" max="99" oninput="calculateEditFinalPrice()">
+            </div>
+          </div>
+          <div id="editFinalPriceDisplay" style="margin-top:8px;"></div>
+        </div>
+      </div>
+      
+      <div class="form-row">
         <div class="form-group">
           <label>الصاحب</label>
           <input type="text" id="editOwner">
         </div>
+        <div class="form-group">
+          <label>الوصف</label>
+          <input type="text" id="editDesc">
+        </div>
       </div>
-      <div class="form-group full">
-        <label>الوصف</label>
-        <textarea id="editDesc"></textarea>
-      </div>
+      
       <div class="form-group full">
         <label>الصور</label>
         <div class="img-section">
@@ -920,6 +1301,7 @@ window.onload = () => {
           <div class="img-preview-row" id="editImgPreview"></div>
         </div>
       </div>
+      
       <button class="btn btn-success" onclick="saveEdit()" style="margin-top:8px;">
         <i class="fas fa-save"></i> حفظ
       </button>
@@ -927,6 +1309,39 @@ window.onload = () => {
   </div>
 </div>
 
+<!-- Delete Category Modal -->
+<div class="modal" id="deleteCategoryModal">
+  <div class="modal-content delete-modal-content">
+    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 12px;"></i>
+    <h3>تأكيد حذف التصنيف</h3>
+    <p>هل أنت متأكد من حذف التصنيف: <strong id="deleteCategoryName"></strong>؟</p>
+    <div class="delete-modal-buttons">
+      <button class="btn btn-danger" onclick="executeDeleteCategory()">
+        <i class="fas fa-trash"></i> نعم، احذف
+      </button>
+      <button class="btn btn-secondary" onclick="hideDeleteCategoryModal()">
+        <i class="fas fa-times"></i> إلغاء
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Product Modal -->
+<div class="modal" id="deleteProductModal">
+  <div class="modal-content delete-modal-content">
+    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 12px;"></i>
+    <h3>تأكيد حذف المنتج</h3>
+    <p>هل أنت متأكد من حذف المنتج: <strong id="deleteProductName"></strong>؟</p>
+    <div class="delete-modal-buttons">
+      <button class="btn btn-danger" onclick="executeDeleteProduct()">
+        <i class="fas fa-trash"></i> نعم، احذف
+      </button>
+      <button class="btn btn-secondary" onclick="hideDeleteProductModal()">
+        <i class="fas fa-times"></i> إلغاء
+      </button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
-
