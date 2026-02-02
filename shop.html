@@ -1,33 +1,712 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 المتجر بالنقاط</title>
+<title>متجر الأكاديمية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-.header-logo,.sidebar,.search-form,.dark-toggle,.top-bar,header,#header-wrapper,footer,.footer-container,#footer-wrapper{display:none !important;}
-body { font-family: Arial, sans-serif; background: #f0f0f0; direction: rtl; margin: 0; padding-bottom: 80px; }
-.store { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; max-width: 900px; margin: 0 auto; padding: 10px; }
-.product { background: #fff; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
-.product img { width: 100%; height: 90px; object-fit: contain; padding: 5px; background: #fff; }
-.product h3 { margin: 5px 0; font-size: 0.95em; }
-.product p { margin: 0; font-size: 0.9em; }
-.btn { background: #2196f3; color: white; padding: 7px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 8px; font-size: 0.9em; }
-.btn:hover { background: #1976d2; }
-.msg { margin-top: 5px; font-size: 0.85em; font-weight: bold; color: green; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-.modal.show { display: block; }
-.modal-content { background: #fff; margin: 15% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; position: relative; }
-.modal input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; text-align: center; }
-.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5em; color: #aaa; cursor: pointer; }
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary: #f59e0b;
+  --success: #10b981;
+  --bg: #f1f5f9;
+  --card-bg: #ffffff;
+  --text: #0f172a;
+  --text-light: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
-/* NEW — مودال معاينة المنتج */
-#previewModal .modal-content img {
-    width: 100%;
-    max-height: 220px;
-    object-fit: contain;
-    margin-bottom: 10px;
+body { 
+  font-family: 'Cairo', sans-serif; 
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Header */
+.store-header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.logo-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+/* Store Container */
+.store-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: "";
+  width: 4px;
+  height: 24px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* Store Grid - 2 Products per row */
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* Product Card - Modern Design */
+.product-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: #cbd5e1;
+}
+
+/* Image Section */
+.product-image-wrapper {
+  position: relative;
+  height: 320px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 24px;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* Overlay on hover */
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(37, 99, 235, 0.0);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card:hover .image-overlay {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.quick-view {
+  background: white;
+  color: var(--primary);
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-card:hover .quick-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quick-view:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Sales Badge */
+.sales-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: var(--secondary);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+}
+
+/* Card Content */
+.card-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  min-height: 52px;
+}
+
+/* Price Section */
+.price-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.price-label {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.price-value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.price-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.price-currency {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* Buy Button */
+.buy-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.buy-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.buy-btn:active {
+  transform: translateY(0);
+}
+
+/* Preview Modal */
+.preview-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-modal.show {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.preview-content {
+  background: white;
+  border-radius: 20px;
+  max-width: 700px;
+  width: 100%;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.preview-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 500px;
+}
+
+.preview-image-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.close-preview {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.close-preview:hover {
+  background: #f1f5f9;
+  transform: rotate(90deg);
+}
+
+.preview-info-section {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.preview-price-box {
+  background: #eff6ff;
+  border: 2px solid #dbeafe;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.price-row:last-child {
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid #dbeafe;
+}
+
+.price-row-label {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.price-row-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.price-row-value.primary {
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.preview-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-box {
+  flex: 1;
+  background: var(--bg);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.preview-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.continue-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.continue-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.cancel-btn {
+  background: transparent;
+  color: var(--text-light);
+  border: 2px solid var(--border);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--bg);
+  border-color: #cbd5e1;
+}
+
+/* Purchase Modal */
+.purchase-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 1001;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.purchase-modal.show {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+.purchase-content {
+  background: white;
+  border-radius: 20px;
+  max-width: 450px;
+  width: 100%;
+  padding: 40px;
+  text-align: center;
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+.purchase-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 2.5rem;
+  color: white;
+}
+
+.purchase-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.purchase-subtitle {
+  color: var(--text-light);
+  margin-bottom: 32px;
+  font-size: 0.95rem;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  text-align: center;
+  background: var(--bg);
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+}
+
+.confirm-btn {
+  width: 100%;
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.confirm-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: none;
+  font-size: 0.95rem;
+}
+
+.message.show {
+  display: block;
+  animation: shake 0.4s ease;
+}
+
+.message.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.message.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-light);
+  grid-column: 1 / -1;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .store-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .product-image-wrapper {
+    height: 220px;
+  }
+  
+  .preview-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-image-section {
+    height: 300px;
+  }
+  
+  .preview-info-section {
+    padding: 24px;
+  }
+  
+  .product-title {
+    font-size: 1rem;
+    min-height: auto;
+  }
+  
+  .price-number {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .product-image-wrapper {
+    height: 180px;
+  }
+  
+  .card-content {
+    padding: 16px;
+  }
+  
+  .buy-btn {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 </style>
 
@@ -48,146 +727,322 @@ const database = firebase.database();
 
 let users = {};
 let products = {};
-let currentProductId = null;
 let currentProduct = null;
+let globalSales = {};
 
 window.onload = () => {
-  database.ref('users').once('value').then(snapshot => {
-    users = snapshot.val() || {};
-    loadProducts();
-  });
+  loadData();
 };
 
-function loadProducts() {
-  database.ref('products').once('value').then(snapshot => {
-    products = snapshot.val() || {};
-    const storeDiv = document.querySelector('.store');
-    storeDiv.innerHTML = '';
-    for(let pid in products){
-      const product = products[pid];
-      const owner = users[product.ownerCode] || {};
-      const purchaseCount = owner.purchaseCount && owner.purchaseCount[pid] ? owner.purchaseCount[pid] : 0;
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `
-        <img src="${product.image ? product.image : 'https://via.placeholder.com/150'}" alt="${product.name}" />
-        <h3>${product.name}</h3>
-        <p>السعر: ${product.price} نقطة</p>
-
-        <!-- تعديل زر الشراء ليعرض المعاينة -->
-        <button class="btn" onclick="openPreview('${pid}')">عرض</button>
-
-        <div class="msg" id="msg${pid}">✅ عدد المشتريات: ${purchaseCount}</div>
-      `;
-      storeDiv.appendChild(div);
-    }
+function loadData() {
+  Promise.all([
+    database.ref('users').once('value'),
+    database.ref('products').once('value'),
+    database.ref('globalSales').once('value')
+  ]).then(([usersSnap, productsSnap, salesSnap]) => {
+    users = usersSnap.val() || {};
+    products = productsSnap.val() || {};
+    globalSales = salesSnap.val() || {};
+    renderProducts();
+  }).catch(err => {
+    console.error("Error loading data:", err);
+    document.querySelector('.store-grid').innerHTML = '<div class="loading">❌ حدث خطأ في تحميل البيانات</div>';
   });
 }
 
-/* NEW — فتح مودال المعاينة */
-function openPreview(pid){
-    const p = products[pid];
-    currentProductId = pid;
-    currentProduct = p;
+function renderProducts() {
+  const grid = document.querySelector('.store-grid');
+  grid.innerHTML = '';
+  
+  if (!products || Object.keys(products).length === 0) {
+    grid.innerHTML = '<div class="loading">لا توجد منتجات متاحة حالياً</div>';
+    return;
+  }
 
-    document.getElementById("previewImg").src = p.image || "https://via.placeholder.com/200";
-    document.getElementById("previewName").innerText = p.name;
-    document.getElementById("previewPrice").innerText = p.price;
-
-    document.getElementById("previewModal").classList.add("show");
+  for (let pid in products) {
+    const product = products[pid];
+    const salesCount = globalSales[pid] || 0;
+    
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="sales-badge">${salesCount} مباع</div>
+      <div class="product-image-wrapper" onclick="openPreview('${pid}')">
+        <img src="${product.image || 'https://via.placeholder.com/400'}" class="product-image" alt="${product.name}">
+        <div class="image-overlay">
+          <button class="quick-view">
+            <span>👁️</span> معاينة سريعة
+          </button>
+        </div>
+      </div>
+      <div class="card-content">
+        <h3 class="product-title">${product.name}</h3>
+        <div class="price-section">
+          <span class="price-label">السعر</span>
+          <div class="price-value">
+            <span class="price-number">${product.price}</span>
+            <span class="price-currency">نقطة</span>
+          </div>
+        </div>
+        <button class="buy-btn" onclick="openPreview('${pid}')">
+          <span>🛒</span> أضف للسلة
+        </button>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
 }
 
-/* NEW — إغلاق مودال المعاينة */
-function closePreview(){ document.getElementById("previewModal").classList.remove("show"); }
-
-/* NEW — متابعة للشراء */
-function continueToBuy(){
-    closePreview();
-    openPurchaseModal(currentProductId);
+function openPreview(pid) {
+  const product = products[pid];
+  if (!product) return;
+  
+  currentProduct = { id: pid, ...product };
+  const salesCount = globalSales[pid] || 0;
+  
+  document.getElementById('previewImg').src = product.image || 'https://via.placeholder.com/400';
+  document.getElementById('previewName').textContent = product.name;
+  document.getElementById('previewPrice').textContent = product.price;
+  document.getElementById('previewSales').textContent = salesCount;
+  
+  document.getElementById('previewModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
-function openPurchaseModal(pid) {
-  currentProductId = pid;
-  currentProduct = products[pid];
-  document.getElementById('modalUserCode').value = '';
-  document.getElementById('modalUserPass').value = '';
-  document.getElementById('modalMsg').innerText = '';
+function closePreview() {
+  document.getElementById('previewModal').classList.remove('show');
+  document.body.style.overflow = 'auto';
+}
+
+function continueToPurchase() {
+  closePreview();
+  openPurchaseModal();
+}
+
+function openPurchaseModal() {
+  document.getElementById('userCode').value = '';
+  document.getElementById('userPass').value = '';
+  document.getElementById('purchaseMsg').className = 'message';
+  document.getElementById('purchaseMsg').textContent = '';
+  
   document.getElementById('purchaseModal').classList.add('show');
 }
 
-function closePurchaseModal() { document.getElementById('purchaseModal').classList.remove('show'); }
-
-function confirmPurchase(){
-  const buyerCode = document.getElementById('modalUserCode').value.trim();
-  const pass = document.getElementById('modalUserPass').value.trim();
-  const msg = document.getElementById('modalMsg');
-
-  if(!buyerCode||!pass){ msg.style.color='red'; msg.innerText='❌ الرجاء إدخال الرقم وكلمة السر!'; return; }
-  const buyer = users[buyerCode];
-  if(!buyer){ msg.style.color='red'; msg.innerText='❌ الرقم غير موجود!'; return; }
-  if(buyer.password!==pass){ msg.style.color='red'; msg.innerText='❌ كلمة السر غير صحيحة!'; return; }
-  if(buyer.points<currentProduct.price){ msg.style.color='red'; msg.innerText='❌ نقاطك غير كافية!'; return; }
-
-  const owner = users[currentProduct.ownerCode];
-  if(!owner){ msg.style.color='red'; msg.innerText='❌ خطأ: صاحب المنتج غير موجود!'; return; }
-
-  const newBuyerPoints = buyer.points - currentProduct.price;
-  const newOwnerPoints = (owner.points || 0) + currentProduct.price;
-  const newPurchaseCount = owner.purchaseCount||{};
-  newPurchaseCount[currentProductId] = (newPurchaseCount[currentProductId]||0)+1;
-
-  database.ref(`users/${currentProduct.ownerCode}`).update({
-    points: newOwnerPoints,
-    purchaseCount: newPurchaseCount
-  }).then(()=> database.ref(`users/${buyerCode}/points`).set(newBuyerPoints))
-  .then(()=>{
-    buyer.points=newBuyerPoints;
-    owner.points=newOwnerPoints;
-    owner.purchaseCount=newPurchaseCount;
-    document.getElementById(`msg${currentProductId}`).innerText=`✅ عدد المشتريات: ${owner.purchaseCount[currentProductId]}`;
-    msg.style.color='green'; msg.innerText='✅ تم الشراء بنجاح!';
-    sendToTelegram(buyerCode,buyer,currentProductId,currentProduct.price,newBuyerPoints);
-    setTimeout(()=>{closePurchaseModal();},1500);
-  }).catch(()=>{msg.style.color='red'; msg.innerText='❌ خطأ في تحديث الرصيد';});
+function closePurchaseModal() {
+  document.getElementById('purchaseModal').classList.remove('show');
 }
 
-function sendToTelegram(code,userObj,productId,price,remaining){
-  const productName = products[productId].name;
-  let message = `🛒 *طلب شراء جديد*\n📱 *الرقم الخاص:* ${code}\n📦 *المنتج:* ${productName}\n💰 *السعر:* ${price} نقطة\n💳 *الرصيد المتبقي:* ${remaining} نقطة`;
-  let inlineKeyboard={inline_keyboard:[]};
-  if(userObj.telegramId && userObj.telegramId!=="undefined") inlineKeyboard.inline_keyboard.push([{text:"👤 تواصل على التليجرام",url:`tg://user?id=${userObj.telegramId}`}]);
-  else if(userObj.whatsappLink && userObj.whatsappLink!=="undefined") inlineKeyboard.inline_keyboard.push([{text:"📱 تواصل على الواتساب",url:userObj.whatsappLink}]);
-  fetch(`https://api.telegram.org/bot7823121427:AAFAQUIObZPEEhAK18nzWtem9oH7AIqF6ek/sendMessage`,{
-    method:"POST",headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({chat_id:"-1001573316681",text:message,parse_mode:"Markdown",reply_markup:inlineKeyboard})
+function confirmPurchase() {
+  const code = document.getElementById('userCode').value.trim();
+  const pass = document.getElementById('userPass').value.trim();
+  
+  if (!code || !pass) {
+    showMessage('الرجاء إدخال جميع البيانات', 'error');
+    return;
+  }
+  
+  const buyer = users[code];
+  if (!buyer) {
+    showMessage('الرقم غير موجود في النظام', 'error');
+    return;
+  }
+  
+  if (buyer.password !== pass) {
+    showMessage('كلمة السر غير صحيحة', 'error');
+    return;
+  }
+  
+  if (buyer.points < currentProduct.price) {
+    showMessage(`رصيدك غير كافي! لديك ${buyer.points} نقطة فقط`, 'error');
+    return;
+  }
+  
+  const owner = users[currentProduct.ownerCode];
+  if (!owner) {
+    showMessage('خطأ: صاحب المنتج غير موجود', 'error');
+    return;
+  }
+  
+  const btn = document.querySelector('.confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'جاري المعالجة...';
+  
+  const newBuyerPoints = buyer.points - currentProduct.price;
+  const newOwnerPoints = (owner.points || 0) + currentProduct.price;
+  const newSalesCount = (globalSales[currentProduct.id] || 0) + 1;
+  
+  const updates = {};
+  updates[`users/${currentProduct.ownerCode}/points`] = newOwnerPoints;
+  updates[`users/${code}/points`] = newBuyerPoints;
+  updates[`globalSales/${currentProduct.id}`] = newSalesCount;
+  
+  database.ref().update(updates).then(() => {
+    buyer.points = newBuyerPoints;
+    owner.points = newOwnerPoints;
+    globalSales[currentProduct.id] = newSalesCount;
+    
+    renderProducts();
+    
+    showMessage('✅ تم الشراء بنجاح!', 'success');
+    sendToTelegram(code, buyer, currentProduct, newBuyerPoints);
+    
+    setTimeout(() => {
+      closePurchaseModal();
+      btn.disabled = false;
+      btn.textContent = 'تأكيد الشراء';
+    }, 2000);
+  }).catch(err => {
+    console.error(err);
+    showMessage('❌ حدث خطأ أثناء المعالجة', 'error');
+    btn.disabled = false;
+    btn.textContent = 'تأكيد الشراء';
   });
+}
+
+function showMessage(text, type) {
+  const msg = document.getElementById('purchaseMsg');
+  msg.textContent = text;
+  msg.className = `message show ${type}`;
+}
+
+function sendToTelegram(code, userObj, product, remaining) {
+  const message = `🛒 *طلب شراء جديد*\n\n` +
+    `📱 *الرقم:* ${code}\n` +
+    `👤 *الاسم:* ${userObj.name || 'غير معروف'}\n` +
+    `📦 *المنتج:* ${product.name}\n` +
+    `💰 *السعر:* ${product.price} نقطة\n` +
+    `💳 *المتبقي:* ${remaining} نقطة`;
+    
+  const keyboard = {
+    inline_keyboard: []
+  };
+  
+  if (userObj.telegramId && userObj.telegramId !== "undefined") {
+    keyboard.inline_keyboard.push([{
+      text: "👤 تواصل عبر تليجرام",
+      url: `tg://user?id=${userObj.telegramId}`
+    }]);
+  } else if (userObj.whatsappLink) {
+    keyboard.inline_keyboard.push([{
+      text: "📱 تواصل عبر واتساب",
+      url: userObj.whatsappLink
+    }]);
+  }
+  
+  fetch(`https://api.telegram.org/bot7823121427:AAFAQUIObZPEEhAK18nzWtem9oH7AIqF6ek/sendMessage`, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: "-1001573316681",
+      text: message,
+      parse_mode: "Markdown",
+      reply_markup: keyboard
+    })
+  }).catch(console.error);
+}
+
+window.onclick = function(event) {
+  const previewModal = document.getElementById('previewModal');
+  const purchaseModal = document.getElementById('purchaseModal');
+  
+  if (event.target === previewModal) {
+    closePreview();
+  }
+  if (event.target === purchaseModal) {
+    closePurchaseModal();
+  }
 }
 </script>
 </head>
 <body>
 
-<div class="store"></div>
+<header class="store-header">
+  <div class="header-content">
+    <div class="logo">
+      <div class="logo-icon">🎓</div>
+      <span>متجر الأكاديمية</span>
+    </div>
+  </div>
+</header>
 
-<!-- NEW — مودال المعاينة -->
-<div class="modal" id="previewModal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closePreview()">✖</button>
-    <img id="previewImg" src="">
-    <h3 id="previewName"></h3>
-    <p>السعر: <span id="previewPrice"></span> نقطة</p>
-    <button class="btn" onclick="continueToBuy()">متابعة للشراء</button>
+<div class="store-container">
+  <h2 class="section-title">المنتجات المتاحة</h2>
+  <div class="store-grid">
+    <div class="loading">
+      <div class="spinner"></div>
+      جاري تحميل المنتجات...
+    </div>
   </div>
 </div>
 
-<div class="modal" id="purchaseModal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closePurchaseModal()">✖</button>
-    <h3>تأكيد الشراء</h3>
-    <input id="modalUserCode" placeholder="رقمك الخاص" />
-    <input type="password" id="modalUserPass" placeholder="كلمة السر" />
-    <div id="modalMsg" class="msg"></div>
-    <button class="btn" onclick="confirmPurchase()">تأكيد</button>
+<!-- Preview Modal -->
+<div class="preview-modal" id="previewModal">
+  <div class="preview-content">
+    <div class="preview-layout">
+      <div class="preview-image-section">
+        <button class="close-preview" onclick="closePreview()">✕</button>
+        <img id="previewImg" src="" class="preview-image" alt="Product">
+      </div>
+      <div class="preview-info-section">
+        <h2 id="previewName" class="preview-title"></h2>
+        
+        <div class="preview-price-box">
+          <div class="price-row">
+            <span class="price-row-label">السعر</span>
+            <span class="price-row-value primary"><span id="previewPrice"></span> نقطة</span>
+          </div>
+          <div class="price-row">
+            <span class="price-row-label">الحالة</span>
+            <span class="price-row-value" style="color: var(--success);">✓ متوفر</span>
+          </div>
+        </div>
+        
+        <div class="preview-stats">
+          <div class="stat-box">
+            <div id="previewSales" class="stat-number">0</div>
+            <div class="stat-label">تم بيعه</div>
+          </div>
+        </div>
+        
+        <div class="preview-actions">
+          <button class="continue-btn" onclick="continueToPurchase()">
+            <span>🛒</span> شراء الآن
+          </button>
+          <button class="cancel-btn" onclick="closePreview()">
+            متاببة التسوق
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Purchase Modal -->
+<div class="purchase-modal" id="purchaseModal">
+  <div class="purchase-content">
+    <button class="close-preview" onclick="closePurchaseModal()" style="position: absolute; top: 20px; right: 20px; background: none; box-shadow: none; width: auto; height: auto;">✕</button>
+    
+    <div class="purchase-icon">🔐</div>
+    <h3 class="purchase-title">تأكيد عملية الشراء</h3>
+    <p class="purchase-subtitle">أدخل بيانات حسابك لإتمام عملية الشراء بأمان</p>
+    
+    <div class="input-group">
+      <label>الرقم الخاص بك</label>
+      <input type="text" id="userCode" placeholder="أدخل الرقم الخاص بك">
+    </div>
+    
+    <div class="input-group">
+      <label>كلمة السر</label>
+      <input type="password" id="userPass" placeholder="أدخل كلمة السر">
+    </div>
+    
+    <div id="purchaseMsg" class="message"></div>
+    
+    <button class="confirm-btn" onclick="confirmPurchase()">
+      تأكيد الشراء
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
