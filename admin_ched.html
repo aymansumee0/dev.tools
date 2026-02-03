@@ -973,12 +973,12 @@
     <nav class="mobile-nav">
       <a class="mobile-nav-item active" onclick="showSection('academic', this)">
         <i class="fas fa-graduation-cap"></i>
-        <span>أكاديمي</span>
+        <span>الجداول</span>
         <span class="mobile-nav-badge" id="academicBadge" style="display: none;">0</span>
       </a>
       <a class="mobile-nav-item" onclick="showSection('whatsapp', this)">
         <i class="fab fa-whatsapp"></i>
-        <span>واتساب</span>
+        <span>المجموعات</span>
         <span class="mobile-nav-badge" id="whatsappBadge" style="display: none;">0</span>
       </a>
       <a class="mobile-nav-item" onclick="showSection('preview', this)">
@@ -1207,6 +1207,9 @@
     let closeAmPm = 'PM';
 
     const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+    // Preview URL
+    const PREVIEW_URL = 'https://aymansumee0.github.io/dev.tools/chedo_v1.html';
 
     // Initialize - No loading screen on startup
     document.addEventListener('DOMContentLoaded', function() {
@@ -1885,9 +1888,9 @@
         });
     }
 
-    // Preview
+    // Preview - Use the new URL
     function refreshPreview() {
-      document.getElementById('previewFrame').src = 'schedule.html?' + Date.now();
+      document.getElementById('previewFrame').src = PREVIEW_URL + '?' + Date.now();
     }
 
     // Toast
