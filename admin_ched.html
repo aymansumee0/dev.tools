@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة تحكم الجدول الأكاديمي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --secondary: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --gray: #64748b;
+      --light: #f8fafc;
+      --border: #e2e8f0;
+      --whatsapp: #25d366;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .login-box {
+      background: rgba(255,255,255,0.95);
+      padding: 40px;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .login-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .login-box h1 {
+      font-size: 28px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .login-box p {
+      color: var(--gray);
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 13px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Dashboard Layout */
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.active {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--dark);
+      padding: 20px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .brand {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+    }
+
+    .brand-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 15px;
+      color: white;
+    }
+
+    .brand h2 {
+      color: white;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .brand p {
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .nav-link i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-right: auto;
+      background: var(--danger);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-right: 260px;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .page-title h1 {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: white;
+    }
+
+    .btn-whatsapp:hover {
+      background: #128c7e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--dark);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .stat-icon.blue { background: #dbeafe; color: #1e40af; }
+    .stat-icon.green { background: #dcfce7; color: #166534; }
+    .stat-icon.orange { background: #fef3c7; color: #92400e; }
+    .stat-icon.purple { background: #f3e8ff; color: #7c3aed; }
+    .stat-icon.whatsapp { background: #d1fae5; color: #059669; }
+
+    .stat-info h3 {
+      font-size: 28px;
+      color: var(--dark);
+      line-height: 1;
+    }
+
+    .stat-info p {
+      color: var(--gray);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    /* Content Card */
+    .content-card {
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 8px 18px;
+      background: #f1f5f9;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .filter-tab:hover, .filter-tab.active {
+      background: white;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Compact Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      background: #f8fafc;
+      padding: 14px 16px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--gray);
+      font-size: 12px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tbody td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .session-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .session-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .session-icon.course { background: #dbeafe; color: #1e40af; }
+    .session-icon.lecture { background: #dcfce7; color: #166534; }
+    .session-icon.workshop { background: #fef3c7; color: #92400e; }
+
+    .session-details h4 {
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 3px;
+      font-weight: 700;
+    }
+
+    .session-details span {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .type-badge.course { background: #dbeafe; color: #1e40af; }
+    .type-badge.lecture { background: #dcfce7; color: #166534; }
+    .type-badge.workshop { background: #fef3c7; color: #92400e; }
+
+    .time-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .time-main {
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 13px;
+    }
+
+    .time-sub {
+      font-size: 11px;
+      color: var(--gray);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-now { background: #dcfce7; color: #166534; }
+    .status-soon { background: #fef3c7; color: #92400e; }
+    .status-later { background: #dbeafe; color: #1e40af; }
+    .status-ended { background: #f1f5f9; color: var(--gray); }
+
+    .instructor-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .instructor-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      font-size: 13px;
+    }
+
+    .icon-btn.edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .icon-btn.delete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .icon-btn.view {
+      background: #f3e8ff;
+      color: #7c3aed;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* WhatsApp Groups Table */
+    .whatsapp-row {
+      background: rgba(37, 211, 102, 0.03);
+    }
+
+    .days-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .day-tag {
+      padding: 4px 10px;
+      background: #f1f5f9;
+      border-radius: 15px;
+      font-size: 11px;
+      color: var(--gray);
+    }
+
+    .day-tag.active {
+      background: #d1fae5;
+      color: #059669;
+      font-weight: 700;
+    }
+
+    .time-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 13px;
+    }
+
+    .link-cell {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      direction: ltr;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--gray);
+    }
+
+    .empty-state i {
+      font-size: 50px;
+      margin-bottom: 15px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlide 0.4s ease;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 25px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 20px;
+      color: var(--dark);
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--gray);
+      transition: all 0.3s;
+    }
+
+    .close-btn:hover {
+      background: #e2e8f0;
+      color: var(--dark);
+    }
+
+    .modal-body {
+      padding: 25px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 5px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 13px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Flatpickr Customization */
+    .flatpickr-calendar {
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .days-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .day-checkbox {
+      display: none;
+    }
+
+    .day-label {
+      padding: 10px 16px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .day-checkbox:checked + .day-label {
+      background: var(--whatsapp);
+      color: white;
+    }
+
+    .modal-footer {
+      padding: 20px 25px;
+      border-top: 2px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Preview Section */
+    .preview-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid var(--border);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .preview-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 400px;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      background: white;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 18px 24px;
+      border-radius: 16px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 10000;
+      transform: translateX(-150%);
+      transition: transform 0.5s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .toast.success .toast-icon { background: #dcfce7; color: #166534; }
+    .toast.error .toast-icon { background: #fee2e2; color: #991b1b; }
+
+    .toast-content h4 {
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+
+    .toast-content p {
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+      }
+      
+      .main-content {
+        margin-right: 0;
+      }
+      
+      .dashboard.active {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .table-container {
+        font-size: 12px;
+      }
+
+      tbody td {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <div class="login-icon">🔐</div>
+      <h1>لوحة التحكم</h1>
+      <p>إدارة الجدول الأكاديمي الشامل</p>
+      
+      <div class="input-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور">
+      </div>
+      
+      <button class="btn btn-primary" onclick="login()">
+        <i class="fas fa-sign-in-alt"></i>
+        دخول
+      </button>
+      
+      <p style="margin-top: 20px; font-size: 13px; color: var(--gray);">
+        كلمة المرور الافتراضية: <strong>admin123</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fas fa-cog"></i>
+        </div>
+        <h2>لوحة التحكم</h2>
+        <p>نظام إدارة الجداول</p>
+      </div>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a class="nav-link active" onclick="showSection('academic', this)">
+            <i class="fas fa-graduation-cap"></i>
+            <span>الجدول الأكاديمي</span>
+            <span class="nav-badge" id="academicBadge">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showSection('whatsapp', this)">
+            <i class="fab fa-whatsapp"></i>
+            <span>مجموعات الواتساب</span>
+            <span class="nav-badge" id="whatsappBadge">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showSection('preview', this)">
+            <i class="fas fa-eye"></i>
+            <span>معاينة الجدول</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>تسجيل خروج</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Academic Section -->
+      <section class="content-section" id="academicSection">
+        <div class="header">
+          <div class="page-title">
+            <h1>إدارة الجدول الأكاديمي</h1>
+            <p>إضافة وتعديل الدورات والشروحات والورش</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-success" onclick="openAcademicModal()">
+              <i class="fas fa-plus"></i>
+              جلسة جديدة
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalAcademic">0</h3>
+              <p>إجمالي الجلسات</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="activeAcademic">0</h3>
+              <p>الجلسات النشطة</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalInstructors">0</h3>
+              <p>عدد المدربين</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalHours">0</h3>
+              <p>إجمالي الساعات</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Table -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-list" style="color: var(--primary);"></i>
+              قائمة الجلسات
+            </h2>
+            <div class="filter-tabs">
+              <div class="filter-tab active" onclick="filterAcademic('all', this)">الكل</div>
+              <div class="filter-tab" onclick="filterAcademic('دورة', this)">دورات</div>
+              <div class="filter-tab" onclick="filterAcademic('شرح', this)">شروحات</div>
+              <div class="filter-tab" onclick="filterAcademic('ورشة', this)">ورش</div>
+            </div>
+          </div>
+          
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>الجلسة</th>
+                  <th>النوع</th>
+                  <th>التاريخ والوقت</th>
+                  <th>المدرب</th>
+                  <th>الحالة</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="academicTable">
+                <!-- Dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- WhatsApp Section -->
+      <section class="content-section" id="whatsappSection" style="display: none;">
+        <div class="header">
+          <div class="page-title">
+            <h1>إدارة مجموعات الواتساب</h1>
+            <p>تحديد مواعيد فتح وإغلاق المجموعات</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-whatsapp" onclick="openWhatsAppModal()">
+              <i class="fab fa-whatsapp"></i>
+              مجموعة جديدة
+            </button>
+          </div>
+        </div>
+
+        <!-- WhatsApp Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon whatsapp">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalGroups">0</h3>
+              <p>إجمالي المجموعات</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="fas fa-lock-open"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="openGroups">0</h3>
+              <p>المجموعات المفتوحة</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="closedGroups">0</h3>
+              <p>المجموعات المغلقة</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Table -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i>
+              قائمة المجموعات
+            </h2>
+          </div>
+          
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>المجموعة</th>
+                  <th>أيام العمل</th>
+                  <th>مواعيد الفتح</th>
+                  <th>الرابط</th>
+                  <th>الحالة الحالية</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="whatsappTable">
+                <!-- Dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Preview Section -->
+      <section class="content-section" id="previewSection" style="display: none;">
+        <div class="header">
+          <div class="page-title">
+            <h1>معاينة الجدول</h1>
+            <p>كما يظهر للطلاب</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="refreshPreview()">
+              <i class="fas fa-sync-alt"></i>
+              تحديث
+            </button>
+          </div>
+        </div>
+        
+        <div class="content-card">
+          <iframe class="preview-frame" id="previewFrame" src="about:blank"></iframe>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Academic Modal -->
+  <div class="modal" id="academicModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="academicModalTitle">إضافة جلسة جديدة</h2>
+        <button class="close-btn" onclick="closeAcademicModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="academicForm" class="form-grid">
+          <input type="hidden" id="academicId">
+          
+          <div class="form-group full">
+            <label>عنوان الجلسة *</label>
+            <input type="text" id="academicTitle" placeholder="مثال: مقدمة في ريادة الأعمال" required>
+          </div>
+          
+          <div class="form-group">
+            <label>نوع الجلسة *</label>
+            <select id="academicType" required>
+              <option value="دورة">دورة تدريبية</option>
+              <option value="شرح">شرح تفاعلي</option>
+              <option value="ورشة">ورشة عمل</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>التاريخ *</label>
+            <input type="text" id="academicDate" class="date-picker" placeholder="اختر التاريخ" required>
+          </div>
+          
+          <div class="form-group">
+            <label>وقت البدء *</label>
+            <input type="time" id="academicTime" required>
+          </div>
+          
+          <div class="form-group">
+            <label>المدة (دقيقة) *</label>
+            <input type="number" id="academicDuration" value="120" min="30" max="300" required>
+          </div>
+
+          <div class="form-group">
+            <label>اليوم (تلقائي)</label>
+            <input type="text" id="academicDay" readonly style="background: #f8fafc; color: var(--gray);">
+          </div>
+          
+          <div class="form-group full">
+            <label>اسم المدرب *</label>
+            <input type="text" id="academicInstructor" placeholder="مثال: د. أحمد محمد" required>
+          </div>
+          
+          <div class="form-group full">
+            <label>مكان الانعقاد / الرابط</label>
+            <input type="text" id="academicLocation" placeholder="مثال: القاعة الرئيسية أو رابط Zoom">
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeAcademicModal()">إلغاء</button>
+        <button class="btn btn-success" onclick="saveAcademic()">
+          <i class="fas fa-save"></i>
+          حفظ الجلسة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp Modal -->
+  <div class="modal" id="whatsappModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="whatsappModalTitle">إضافة مجموعة واتساب</h2>
+        <button class="close-btn" onclick="closeWhatsAppModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+      <form id="whatsappForm">
+
+  <!-- هذا السطر هو الحل -->
+  <input type="hidden" id="whatsappId">
+
+          <div class="form-group">
+            <label>اسم المجموعة *</label>
+            <input type="text" id="whatsappName" placeholder="مثال: مجموعة التكاليف 1" required>
+          </div>
+          
+          <div class="form-group">
+            <label>أيام الفتح *</label>
+            <div class="days-selector">
+              <label>
+                <input type="checkbox" class="day-checkbox" value="0">
+                <span class="day-label">الأحد</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="1">
+                <span class="day-label">الإثنين</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="2">
+                <span class="day-label">الثلاثاء</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="3">
+                <span class="day-label">الأربعاء</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="4">
+                <span class="day-label">الخميس</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="5">
+                <span class="day-label">الجمعة</span>
+              </label>
+              <label>
+                <input type="checkbox" class="day-checkbox" value="6">
+                <span class="day-label">السبت</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-grid" style="margin-top: 20px;">
+            <div class="form-group">
+              <label>وقت الفتح *</label>
+              <input type="time" id="whatsappOpenTime" required>
+            </div>
+            
+            <div class="form-group">
+              <label>وقت الإغلاق *</label>
+              <input type="time" id="whatsappCloseTime" required>
+            </div>
+          </div>
+          
+          <div class="form-group" style="margin-top: 20px;">
+            <label>رابط المجموعة *</label>
+            <input type="url" id="whatsappLink" placeholder="https://chat.whatsapp.com/..." required>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeWhatsAppModal()">إلغاء</button>
+        <button class="btn btn-whatsapp" onclick="saveWhatsApp()">
+          <i class="fab fa-whatsapp"></i>
+          حفظ المجموعة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="toast-content">
+      <h4>تم بنجاح!</h4>
+      <p id="toastMessage">تم حفظ البيانات</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/ar.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyByR2B-XISUw_PYh5EeIcbNQwwII0c6xZg",
+      authDomain: "store-points-7d2f4.firebaseapp.com",
+      databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "store-points-7d2f4",
+      storageBucket: "store-points-7d2f4.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let academicData = [];
+    let whatsappData = [];
+    let currentAcademicFilter = 'all';
+    let datePickerInstance = null;
+
+    // Arabic day names
+    const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+    // Login
+    function login() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === 'admin123') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').classList.add('active');
+        initDashboard();
+      } else {
+        alert('كلمة المرور غير صحيحة!');
+      }
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    // Initialize Dashboard
+    function initDashboard() {
+      loadAcademic();
+      loadWhatsApp();
+    }
+
+    // Show Section
+    function showSection(section, element) {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      element.classList.add('active');
+      
+      document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+      document.getElementById(section + 'Section').style.display = 'block';
+      
+      if (section === 'preview') {
+        refreshPreview();
+      }
+    }
+
+    // Initialize Date Picker
+    function initDatePicker() {
+      if (datePickerInstance) {
+        datePickerInstance.destroy();
+      }
+      
+      datePickerInstance = flatpickr("#academicDate", {
+        locale: "ar",
+        dateFormat: "d-m-Y",
+        defaultDate: new Date(),
+        onChange: function(selectedDates, dateStr, instance) {
+          if (selectedDates[0]) {
+            const dayIndex = selectedDates[0].getDay();
+            document.getElementById('academicDay').value = arabicDays[dayIndex];
+          }
+        }
+      });
+    }
+
+    // Load Academic Data
+    function loadAcademic() {
+      showLoading(true);
+      const ref = database.ref('academic/sessions');
+      ref.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        academicData = Object.entries(data).map(([id, session]) => ({
+          id,
+          ...session
+        })).sort((a, b) => parseDateTime(a.date, a.time) - parseDateTime(b.date, b.time));
+        
+        updateAcademicStats();
+        renderAcademicTable();
+        showLoading(false);
+      });
+    }
+
+    // Parse Date Time
+    function parseDateTime(dateStr, timeStr) {
+      const [day, month, year] = dateStr.split('-').map(Number);
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return new Date(year, month - 1, day, hours, minutes);
+    }
+
+    // Get Session Status
+    function getSessionStatus(session) {
+      const now = new Date();
+      const startTime = parseDateTime(session.date, session.time);
+      const endTime = new Date(startTime.getTime() + (session.duration || 120) * 60000);
+      
+      if (now >= startTime && now <= endTime) {
+        return { text: 'جارية', class: 'status-now' };
+      } else if (now < startTime) {
+        const diffHrs = Math.floor((startTime - now) / (1000 * 60 * 60));
+        if (diffHrs < 24) return { text: 'قريباً', class: 'status-soon' };
+        return { text: 'لاحقاً', class: 'status-later' };
+      } else {
+        return { text: 'انتهت', class: 'status-ended' };
+      }
+    }
+
+    // Update Academic Stats
+    function updateAcademicStats() {
+      document.getElementById('academicBadge').textContent = academicData.length;
+      document.getElementById('totalAcademic').textContent = academicData.length;
+      
+      const activeCount = academicData.filter(s => {
+        const status = getSessionStatus(s);
+        return status.text === 'جارية' || status.text === 'قريباً';
+      }).length;
+      document.getElementById('activeAcademic').textContent = activeCount;
+      
+      const instructors = new Set(academicData.map(s => s.instructor));
+      document.getElementById('totalInstructors').textContent = instructors.size;
+      
+      const totalHours = academicData.reduce((sum, s) => sum + (s.duration || 120) / 60, 0);
+      document.getElementById('totalHours').textContent = Math.round(totalHours);
+    }
+
+    // Filter Academic
+    function filterAcademic(type, element) {
+      currentAcademicFilter = type;
+      document.querySelectorAll('#academicSection .filter-tab').forEach(t => t.classList.remove('active'));
+      element.classList.add('active');
+      renderAcademicTable();
+    }
+
+    // Render Academic Table
+    function renderAcademicTable() {
+      const tbody = document.getElementById('academicTable');
+      let filtered = academicData;
+      if (currentAcademicFilter !== 'all') {
+        filtered = academicData.filter(s => s.type === currentAcademicFilter);
+      }
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <i class="far fa-calendar-plus"></i>
+                <h3>لا توجد جلسات</h3>
+                <p>اضغط على "جلسة جديدة" لإضافة أول جلسة</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = filtered.map(session => {
+        const status = getSessionStatus(session);
+        const typeClass = session.type === 'دورة' ? 'course' : session.type === 'شرح' ? 'lecture' : 'workshop';
+        
+        return `
+          <tr>
+            <td>
+              <div class="session-info">
+                <div class="session-icon ${typeClass}">
+                  <i class="fas ${getTypeIcon(session.type)}"></i>
+                </div>
+                <div class="session-details">
+                  <h4>${session.title}</h4>
+                  <span>${session.day}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="type-badge ${typeClass}">
+                <i class="fas ${getTypeIcon(session.type)}"></i>
+                ${session.type}
+              </span>
+            </td>
+            <td>
+              <div class="time-cell">
+                <span class="time-main">${session.date}</span>
+                <span class="time-sub">${session.time} (${session.duration || 120} دقيقة)</span>
+              </div>
+            </td>
+            <td>
+              <div class="instructor-cell">
+                <div class="instructor-avatar">${session.instructor.charAt(0)}</div>
+                <span>${session.instructor}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge ${status.class}">
+                <i class="fas fa-circle" style="font-size: 6px;"></i>
+                ${status.text}
+              </span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="icon-btn edit" onclick="editAcademic('${session.id}')" title="تعديل">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-btn delete" onclick="deleteAcademic('${session.id}')" title="حذف">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Get Type Icon
+    function getTypeIcon(type) {
+      const icons = { 'دورة': 'fa-graduation-cap', 'شرح': 'fa-chalkboard-teacher', 'ورشة': 'fa-tools' };
+      return icons[type] || 'fa-calendar';
+    }
+
+    // Academic Modal Functions
+    function openAcademicModal() {
+      document.getElementById('academicForm').reset();
+      document.getElementById('academicId').value = '';
+      document.getElementById('academicModalTitle').textContent = 'إضافة جلسة جديدة';
+      
+      // Initialize date picker
+      initDatePicker();
+      
+      // Set default day
+      const today = new Date();
+      const dayIndex = today.getDay();
+      document.getElementById('academicDay').value = arabicDays[dayIndex];
+      
+      document.getElementById('academicModal').classList.add('active');
+    }
+
+    function closeAcademicModal() {
+      document.getElementById('academicModal').classList.remove('active');
+      if (datePickerInstance) {
+        datePickerInstance.destroy();
+        datePickerInstance = null;
+      }
+    }
+
+    function saveAcademic() {
+      const form = document.getElementById('academicForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      showLoading(true);
+      
+      const data = {
+        title: document.getElementById('academicTitle').value,
+        type: document.getElementById('academicType').value,
+        day: document.getElementById('academicDay').value,
+        date: document.getElementById('academicDate').value,
+        time: document.getElementById('academicTime').value,
+        duration: parseInt(document.getElementById('academicDuration').value),
+        instructor: document.getElementById('academicInstructor').value,
+        location: document.getElementById('academicLocation').value || 'القاعة الرئيسية'
+      };
+
+      const id = document.getElementById('academicId').value;
+      let ref;
+      if (id) {
+        ref = database.ref('academic/sessions/' + id);
+      } else {
+        ref = database.ref('academic/sessions').push();
+      }
+
+      ref.set(data).then(() => {
+        showLoading(false);
+        closeAcademicModal();
+        showToast('success', id ? 'تم تحديث الجلسة' : 'تم إضافة الجلسة بنجاح');
+      }).catch(err => {
+        showLoading(false);
+        showToast('error', 'حدث خطأ: ' + err.message);
+      });
+    }
+
+    function editAcademic(id) {
+      const session = academicData.find(s => s.id === id);
+      if (!session) return;
+
+      document.getElementById('academicId').value = id;
+      document.getElementById('academicTitle').value = session.title;
+      document.getElementById('academicType').value = session.type;
+      document.getElementById('academicDay').value = session.day;
+      document.getElementById('academicTime').value = session.time;
+      document.getElementById('academicDuration').value = session.duration || 120;
+      document.getElementById('academicInstructor').value = session.instructor;
+      document.getElementById('academicLocation').value = session.location || '';
+      
+      // Initialize date picker with existing date
+      initDatePicker();
+      datePickerInstance.setDate(session.date, true);
+      
+      document.getElementById('academicModalTitle').textContent = 'تعديل الجلسة';
+      document.getElementById('academicModal').classList.add('active');
+    }
+
+    function deleteAcademic(id) {
+      if (!confirm('هل أنت متأكد من حذف هذه الجلسة؟')) return;
+      
+      showLoading(true);
+      database.ref('academic/sessions/' + id).remove()
+        .then(() => {
+          showLoading(false);
+          showToast('success', 'تم حذف الجلسة');
+        })
+        .catch(err => {
+          showLoading(false);
+          showToast('error', 'حدث خطأ: ' + err.message);
+        });
+    }
+
+    // Load WhatsApp Data
+    function loadWhatsApp() {
+      const ref = database.ref('whatsapp/groups');
+      ref.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        whatsappData = Object.entries(data).map(([id, group]) => ({ id, ...group }));
+        updateWhatsAppStats();
+        renderWhatsAppTable();
+      });
+    }
+
+    // Update WhatsApp Stats
+    function updateWhatsAppStats() {
+      document.getElementById('whatsappBadge').textContent = whatsappData.length;
+      document.getElementById('totalGroups').textContent = whatsappData.length;
+      
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+      
+      let openCount = 0;
+      whatsappData.forEach(group => {
+        const [openH, openM] = group.openTime.split(':').map(Number);
+        const [closeH, closeM] = group.closeTime.split(':').map(Number);
+        const openMinutes = openH * 60 + openM;
+        const closeMinutes = closeH * 60 + closeM;
+        
+        if (group.days.includes(currentDay) && currentTime >= openMinutes && currentTime <= closeMinutes) {
+          openCount++;
+        }
+      });
+      
+      document.getElementById('openGroups').textContent = openCount;
+      document.getElementById('closedGroups').textContent = whatsappData.length - openCount;
+    }
+
+    // Render WhatsApp Table
+    function renderWhatsAppTable() {
+      const tbody = document.getElementById('whatsappTable');
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+      
+      if (whatsappData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <i class="fab fa-whatsapp"></i>
+                <h3>لا توجد مجموعات</h3>
+                <p>اضغط على "مجموعة جديدة" لإضافة أول مجموعة</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = whatsappData.map(group => {
+        const [openH, openM] = group.openTime.split(':').map(Number);
+        const [closeH, closeM] = group.closeTime.split(':').map(Number);
+        const openMinutes = openH * 60 + openM;
+        const closeMinutes = closeH * 60 + closeM;
+        
+        const isOpen = group.days.includes(currentDay) && 
+                      currentTime >= openMinutes && 
+                      currentTime <= closeMinutes;
+        
+        return `
+          <tr class="whatsapp-row">
+            <td>
+              <div class="session-info">
+                <div class="session-icon" style="background: #d1fae5; color: #059669;">
+                  <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="session-details">
+                  <h4>${group.name}</h4>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="days-tags">
+                ${group.days.map(d => `
+                  <span class="day-tag ${d === currentDay ? 'active' : ''}">${arabicDays[d]}</span>
+                `).join('')}
+              </div>
+            </td>
+            <td>
+              <div class="time-range">
+                <i class="far fa-clock" style="font-size: 12px;"></i>
+                <span>${group.openTime} - ${group.closeTime}</span>
+              </div>
+            </td>
+            <td class="link-cell" title="${group.link}">${group.link}</td>
+            <td>
+              <span class="status-badge ${isOpen ? 'status-now' : 'status-ended'}">
+                <i class="fas ${isOpen ? 'fa-lock-open' : 'fa-lock'}" style="font-size: 10px;"></i>
+                ${isOpen ? 'مفتوحة الآن' : 'مغلقة'}
+              </span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="icon-btn edit" onclick="editWhatsApp('${group.id}')" title="تعديل">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-btn delete" onclick="deleteWhatsApp('${group.id}')" title="حذف">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // WhatsApp Modal Functions
+    function openWhatsAppModal() {
+      document.getElementById('whatsappForm').reset();
+      document.getElementById('whatsappId').value = '';
+      document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('whatsappModalTitle').textContent = 'إضافة مجموعة واتساب';
+      document.getElementById('whatsappModal').classList.add('active');
+    }
+
+    function closeWhatsAppModal() {
+      document.getElementById('whatsappModal').classList.remove('active');
+    }
+
+    function saveWhatsApp() {
+      const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseIn
