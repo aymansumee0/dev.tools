@@ -2,9 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>لوحة تحكم الجدول الأكاديمي</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>لوحة تحكم الجدول</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     :root {
@@ -20,7 +21,7 @@
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --dark: #0f172a;
+      --dark: #1e293b;
       --gray: #64748b;
       --light: #f8fafc;
       --border: #e2e8f0;
@@ -31,228 +32,118 @@
       font-family: 'Cairo', sans-serif;
       background: #f1f5f9;
       min-height: 100vh;
-      font-size: 14px;
-    }
-
-    /* Login Screen */
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .login-box {
-      background: rgba(255,255,255,0.95);
-      padding: 40px;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-    }
-
-    .login-icon {
-      font-size: 60px;
-      margin-bottom: 15px;
-    }
-
-    .login-box h1 {
-      font-size: 28px;
-      color: var(--dark);
-      margin-bottom: 8px;
-    }
-
-    .login-box p {
-      color: var(--gray);
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-      text-align: right;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      color: var(--dark);
       font-size: 13px;
+      line-height: 1.4;
     }
 
-    .input-group input {
-      width: 100%;
-      padding: 14px 18px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 15px;
-      transition: all 0.3s;
-    }
-
-    .input-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-    }
-
-    .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-    }
-
-    /* Dashboard Layout */
+    /* Mobile First Dashboard */
     .dashboard {
-      display: none;
-    }
-
-    .dashboard.active {
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: var(--dark);
-      padding: 20px;
+    /* Compact Bottom Navigation */
+    .mobile-nav {
       position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 100;
-    }
-
-    .brand {
-      text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      margin-bottom: 20px;
-    }
-
-    .brand-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 18px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin: 0 auto 15px;
-      color: white;
+      justify-content: space-around;
+      padding: 8px 0;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      z-index: 1000;
+      border-top: 1px solid var(--border);
     }
 
-    .brand h2 {
-      color: white;
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-
-    .brand p {
-      color: rgba(255,255,255,0.6);
-      font-size: 12px;
-    }
-
-    .nav-menu {
-      list-style: none;
-    }
-
-    .nav-item {
-      margin-bottom: 8px;
-    }
-
-    .nav-link {
+    .mobile-nav-item {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      color: rgba(255,255,255,0.7);
+      gap: 4px;
+      padding: 6px 12px;
+      color: var(--gray);
       text-decoration: none;
+      font-size: 11px;
       font-weight: 600;
-      transition: all 0.3s;
-      cursor: pointer;
-      font-size: 13px;
+      transition: all 0.2s;
+      border-radius: 12px;
     }
 
-    .nav-link:hover, .nav-link.active {
-      background: rgba(255,255,255,0.1);
-      color: white;
+    .mobile-nav-item i {
+      font-size: 20px;
     }
 
-    .nav-link i {
-      font-size: 18px;
-      width: 24px;
-      text-align: center;
+    .mobile-nav-item.active {
+      color: var(--primary);
+      background: rgba(99, 102, 241, 0.1);
     }
 
-    .nav-badge {
-      margin-right: auto;
+    .mobile-nav-badge {
+      position: absolute;
+      top: 4px;
       background: var(--danger);
       color: white;
-      padding: 3px 10px;
-      border-radius: 15px;
-      font-size: 11px;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
       font-weight: 700;
     }
 
     /* Main Content */
     .main-content {
       flex: 1;
-      margin-right: 260px;
-      padding: 20px;
+      padding: 12px;
+      padding-bottom: 80px;
     }
 
-    /* Header */
+    /* Compact Header */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 10px;
     }
 
     .page-title h1 {
-      font-size: 24px;
+      font-size: 18px;
       color: var(--dark);
-      margin-bottom: 4px;
+      font-weight: 700;
     }
 
     .page-title p {
       color: var(--gray);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .header-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    /* Compact Buttons */
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
     }
 
     .btn-success {
@@ -260,32 +151,15 @@
       color: white;
     }
 
-    .btn-success:hover {
-      background: #059669;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-    }
-
     .btn-whatsapp {
       background: var(--whatsapp);
       color: white;
     }
 
-    .btn-whatsapp:hover {
-      background: #128c7e;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-    }
-
     .btn-secondary {
       background: white;
       color: var(--dark);
-      border: 2px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+      border: 1px solid var(--border);
     }
 
     .btn-danger {
@@ -294,42 +168,40 @@
     }
 
     .btn-sm {
-      padding: 8px 16px;
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 11px;
     }
 
-    /* Stats Cards */
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Compact Stats */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
     }
 
     .stat-card {
       background: white;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      padding: 15px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       display: flex;
       align-items: center;
-      gap: 15px;
-      transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      gap: 12px;
     }
 
     .stat-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 18px;
     }
 
     .stat-icon.blue { background: #dbeafe; color: #1e40af; }
@@ -339,178 +211,136 @@
     .stat-icon.whatsapp { background: #d1fae5; color: #059669; }
 
     .stat-info h3 {
-      font-size: 28px;
+      font-size: 20px;
       color: var(--dark);
       line-height: 1;
     }
 
     .stat-info p {
       color: var(--gray);
-      font-size: 13px;
-      margin-top: 5px;
+      font-size: 11px;
+      margin-top: 3px;
     }
 
     /* Content Card */
     .content-card {
       background: white;
-      border-radius: 24px;
-      padding: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 15px;
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--dark);
-      display: flex;
-      align-items: center;
       gap: 10px;
     }
 
-    /* Filter Tabs */
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Filter Pills */
     .filter-tabs {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .filter-tab {
-      padding: 8px 18px;
+      padding: 6px 14px;
       background: #f1f5f9;
-      border: 2px solid transparent;
-      border-radius: 10px;
+      border: 1px solid transparent;
+      border-radius: 20px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
       font-weight: 600;
       color: var(--gray);
-      font-size: 13px;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
-    .filter-tab:hover, .filter-tab.active {
+    .filter-tab.active {
       background: white;
       border-color: var(--primary);
       color: var(--primary);
     }
 
-    /* Compact Table Styles */
+    /* Mobile Optimized Table - Card View */
     .table-container {
       overflow-x: auto;
-      border-radius: 16px;
-      border: 1px solid var(--border);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    thead th {
-      background: #f8fafc;
-      padding: 14px 16px;
-      text-align: right;
-      font-weight: 700;
-      color: var(--gray);
-      font-size: 12px;
-      border-bottom: 2px solid var(--border);
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    tbody td {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-
-    tbody tr:hover {
-      background: #f8fafc;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .session-info {
+    .mobile-list {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 12px;
     }
 
-    .session-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+    .mobile-card {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .mobile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .mobile-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mobile-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
-    .session-icon.course { background: #dbeafe; color: #1e40af; }
-    .session-icon.lecture { background: #dcfce7; color: #166534; }
-    .session-icon.workshop { background: #fef3c7; color: #92400e; }
+    .mobile-icon.course { background: #dbeafe; color: #1e40af; }
+    .mobile-icon.lecture { background: #dcfce7; color: #166534; }
+    .mobile-icon.workshop { background: #fef3c7; color: #92400e; }
 
-    .session-details h4 {
+    .mobile-title-text h4 {
       font-size: 14px;
       color: var(--dark);
-      margin-bottom: 3px;
       font-weight: 700;
+      margin-bottom: 2px;
     }
 
-    .session-details span {
-      font-size: 12px;
+    .mobile-title-text span {
+      font-size: 11px;
       color: var(--gray);
     }
 
-    .type-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .type-badge.course { background: #dbeafe; color: #1e40af; }
-    .type-badge.lecture { background: #dcfce7; color: #166534; }
-    .type-badge.workshop { background: #fef3c7; color: #92400e; }
-
-    .time-cell {
+    .mobile-status {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .time-main {
-      font-weight: 700;
-      color: var(--dark);
-      font-size: 13px;
-    }
-
-    .time-sub {
-      font-size: 11px;
-      color: var(--gray);
-    }
-
-    .status-badge {
-      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
+      gap: 4px;
+      padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
@@ -521,79 +351,80 @@
     .status-later { background: #dbeafe; color: #1e40af; }
     .status-ended { background: #f1f5f9; color: var(--gray); }
 
-    .instructor-cell {
-      display: flex;
-      align-items: center;
+    .mobile-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .instructor-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
+    .mobile-info-item {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 13px;
-      flex-shrink: 0;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .actions-cell {
+    .mobile-info-label {
+      font-size: 10px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+
+    .mobile-info-value {
+      font-size: 12px;
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    .mobile-card-footer {
       display: flex;
-      gap: 6px;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
     }
 
-    .icon-btn {
-      width: 32px;
-      height: 32px;
+    .mobile-btn {
+      flex: 1;
+      padding: 8px;
       border-radius: 8px;
       border: none;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s;
-      font-size: 13px;
+      gap: 6px;
     }
 
-    .icon-btn.edit {
+    .mobile-btn-edit {
       background: #dbeafe;
       color: #1e40af;
     }
 
-    .icon-btn.delete {
+    .mobile-btn-delete {
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .icon-btn.view {
-      background: #f3e8ff;
-      color: #7c3aed;
-    }
-
-    .icon-btn:hover {
-      transform: scale(1.1);
-    }
-
-    /* WhatsApp Groups Table */
-    .whatsapp-row {
-      background: rgba(37, 211, 102, 0.03);
+    /* WhatsApp Specific */
+    .whatsapp-card {
+      background: rgba(37, 211, 102, 0.05);
+      border-color: rgba(37, 211, 102, 0.2);
     }
 
     .days-tags {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       flex-wrap: wrap;
+      margin-top: 4px;
     }
 
     .day-tag {
-      padding: 4px 10px;
+      padding: 3px 8px;
       background: #f1f5f9;
-      border-radius: 15px;
-      font-size: 11px;
+      border-radius: 12px;
+      font-size: 10px;
       color: var(--gray);
     }
 
@@ -603,134 +434,77 @@
       font-weight: 700;
     }
 
-    .time-range {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      color: var(--dark);
-      font-size: 13px;
-    }
-
-    .link-cell {
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      direction: ltr;
-      color: var(--primary);
-      font-size: 12px;
-    }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: var(--gray);
-    }
-
-    .empty-state i {
-      font-size: 50px;
-      margin-bottom: 15px;
-      opacity: 0.3;
-    }
-
-    .empty-state h3 {
-      font-size: 18px;
-      color: var(--dark);
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      font-size: 13px;
-    }
-
-    /* Modal */
-    .modal {
+    /* Simple Modal for WebView */
+    .simple-modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-      align-items: center;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: flex-end;
       justify-content: center;
-      padding: 20px;
-      backdrop-filter: blur(8px);
     }
 
-    .modal.active {
+    .simple-modal.active {
       display: flex;
     }
 
-    .modal-content {
+    .simple-modal-content {
       background: white;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 550px;
+      width: 100%;
       max-height: 90vh;
+      border-radius: 24px 24px 0 0;
       overflow-y: auto;
-      animation: modalSlide 0.4s ease;
+      animation: slideUp 0.3s ease;
     }
 
-    @keyframes modalSlide {
-      from { transform: translateY(60px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
-    .modal-header {
-      padding: 25px;
-      border-bottom: 2px solid var(--border);
+    .simple-modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
     }
 
-    .modal-header h2 {
-      font-size: 20px;
+    .simple-modal-header h2 {
+      font-size: 18px;
       color: var(--dark);
     }
 
     .close-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       border: none;
       background: #f1f5f9;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       color: var(--gray);
-      transition: all 0.3s;
     }
 
-    .close-btn:hover {
-      background: #e2e8f0;
-      color: var(--dark);
-    }
-
-    .modal-body {
-      padding: 25px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    .simple-modal-body {
+      padding: 20px;
     }
 
     .form-group {
-      margin-bottom: 5px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
+      margin-bottom: 16px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 700;
       color: var(--dark);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .form-group input,
@@ -738,35 +512,86 @@
     .form-group textarea {
       width: 100%;
       padding: 12px 14px;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: 12px;
       font-family: inherit;
       font-size: 14px;
-      transition: all 0.3s;
+      background: white;
     }
 
     .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-group select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
 
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    /* Flatpickr Customization */
-    .flatpickr-calendar {
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .days-selector {
+    /* Time Input 12 Hour Format */
+    .time-input-wrapper {
       display: flex;
+      align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      background: white;
+    }
+
+    .time-input-wrapper:focus-within {
+      border-color: var(--primary);
+    }
+
+    .time-input {
+      flex: 1;
+      border: none;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      text-align: center;
+      background: transparent;
+      outline: none;
+    }
+
+    .time-separator {
+      font-weight: 700;
+      color: var(--gray);
+    }
+
+    .ampm-selector {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .ampm-btn {
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ampm-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Days Selector Compact */
+    .days-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
 
     .day-checkbox {
@@ -774,14 +599,16 @@
     }
 
     .day-label {
-      padding: 10px 16px;
+      display: block;
+      padding: 10px 4px;
       background: #f1f5f9;
       border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
       font-weight: 600;
       color: var(--gray);
-      font-size: 13px;
+      font-size: 12px;
+      text-align: center;
     }
 
     .day-checkbox:checked + .day-label {
@@ -789,91 +616,63 @@
       color: white;
     }
 
-    .modal-footer {
-      padding: 20px 25px;
-      border-top: 2px solid var(--border);
+    .simple-modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
       display: flex;
-      justify-content: flex-end;
       gap: 10px;
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+
+    .simple-modal-footer .btn {
+      flex: 1;
+      justify-content: center;
     }
 
     /* Preview Section */
-    .preview-section {
-      margin-top: 30px;
-      padding-top: 30px;
-      border-top: 2px solid var(--border);
-    }
-
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .preview-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--dark);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     .preview-frame {
       width: 100%;
-      height: 400px;
-      border: 2px solid var(--border);
-      border-radius: 20px;
+      height: 60vh;
+      border: 1px solid var(--border);
+      border-radius: 16px;
       background: white;
     }
 
-    /* Toast */
+    /* Toast Notification */
     .toast {
       position: fixed;
       top: 20px;
-      left: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
       background: white;
-      padding: 18px 24px;
-      border-radius: 16px;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+      padding: 14px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       display: flex;
       align-items: center;
-      gap: 15px;
-      z-index: 10000;
-      transform: translateX(-150%);
-      transition: transform 0.5s ease;
+      gap: 10px;
+      z-index: 3000;
+      transition: transform 0.3s ease;
+      min-width: 280px;
+      justify-content: center;
     }
 
     .toast.show {
-      transform: translateX(0);
+      transform: translateX(-50%) translateY(0);
     }
 
     .toast-icon {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
     }
 
-    .toast.success .toast-icon { background: #dcfce7; color: #166534; }
-    .toast.error .toast-icon { background: #fee2e2; color: #991b1b; }
+    .toast.success { border-right: 4px solid var(--success); }
+    .toast.error { border-right: 4px solid var(--danger); }
+    .toast.success .toast-icon { color: var(--success); }
+    .toast.error .toast-icon { color: var(--danger); }
 
-    .toast-content h4 {
-      font-size: 15px;
-      color: var(--dark);
-      margin-bottom: 3px;
-    }
-
-    .toast-content p {
-      font-size: 13px;
-      color: var(--gray);
-    }
-
-    /* Loading */
+    /* Loading - Hidden by default */
     .loading-overlay {
       position: fixed;
       inset: 0;
@@ -881,7 +680,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      z-index: 2500;
     }
 
     .loading-overlay.active {
@@ -889,9 +688,9 @@
     }
 
     .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid var(--border);
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -901,120 +700,85 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .sidebar {
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray);
+    }
+
+    .empty-state i {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 12px;
+    }
+
+    /* Hide scrollbar for mobile nav */
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Tablet and up */
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .mobile-list {
+        display: none;
+      }
+      
+      table {
         width: 100%;
-        position: relative;
-        height: auto;
+        border-collapse: collapse;
+        font-size: 13px;
       }
       
-      .main-content {
-        margin-right: 0;
-      }
-      
-      .dashboard.active {
-        flex-direction: column;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .table-container {
-        font-size: 12px;
-      }
-
-      tbody td {
+      thead th {
+        background: #f8fafc;
         padding: 12px;
+        text-align: right;
+        font-weight: 700;
+        color: var(--gray);
+        font-size: 11px;
+        border-bottom: 2px solid var(--border);
+      }
+      
+      tbody td {
+        padding: 14px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .simple-modal-content {
+        max-width: 500px;
+        border-radius: 24px;
+        margin: 20px;
+        max-height: 85vh;
       }
     }
 
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
+    @media (max-width: 767px) {
+      .desktop-table {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Login Screen -->
-  <div class="login-screen" id="loginScreen">
-    <div class="login-box">
-      <div class="login-icon">🔐</div>
-      <h1>لوحة التحكم</h1>
-      <p>إدارة الجدول الأكاديمي الشامل</p>
-      
-      <div class="input-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور">
-      </div>
-      
-      <button class="btn btn-primary" onclick="login()">
-        <i class="fas fa-sign-in-alt"></i>
-        دخول
-      </button>
-      
-      <p style="margin-top: 20px; font-size: 13px; color: var(--gray);">
-        كلمة المرور الافتراضية: <strong>admin123</strong>
-      </p>
-    </div>
-  </div>
-
   <!-- Dashboard -->
   <div class="dashboard" id="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">
-          <i class="fas fa-cog"></i>
-        </div>
-        <h2>لوحة التحكم</h2>
-        <p>نظام إدارة الجداول</p>
-      </div>
-      
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a class="nav-link active" onclick="showSection('academic', this)">
-            <i class="fas fa-graduation-cap"></i>
-            <span>الجدول الأكاديمي</span>
-            <span class="nav-badge" id="academicBadge">0</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" onclick="showSection('whatsapp', this)">
-            <i class="fab fa-whatsapp"></i>
-            <span>مجموعات الواتساب</span>
-            <span class="nav-badge" id="whatsappBadge">0</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" onclick="showSection('preview', this)">
-            <i class="fas fa-eye"></i>
-            <span>معاينة الجدول</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>تسجيل خروج</span>
-          </a>
-        </li>
-      </ul>
-    </aside>
-
+    
     <!-- Main Content -->
     <main class="main-content">
       
@@ -1022,44 +786,42 @@
       <section class="content-section" id="academicSection">
         <div class="header">
           <div class="page-title">
-            <h1>إدارة الجدول الأكاديمي</h1>
-            <p>إضافة وتعديل الدورات والشروحات والورش</p>
+            <h1>الجدول الأكاديمي</h1>
+            <p>إدارة الدورات والشروحات</p>
           </div>
-          <div class="header-actions">
-            <button class="btn btn-success" onclick="openAcademicModal()">
-              <i class="fas fa-plus"></i>
-              جلسة جديدة
-            </button>
-          </div>
+          <button class="btn btn-success btn-sm" onclick="openAcademicModal()">
+            <i class="fas fa-plus"></i>
+            جديد
+          </button>
         </div>
 
         <!-- Stats -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon blue">
-              <i class="fas fa-calendar-check"></i>
+              <i class="fas fa-calendar"></i>
             </div>
             <div class="stat-info">
               <h3 id="totalAcademic">0</h3>
-              <p>إجمالي الجلسات</p>
+              <p>الجلسات</p>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon green">
-              <i class="fas fa-play-circle"></i>
+              <i class="fas fa-play"></i>
             </div>
             <div class="stat-info">
               <h3 id="activeAcademic">0</h3>
-              <p>الجلسات النشطة</p>
+              <p>النشطة</p>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon orange">
-              <i class="fas fa-chalkboard-teacher"></i>
+              <i class="fas fa-user"></i>
             </div>
             <div class="stat-info">
               <h3 id="totalInstructors">0</h3>
-              <p>عدد المدربين</p>
+              <p>المدربين</p>
             </div>
           </div>
           <div class="stat-card">
@@ -1068,17 +830,17 @@
             </div>
             <div class="stat-info">
               <h3 id="totalHours">0</h3>
-              <p>إجمالي الساعات</p>
+              <p>الساعات</p>
             </div>
           </div>
         </div>
 
-        <!-- Academic Table -->
+        <!-- Academic List -->
         <div class="content-card">
           <div class="card-header">
             <h2 class="card-title">
               <i class="fas fa-list" style="color: var(--primary);"></i>
-              قائمة الجلسات
+              الجلسات
             </h2>
             <div class="filter-tabs">
               <div class="filter-tab active" onclick="filterAcademic('all', this)">الكل</div>
@@ -1088,16 +850,20 @@
             </div>
           </div>
           
-          <div class="table-container">
+          <div id="academicList" class="mobile-list">
+            <!-- Dynamic Mobile Cards -->
+          </div>
+          
+          <div class="table-container desktop-table">
             <table>
               <thead>
                 <tr>
                   <th>الجلسة</th>
                   <th>النوع</th>
-                  <th>التاريخ والوقت</th>
+                  <th>الوقت</th>
                   <th>المدرب</th>
                   <th>الحالة</th>
-                  <th>الإجراءات</th>
+                  <th>إجراء</th>
                 </tr>
               </thead>
               <tbody id="academicTable">
@@ -1112,15 +878,13 @@
       <section class="content-section" id="whatsappSection" style="display: none;">
         <div class="header">
           <div class="page-title">
-            <h1>إدارة مجموعات الواتساب</h1>
-            <p>تحديد مواعيد فتح وإغلاق المجموعات</p>
+            <h1>مجموعات الواتساب</h1>
+            <p>مواعيد الفتح والإغلاق</p>
           </div>
-          <div class="header-actions">
-            <button class="btn btn-whatsapp" onclick="openWhatsAppModal()">
-              <i class="fab fa-whatsapp"></i>
-              مجموعة جديدة
-            </button>
-          </div>
+          <button class="btn btn-whatsapp btn-sm" onclick="openWhatsAppModal()">
+            <i class="fab fa-whatsapp"></i>
+            جديد
+          </button>
         </div>
 
         <!-- WhatsApp Stats -->
@@ -1131,7 +895,7 @@
             </div>
             <div class="stat-info">
               <h3 id="totalGroups">0</h3>
-              <p>إجمالي المجموعات</p>
+              <p>المجموعات</p>
             </div>
           </div>
           <div class="stat-card">
@@ -1140,7 +904,7 @@
             </div>
             <div class="stat-info">
               <h3 id="openGroups">0</h3>
-              <p>المجموعات المفتوحة</p>
+              <p>المفتوحة</p>
             </div>
           </div>
           <div class="stat-card">
@@ -1149,30 +913,33 @@
             </div>
             <div class="stat-info">
               <h3 id="closedGroups">0</h3>
-              <p>المجموعات المغلقة</p>
+              <p>المغلقة</p>
             </div>
           </div>
         </div>
 
-        <!-- WhatsApp Table -->
+        <!-- WhatsApp List -->
         <div class="content-card">
           <div class="card-header">
             <h2 class="card-title">
               <i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i>
-              قائمة المجموعات
+              المجموعات
             </h2>
           </div>
           
-          <div class="table-container">
+          <div id="whatsappList" class="mobile-list">
+            <!-- Dynamic Mobile Cards -->
+          </div>
+          
+          <div class="table-container desktop-table">
             <table>
               <thead>
                 <tr>
                   <th>المجموعة</th>
-                  <th>أيام العمل</th>
-                  <th>مواعيد الفتح</th>
-                  <th>الرابط</th>
-                  <th>الحالة الحالية</th>
-                  <th>الإجراءات</th>
+                  <th>الأيام</th>
+                  <th>المواعيد</th>
+                  <th>الحالة</th>
+                  <th>إجراء</th>
                 </tr>
               </thead>
               <tbody id="whatsappTable">
@@ -1190,111 +957,136 @@
             <h1>معاينة الجدول</h1>
             <p>كما يظهر للطلاب</p>
           </div>
-          <div class="header-actions">
-            <button class="btn btn-secondary" onclick="refreshPreview()">
-              <i class="fas fa-sync-alt"></i>
-              تحديث
-            </button>
-          </div>
+          <button class="btn btn-secondary btn-sm" onclick="refreshPreview()">
+            <i class="fas fa-sync"></i>
+          </button>
         </div>
         
-        <div class="content-card">
+        <div class="content-card" style="padding: 10px;">
           <iframe class="preview-frame" id="previewFrame" src="about:blank"></iframe>
         </div>
       </section>
 
     </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+      <a class="mobile-nav-item active" onclick="showSection('academic', this)">
+        <i class="fas fa-graduation-cap"></i>
+        <span>أكاديمي</span>
+        <span class="mobile-nav-badge" id="academicBadge" style="display: none;">0</span>
+      </a>
+      <a class="mobile-nav-item" onclick="showSection('whatsapp', this)">
+        <i class="fab fa-whatsapp"></i>
+        <span>واتساب</span>
+        <span class="mobile-nav-badge" id="whatsappBadge" style="display: none;">0</span>
+      </a>
+      <a class="mobile-nav-item" onclick="showSection('preview', this)">
+        <i class="fas fa-eye"></i>
+        <span>معاينة</span>
+      </a>
+    </nav>
   </div>
 
   <!-- Academic Modal -->
-  <div class="modal" id="academicModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="academicModalTitle">إضافة جلسة جديدة</h2>
+  <div class="simple-modal" id="academicModal">
+    <div class="simple-modal-content">
+      <div class="simple-modal-header">
+        <h2 id="academicModalTitle">جلسة جديدة</h2>
         <button class="close-btn" onclick="closeAcademicModal()">
           <i class="fas fa-times"></i>
         </button>
       </div>
       
-      <div class="modal-body">
-        <form id="academicForm" class="form-grid">
+      <div class="simple-modal-body">
+        <form id="academicForm">
           <input type="hidden" id="academicId">
           
-          <div class="form-group full">
+          <div class="form-group">
             <label>عنوان الجلسة *</label>
-            <input type="text" id="academicTitle" placeholder="مثال: مقدمة في ريادة الأعمال" required>
+            <input type="text" id="academicTitle" placeholder="مثال: مقدمة في الريادة" required>
           </div>
           
-          <div class="form-group">
-            <label>نوع الجلسة *</label>
-            <select id="academicType" required>
-              <option value="دورة">دورة تدريبية</option>
-              <option value="شرح">شرح تفاعلي</option>
-              <option value="ورشة">ورشة عمل</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>التاريخ *</label>
-            <input type="text" id="academicDate" class="date-picker" placeholder="اختر التاريخ" required>
+          <div class="form-row">
+            <div class="form-group">
+              <label>النوع *</label>
+              <select id="academicType" required>
+                <option value="دورة">دورة</option>
+                <option value="شرح">شرح</option>
+                <option value="ورشة">ورشة</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>التاريخ *</label>
+              <input type="text" id="academicDate" placeholder="اختر التاريخ" required>
+            </div>
           </div>
           
           <div class="form-group">
             <label>وقت البدء *</label>
-            <input type="time" id="academicTime" required>
+            <div class="time-input-wrapper">
+              <input type="number" class="time-input" id="timeHour" min="1" max="12" value="9" placeholder="ساعة">
+              <span class="time-separator">:</span>
+              <input type="number" class="time-input" id="timeMinute" min="0" max="59" value="00" placeholder="دقيقة">
+              <div class="ampm-selector">
+                <button type="button" class="ampm-btn active" id="btnAM" onclick="setAmPm('AM')">ص</button>
+                <button type="button" class="ampm-btn" id="btnPM" onclick="setAmPm('PM')">م</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>المدة (دقيقة) *</label>
+              <input type="number" id="academicDuration" value="120" min="30" max="300" required>
+            </div>
+            
+            <div class="form-group">
+              <label>اليوم</label>
+              <input type="text" id="academicDay" readonly style="background: #f8fafc; color: var(--gray);">
+            </div>
           </div>
           
           <div class="form-group">
-            <label>المدة (دقيقة) *</label>
-            <input type="number" id="academicDuration" value="120" min="30" max="300" required>
+            <label>المدرب *</label>
+            <input type="text" id="academicInstructor" placeholder="اسم المدرب" required>
           </div>
-
+          
           <div class="form-group">
-            <label>اليوم (تلقائي)</label>
-            <input type="text" id="academicDay" readonly style="background: #f8fafc; color: var(--gray);">
-          </div>
-          
-          <div class="form-group full">
-            <label>اسم المدرب *</label>
-            <input type="text" id="academicInstructor" placeholder="مثال: د. أحمد محمد" required>
-          </div>
-          
-          <div class="form-group full">
-            <label>مكان الانعقاد / الرابط</label>
-            <input type="text" id="academicLocation" placeholder="مثال: القاعة الرئيسية أو رابط Zoom">
+            <label>المكان / الرابط</label>
+            <input type="text" id="academicLocation" placeholder="القاعة أو رابط Zoom">
           </div>
         </form>
       </div>
       
-      <div class="modal-footer">
+      <div class="simple-modal-footer">
         <button class="btn btn-secondary" onclick="closeAcademicModal()">إلغاء</button>
         <button class="btn btn-success" onclick="saveAcademic()">
           <i class="fas fa-save"></i>
-          حفظ الجلسة
+          حفظ
         </button>
       </div>
     </div>
   </div>
 
   <!-- WhatsApp Modal -->
-  <div class="modal" id="whatsappModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="whatsappModalTitle">إضافة مجموعة واتساب</h2>
+  <div class="simple-modal" id="whatsappModal">
+    <div class="simple-modal-content">
+      <div class="simple-modal-header">
+        <h2 id="whatsappModalTitle">مجموعة جديدة</h2>
         <button class="close-btn" onclick="closeWhatsAppModal()">
           <i class="fas fa-times"></i>
         </button>
       </div>
       
-      <div class="modal-body">
-      <form id="whatsappForm">
-
-  <!-- هذا السطر هو الحل -->
-  <input type="hidden" id="whatsappId">
-
+      <div class="simple-modal-body">
+        <form id="whatsappForm">
+          <input type="hidden" id="whatsappId">
+          
           <div class="form-group">
             <label>اسم المجموعة *</label>
-            <input type="text" id="whatsappName" placeholder="مثال: مجموعة التكاليف 1" required>
+            <input type="text" id="whatsappName" placeholder="مثال: مجموعة التكاليف" required>
           </div>
           
           <div class="form-group">
@@ -1302,59 +1094,73 @@
             <div class="days-selector">
               <label>
                 <input type="checkbox" class="day-checkbox" value="0">
-                <span class="day-label">الأحد</span>
+                <span class="day-label">سبت</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="1">
-                <span class="day-label">الإثنين</span>
+                <span class="day-label">أحد</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="2">
-                <span class="day-label">الثلاثاء</span>
+                <span class="day-label">إثنين</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="3">
-                <span class="day-label">الأربعاء</span>
+                <span class="day-label">ثلاثاء</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="4">
-                <span class="day-label">الخميس</span>
+                <span class="day-label">أربعاء</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="5">
-                <span class="day-label">الجمعة</span>
+                <span class="day-label">خميس</span>
               </label>
               <label>
                 <input type="checkbox" class="day-checkbox" value="6">
-                <span class="day-label">السبت</span>
+                <span class="day-label">جمعة</span>
               </label>
             </div>
           </div>
           
-          <div class="form-grid" style="margin-top: 20px;">
-            <div class="form-group">
-              <label>وقت الفتح *</label>
-              <input type="time" id="whatsappOpenTime" required>
-            </div>
-            
-            <div class="form-group">
-              <label>وقت الإغلاق *</label>
-              <input type="time" id="whatsappCloseTime" required>
+          <div class="form-group">
+            <label>وقت الفتح *</label>
+            <div class="time-input-wrapper">
+              <input type="number" class="time-input" id="openHour" min="1" max="12" value="9" placeholder="ساعة">
+              <span class="time-separator">:</span>
+              <input type="number" class="time-input" id="openMinute" min="0" max="59" value="00" placeholder="دقيقة">
+              <div class="ampm-selector">
+                <button type="button" class="ampm-btn active" id="openAM" onclick="setOpenAmPm('AM')">ص</button>
+                <button type="button" class="ampm-btn" id="openPM" onclick="setOpenAmPm('PM')">م</button>
+              </div>
             </div>
           </div>
           
-          <div class="form-group" style="margin-top: 20px;">
+          <div class="form-group">
+            <label>وقت الإغلاق *</label>
+            <div class="time-input-wrapper">
+              <input type="number" class="time-input" id="closeHour" min="1" max="12" value="5" placeholder="ساعة">
+              <span class="time-separator">:</span>
+              <input type="number" class="time-input" id="closeMinute" min="0" max="59" value="00" placeholder="دقيقة">
+              <div class="ampm-selector">
+                <button type="button" class="ampm-btn" id="closeAM" onclick="setCloseAmPm('AM')">ص</button>
+                <button type="button" class="ampm-btn active" id="closePM" onclick="setCloseAmPm('PM')">م</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
             <label>رابط المجموعة *</label>
             <input type="url" id="whatsappLink" placeholder="https://chat.whatsapp.com/..." required>
           </div>
         </form>
       </div>
       
-      <div class="modal-footer">
+      <div class="simple-modal-footer">
         <button class="btn btn-secondary" onclick="closeWhatsAppModal()">إلغاء</button>
         <button class="btn btn-whatsapp" onclick="saveWhatsApp()">
           <i class="fab fa-whatsapp"></i>
-          حفظ المجموعة
+          حفظ
         </button>
       </div>
     </div>
@@ -1362,16 +1168,11 @@
 
   <!-- Toast -->
   <div class="toast" id="toast">
-    <div class="toast-icon">
-      <i class="fas fa-check-circle"></i>
-    </div>
-    <div class="toast-content">
-      <h4>تم بنجاح!</h4>
-      <p id="toastMessage">تم حفظ البيانات</p>
-    </div>
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span id="toastMessage">تم بنجاح</span>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading (Hidden by default, only for operations) -->
   <div class="loading-overlay" id="loading">
     <div class="spinner"></div>
   </div>
@@ -1401,27 +1202,16 @@
     let whatsappData = [];
     let currentAcademicFilter = 'all';
     let datePickerInstance = null;
+    let currentAmPm = 'AM';
+    let openAmPm = 'AM';
+    let closeAmPm = 'PM';
 
-    // Arabic day names
-    const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const arabicDays = ['السبت','الاحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+    // Initialize - No loading screen on startup
+    document.addEventListener('DOMContentLoaded', function() {
+      initDashboard();
+    });
 
-    // Login
-    function login() {
-      const password = document.getElementById('adminPassword').value;
-      if (password === 'admin123') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('dashboard').classList.add('active');
-        initDashboard();
-      } else {
-        alert('كلمة المرور غير صحيحة!');
-      }
-    }
-
-    function logout() {
-      location.reload();
-    }
-
-    // Initialize Dashboard
     function initDashboard() {
       loadAcademic();
       loadWhatsApp();
@@ -1429,8 +1219,10 @@
 
     // Show Section
     function showSection(section, element) {
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      element.classList.add('active');
+      document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      if (element) element.classList.add('active');
       
       document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
       document.getElementById(section + 'Section').style.display = 'block';
@@ -1450,7 +1242,7 @@
         locale: "ar",
         dateFormat: "d-m-Y",
         defaultDate: new Date(),
-        onChange: function(selectedDates, dateStr, instance) {
+        onChange: function(selectedDates) {
           if (selectedDates[0]) {
             const dayIndex = selectedDates[0].getDay();
             document.getElementById('academicDay').value = arabicDays[dayIndex];
@@ -1459,9 +1251,52 @@
       });
     }
 
-    // Load Academic Data
+    // Convert 12h to 24h for storage
+    function to24Hour(hour, ampm) {
+      hour = parseInt(hour);
+      if (ampm === 'PM' && hour !== 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+      return hour.toString().padStart(2, '0');
+    }
+
+    // Convert 24h to 12h for display
+    function to12Hour(time24) {
+      if (!time24) return '';
+      const [hour, minute] = time24.split(':').map(Number);
+      const ampm = hour >= 12 ? 'م' : 'ص';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minute.toString().padStart(2, '0')} ${ampm}`;
+    }
+
+    // Parse time from 24h to 12h components
+    function parseTimeTo12h(time24) {
+      const [hour, minute] = time24.split(':').map(Number);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return { hour: hour12, minute: minute.toString().padStart(2, '0'), ampm: ampm };
+    }
+
+    // AM/PM Toggle Functions
+    function setAmPm(ampm) {
+      currentAmPm = ampm;
+      document.getElementById('btnAM').classList.toggle('active', ampm === 'AM');
+      document.getElementById('btnPM').classList.toggle('active', ampm === 'PM');
+    }
+
+    function setOpenAmPm(ampm) {
+      openAmPm = ampm;
+      document.getElementById('openAM').classList.toggle('active', ampm === 'AM');
+      document.getElementById('openPM').classList.toggle('active', ampm === 'PM');
+    }
+
+    function setCloseAmPm(ampm) {
+      closeAmPm = ampm;
+      document.getElementById('closeAM').classList.toggle('active', ampm === 'AM');
+      document.getElementById('closePM').classList.toggle('active', ampm === 'PM');
+    }
+
+    // Load Academic Data - No initial loading
     function loadAcademic() {
-      showLoading(true);
       const ref = database.ref('academic/sessions');
       ref.on('value', (snapshot) => {
         const data = snapshot.val() || {};
@@ -1471,19 +1306,17 @@
         })).sort((a, b) => parseDateTime(a.date, a.time) - parseDateTime(b.date, b.time));
         
         updateAcademicStats();
+        renderAcademicList();
         renderAcademicTable();
-        showLoading(false);
       });
     }
 
-    // Parse Date Time
     function parseDateTime(dateStr, timeStr) {
       const [day, month, year] = dateStr.split('-').map(Number);
       const [hours, minutes] = timeStr.split(':').map(Number);
       return new Date(year, month - 1, day, hours, minutes);
     }
 
-    // Get Session Status
     function getSessionStatus(session) {
       const now = new Date();
       const startTime = parseDateTime(session.date, session.time);
@@ -1500,9 +1333,11 @@
       }
     }
 
-    // Update Academic Stats
     function updateAcademicStats() {
-      document.getElementById('academicBadge').textContent = academicData.length;
+      const badge = document.getElementById('academicBadge');
+      badge.textContent = academicData.length;
+      badge.style.display = academicData.length > 0 ? 'block' : 'none';
+      
       document.getElementById('totalAcademic').textContent = academicData.length;
       
       const activeCount = academicData.filter(s => {
@@ -1518,34 +1353,102 @@
       document.getElementById('totalHours').textContent = Math.round(totalHours);
     }
 
-    // Filter Academic
     function filterAcademic(type, element) {
       currentAcademicFilter = type;
       document.querySelectorAll('#academicSection .filter-tab').forEach(t => t.classList.remove('active'));
       element.classList.add('active');
+      renderAcademicList();
       renderAcademicTable();
     }
 
-    // Render Academic Table
-    function renderAcademicTable() {
-      const tbody = document.getElementById('academicTable');
+    // Render Mobile List with 12h format
+    function renderAcademicList() {
+      const container = document.getElementById('academicList');
       let filtered = academicData;
       if (currentAcademicFilter !== 'all') {
         filtered = academicData.filter(s => s.type === currentAcademicFilter);
       }
       
       if (filtered.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6">
-              <div class="empty-state">
-                <i class="far fa-calendar-plus"></i>
-                <h3>لا توجد جلسات</h3>
-                <p>اضغط على "جلسة جديدة" لإضافة أول جلسة</p>
-              </div>
-            </td>
-          </tr>
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="far fa-calendar-plus"></i>
+            <h3>لا توجد جلسات</h3>
+            <p>اضغط على "جديد" لإضافة جلسة</p>
+          </div>
         `;
+        return;
+      }
+      
+      container.innerHTML = filtered.map(session => {
+        const status = getSessionStatus(session);
+        const typeClass = session.type === 'دورة' ? 'course' : session.type === 'شرح' ? 'lecture' : 'workshop';
+        const icon = session.type === 'دورة' ? 'fa-graduation-cap' : session.type === 'شرح' ? 'fa-chalkboard-teacher' : 'fa-tools';
+        
+        return `
+          <div class="mobile-card">
+            <div class="mobile-card-header">
+              <div class="mobile-card-title">
+                <div class="mobile-icon ${typeClass}">
+                  <i class="fas ${icon}"></i>
+                </div>
+                <div class="mobile-title-text">
+                  <h4>${session.title}</h4>
+                  <span>${session.day} • ${session.date}</span>
+                </div>
+              </div>
+              <span class="mobile-status ${status.class}">
+                <i class="fas fa-circle" style="font-size: 6px;"></i>
+                ${status.text}
+              </span>
+            </div>
+            
+            <div class="mobile-card-body">
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">الوقت</span>
+                <span class="mobile-info-value">${to12Hour(session.time)}</span>
+              </div>
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">المدة</span>
+                <span class="mobile-info-value">${session.duration || 120} دقيقة</span>
+              </div>
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">المدرب</span>
+                <span class="mobile-info-value">${session.instructor}</span>
+              </div>
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">المكان</span>
+                <span class="mobile-info-value" style="font-size: 11px;">${session.location || '---'}</span>
+              </div>
+            </div>
+            
+            <div class="mobile-card-footer">
+              <button class="mobile-btn mobile-btn-edit" onclick="editAcademic('${session.id}')">
+                <i class="fas fa-edit"></i>
+                تعديل
+              </button>
+              <button class="mobile-btn mobile-btn-delete" onclick="deleteAcademic('${session.id}')">
+                <i class="fas fa-trash"></i>
+                حذف
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Desktop Table with 12h format
+    function renderAcademicTable() {
+      const tbody = document.getElementById('academicTable');
+      if (!tbody) return;
+      
+      let filtered = academicData;
+      if (currentAcademicFilter !== 'all') {
+        filtered = academicData.filter(s => s.type === currentAcademicFilter);
+      }
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">لا توجد جلسات</td></tr>';
         return;
       }
       
@@ -1556,47 +1459,30 @@
         return `
           <tr>
             <td>
-              <div class="session-info">
-                <div class="session-icon ${typeClass}">
-                  <i class="fas ${getTypeIcon(session.type)}"></i>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="mobile-icon ${typeClass}" style="width: 32px; height: 32px; font-size: 14px;">
+                  <i class="fas ${session.type === 'دورة' ? 'fa-graduation-cap' : session.type === 'شرح' ? 'fa-chalkboard-teacher' : 'fa-tools'}"></i>
                 </div>
-                <div class="session-details">
-                  <h4>${session.title}</h4>
-                  <span>${session.day}</span>
+                <div>
+                  <div style="font-weight: 700; font-size: 13px;">${session.title}</div>
+                  <div style="font-size: 11px; color: var(--gray);">${session.day}</div>
                 </div>
               </div>
             </td>
+            <td><span style="font-size: 11px; padding: 4px 10px; background: #f1f5f9; border-radius: 12px;">${session.type}</span></td>
             <td>
-              <span class="type-badge ${typeClass}">
-                <i class="fas ${getTypeIcon(session.type)}"></i>
-                ${session.type}
-              </span>
+              <div style="font-weight: 600;">${to12Hour(session.time)}</div>
+              <div style="font-size: 11px; color: var(--gray);">${session.date}</div>
             </td>
+            <td>${session.instructor}</td>
+            <td><span class="mobile-status ${status.class}" style="font-size: 11px;">${status.text}</span></td>
             <td>
-              <div class="time-cell">
-                <span class="time-main">${session.date}</span>
-                <span class="time-sub">${session.time} (${session.duration || 120} دقيقة)</span>
-              </div>
-            </td>
-            <td>
-              <div class="instructor-cell">
-                <div class="instructor-avatar">${session.instructor.charAt(0)}</div>
-                <span>${session.instructor}</span>
-              </div>
-            </td>
-            <td>
-              <span class="status-badge ${status.class}">
-                <i class="fas fa-circle" style="font-size: 6px;"></i>
-                ${status.text}
-              </span>
-            </td>
-            <td>
-              <div class="actions-cell">
-                <button class="icon-btn edit" onclick="editAcademic('${session.id}')" title="تعديل">
-                  <i class="fas fa-edit"></i>
+              <div style="display: flex; gap: 6px;">
+                <button class="icon-btn edit" onclick="editAcademic('${session.id}')" style="width: 28px; height: 28px;">
+                  <i class="fas fa-edit" style="font-size: 12px;"></i>
                 </button>
-                <button class="icon-btn delete" onclick="deleteAcademic('${session.id}')" title="حذف">
-                  <i class="fas fa-trash"></i>
+                <button class="icon-btn delete" onclick="deleteAcademic('${session.id}')" style="width: 28px; height: 28px;">
+                  <i class="fas fa-trash" style="font-size: 12px;"></i>
                 </button>
               </div>
             </td>
@@ -1605,31 +1491,27 @@
       }).join('');
     }
 
-    // Get Type Icon
-    function getTypeIcon(type) {
-      const icons = { 'دورة': 'fa-graduation-cap', 'شرح': 'fa-chalkboard-teacher', 'ورشة': 'fa-tools' };
-      return icons[type] || 'fa-calendar';
-    }
-
     // Academic Modal Functions
     function openAcademicModal() {
       document.getElementById('academicForm').reset();
       document.getElementById('academicId').value = '';
-      document.getElementById('academicModalTitle').textContent = 'إضافة جلسة جديدة';
+      document.getElementById('academicModalTitle').textContent = 'جلسة جديدة';
+      setAmPm('AM');
+      document.getElementById('timeHour').value = '9';
+      document.getElementById('timeMinute').value = '00';
       
-      // Initialize date picker
       initDatePicker();
       
-      // Set default day
       const today = new Date();
-      const dayIndex = today.getDay();
-      document.getElementById('academicDay').value = arabicDays[dayIndex];
+      document.getElementById('academicDay').value = arabicDays[today.getDay()];
       
       document.getElementById('academicModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeAcademicModal() {
       document.getElementById('academicModal').classList.remove('active');
+      document.body.style.overflow = '';
       if (datePickerInstance) {
         datePickerInstance.destroy();
         datePickerInstance = null;
@@ -1645,12 +1527,15 @@
 
       showLoading(true);
       
+      const hour24 = to24Hour(document.getElementById('timeHour').value, currentAmPm);
+      const minute = document.getElementById('timeMinute').value.padStart(2, '0');
+      
       const data = {
         title: document.getElementById('academicTitle').value,
         type: document.getElementById('academicType').value,
         day: document.getElementById('academicDay').value,
         date: document.getElementById('academicDate').value,
-        time: document.getElementById('academicTime').value,
+        time: `${hour24}:${minute}`,
         duration: parseInt(document.getElementById('academicDuration').value),
         instructor: document.getElementById('academicInstructor').value,
         location: document.getElementById('academicLocation').value || 'القاعة الرئيسية'
@@ -1667,10 +1552,10 @@
       ref.set(data).then(() => {
         showLoading(false);
         closeAcademicModal();
-        showToast('success', id ? 'تم تحديث الجلسة' : 'تم إضافة الجلسة بنجاح');
+        showToast('success', id ? 'تم التحديث' : 'تمت الإضافة');
       }).catch(err => {
         showLoading(false);
-        showToast('error', 'حدث خطأ: ' + err.message);
+        showToast('error', 'حدث خطأ');
       });
     }
 
@@ -1682,48 +1567,56 @@
       document.getElementById('academicTitle').value = session.title;
       document.getElementById('academicType').value = session.type;
       document.getElementById('academicDay').value = session.day;
-      document.getElementById('academicTime').value = session.time;
       document.getElementById('academicDuration').value = session.duration || 120;
       document.getElementById('academicInstructor').value = session.instructor;
       document.getElementById('academicLocation').value = session.location || '';
       
-      // Initialize date picker with existing date
+      // Parse time to 12h format
+      const time12 = parseTimeTo12h(session.time);
+      document.getElementById('timeHour').value = time12.hour;
+      document.getElementById('timeMinute').value = time12.minute;
+      setAmPm(time12.ampm);
+      
       initDatePicker();
       datePickerInstance.setDate(session.date, true);
       
       document.getElementById('academicModalTitle').textContent = 'تعديل الجلسة';
       document.getElementById('academicModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function deleteAcademic(id) {
-      if (!confirm('هل أنت متأكد من حذف هذه الجلسة؟')) return;
+      if (!confirm('حذف هذه الجلسة؟')) return;
       
       showLoading(true);
       database.ref('academic/sessions/' + id).remove()
         .then(() => {
           showLoading(false);
-          showToast('success', 'تم حذف الجلسة');
+          showToast('success', 'تم الحذف');
         })
-        .catch(err => {
+        .catch(() => {
           showLoading(false);
-          showToast('error', 'حدث خطأ: ' + err.message);
+          showToast('error', 'حدث خطأ');
         });
     }
 
-    // Load WhatsApp Data
+    // Load WhatsApp Data - No initial loading
     function loadWhatsApp() {
       const ref = database.ref('whatsapp/groups');
       ref.on('value', (snapshot) => {
         const data = snapshot.val() || {};
         whatsappData = Object.entries(data).map(([id, group]) => ({ id, ...group }));
         updateWhatsAppStats();
+        renderWhatsAppList();
         renderWhatsAppTable();
       });
     }
 
-    // Update WhatsApp Stats
     function updateWhatsAppStats() {
-      document.getElementById('whatsappBadge').textContent = whatsappData.length;
+      const badge = document.getElementById('whatsappBadge');
+      badge.textContent = whatsappData.length;
+      badge.style.display = whatsappData.length > 0 ? 'block' : 'none';
+      
       document.getElementById('totalGroups').textContent = whatsappData.length;
       
       const now = new Date();
@@ -1746,25 +1639,96 @@
       document.getElementById('closedGroups').textContent = whatsappData.length - openCount;
     }
 
-    // Render WhatsApp Table
-    function renderWhatsAppTable() {
-      const tbody = document.getElementById('whatsappTable');
+    // Render WhatsApp List with 12h format
+    function renderWhatsAppList() {
+      const container = document.getElementById('whatsappList');
       const now = new Date();
       const currentDay = now.getDay();
       const currentTime = now.getHours() * 60 + now.getMinutes();
       
       if (whatsappData.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6">
-              <div class="empty-state">
-                <i class="fab fa-whatsapp"></i>
-                <h3>لا توجد مجموعات</h3>
-                <p>اضغط على "مجموعة جديدة" لإضافة أول مجموعة</p>
-              </div>
-            </td>
-          </tr>
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fab fa-whatsapp"></i>
+            <h3>لا توجد مجموعات</h3>
+            <p>اضغط على "جديد" لإضافة مجموعة</p>
+          </div>
         `;
+        return;
+      }
+      
+      container.innerHTML = whatsappData.map(group => {
+        const [openH, openM] = group.openTime.split(':').map(Number);
+        const [closeH, closeM] = group.closeTime.split(':').map(Number);
+        const openMinutes = openH * 60 + openM;
+        const closeMinutes = closeH * 60 + closeM;
+        
+        const isOpen = group.days.includes(currentDay) && 
+                      currentTime >= openMinutes && 
+                      currentTime <= closeMinutes;
+        
+        return `
+          <div class="mobile-card whatsapp-card">
+            <div class="mobile-card-header">
+              <div class="mobile-card-title">
+                <div class="mobile-icon" style="background: #d1fae5; color: #059669;">
+                  <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="mobile-title-text">
+                  <h4>${group.name}</h4>
+                  <div class="days-tags">
+                    ${group.days.map(d => `
+                      <span class="day-tag ${d === currentDay ? 'active' : ''}">${arabicDays[d]}</span>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+              <span class="mobile-status ${isOpen ? 'status-now' : 'status-ended'}">
+                <i class="fas ${isOpen ? 'fa-lock-open' : 'fa-lock'}" style="font-size: 10px;"></i>
+                ${isOpen ? 'مفتوحة' : 'مغلقة'}
+              </span>
+            </div>
+            
+            <div class="mobile-card-body">
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">الفتح</span>
+                <span class="mobile-info-value">${to12Hour(group.openTime)}</span>
+              </div>
+              <div class="mobile-info-item">
+                <span class="mobile-info-label">الإغلاق</span>
+                <span class="mobile-info-value">${to12Hour(group.closeTime)}</span>
+              </div>
+            </div>
+            
+            <div class="mobile-card-footer">
+              <a href="${group.link}" target="_blank" class="mobile-btn" style="background: #d1fae5; color: #059669; text-decoration: none;">
+                <i class="fab fa-whatsapp"></i>
+                فتح
+              </a>
+              <button class="mobile-btn mobile-btn-edit" onclick="editWhatsApp('${group.id}')">
+                <i class="fas fa-edit"></i>
+                تعديل
+              </button>
+              <button class="mobile-btn mobile-btn-delete" onclick="deleteWhatsApp('${group.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render WhatsApp Table with 12h format
+    function renderWhatsAppTable() {
+      const tbody = document.getElementById('whatsappTable');
+      if (!tbody) return;
+      
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+      
+      if (whatsappData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px;">لا توجد مجموعات</td></tr>';
         return;
       }
       
@@ -1779,44 +1743,34 @@
                       currentTime <= closeMinutes;
         
         return `
-          <tr class="whatsapp-row">
+          <tr>
             <td>
-              <div class="session-info">
-                <div class="session-icon" style="background: #d1fae5; color: #059669;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="mobile-icon" style="width: 32px; height: 32px; font-size: 14px; background: #d1fae5; color: #059669;">
                   <i class="fab fa-whatsapp"></i>
                 </div>
-                <div class="session-details">
-                  <h4>${group.name}</h4>
-                </div>
+                <span style="font-weight: 700;">${group.name}</span>
               </div>
             </td>
             <td>
               <div class="days-tags">
                 ${group.days.map(d => `
-                  <span class="day-tag ${d === currentDay ? 'active' : ''}">${arabicDays[d]}</span>
+                  <span class="day-tag ${d === currentDay ? 'active' : ''}" style="font-size: 10px; padding: 2px 8px;">${arabicDays[d]}</span>
                 `).join('')}
               </div>
             </td>
+            <td>${to12Hour(group.openTime)} - ${to12Hour(group.closeTime)}</td>
+            <td><span class="mobile-status ${isOpen ? 'status-now' : 'status-ended'}" style="font-size: 11px;">${isOpen ? 'مفتوحة' : 'مغلقة'}</span></td>
             <td>
-              <div class="time-range">
-                <i class="far fa-clock" style="font-size: 12px;"></i>
-                <span>${group.openTime} - ${group.closeTime}</span>
-              </div>
-            </td>
-            <td class="link-cell" title="${group.link}">${group.link}</td>
-            <td>
-              <span class="status-badge ${isOpen ? 'status-now' : 'status-ended'}">
-                <i class="fas ${isOpen ? 'fa-lock-open' : 'fa-lock'}" style="font-size: 10px;"></i>
-                ${isOpen ? 'مفتوحة الآن' : 'مغلقة'}
-              </span>
-            </td>
-            <td>
-              <div class="actions-cell">
-                <button class="icon-btn edit" onclick="editWhatsApp('${group.id}')" title="تعديل">
-                  <i class="fas fa-edit"></i>
+              <div style="display: flex; gap: 6px;">
+                <a href="${group.link}" target="_blank" class="icon-btn edit" style="width: 28px; height: 28px; text-decoration: none; display: inline-flex;">
+                  <i class="fab fa-whatsapp" style="font-size: 12px;"></i>
+                </a>
+                <button class="icon-btn edit" onclick="editWhatsApp('${group.id}')" style="width: 28px; height: 28px;">
+                  <i class="fas fa-edit" style="font-size: 12px;"></i>
                 </button>
-                <button class="icon-btn delete" onclick="deleteWhatsApp('${group.id}')" title="حذف">
-                  <i class="fas fa-trash"></i>
+                <button class="icon-btn delete" onclick="deleteWhatsApp('${group.id}')" style="width: 28px; height: 28px;">
+                  <i class="fas fa-trash" style="font-size: 12px;"></i>
                 </button>
               </div>
             </td>
@@ -1830,29 +1784,42 @@
       document.getElementById('whatsappForm').reset();
       document.getElementById('whatsappId').value = '';
       document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
-      document.getElementById('whatsappModalTitle').textContent = 'إضافة مجموعة واتساب';
+      document.getElementById('whatsappModalTitle').textContent = 'مجموعة جديدة';
+      setOpenAmPm('AM');
+      setCloseAmPm('PM');
+      document.getElementById('openHour').value = '9';
+      document.getElementById('openMinute').value = '00';
+      document.getElementById('closeHour').value = '5';
+      document.getElementById('closeMinute').value = '00';
       document.getElementById('whatsappModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeWhatsAppModal() {
       document.getElementById('whatsappModal').classList.remove('active');
+      document.body.style.overflow = '';
     }
 
     function saveWhatsApp() {
       const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseInt(cb.value));
       
       if (days.length === 0) {
-        alert('الرجاء اختيار يوم واحد على الأقل');
+        alert('اختر يوم واحد على الأقل');
         return;
       }
 
       showLoading(true);
       
+      const openHour24 = to24Hour(document.getElementById('openHour').value, openAmPm);
+      const openMinute = document.getElementById('openMinute').value.padStart(2, '0');
+      const closeHour24 = to24Hour(document.getElementById('closeHour').value, closeAmPm);
+      const closeMinute = document.getElementById('closeMinute').value.padStart(2, '0');
+
       const data = {
         name: document.getElementById('whatsappName').value,
         days: days,
-        openTime: document.getElementById('whatsappOpenTime').value,
-        closeTime: document.getElementById('whatsappCloseTime').value,
+        openTime: `${openHour24}:${openMinute}`,
+        closeTime: `${closeHour24}:${closeMinute}`,
         link: document.getElementById('whatsappLink').value
       };
 
@@ -1867,10 +1834,10 @@
       ref.set(data).then(() => {
         showLoading(false);
         closeWhatsAppModal();
-        showToast('success', id ? 'تم تحديث المجموعة' : 'تم إضافة المجموعة بنجاح');
-      }).catch(err => {
+        showToast('success', id ? 'تم التحديث' : 'تمت الإضافة');
+      }).catch(() => {
         showLoading(false);
-        showToast('error', 'حدث خطأ: ' + err.message);
+        showToast('error', 'حدث خطأ');
       });
     }
 
@@ -1880,30 +1847,40 @@
 
       document.getElementById('whatsappId').value = id;
       document.getElementById('whatsappName').value = group.name;
-      document.getElementById('whatsappOpenTime').value = group.openTime;
-      document.getElementById('whatsappCloseTime').value = group.closeTime;
       document.getElementById('whatsappLink').value = group.link;
+      
+      // Parse times to 12h format
+      const openTime12 = parseTimeTo12h(group.openTime);
+      document.getElementById('openHour').value = openTime12.hour;
+      document.getElementById('openMinute').value = openTime12.minute;
+      setOpenAmPm(openTime12.ampm);
+      
+      const closeTime12 = parseTimeTo12h(group.closeTime);
+      document.getElementById('closeHour').value = closeTime12.hour;
+      document.getElementById('closeMinute').value = closeTime12.minute;
+      setCloseAmPm(closeTime12.ampm);
       
       document.querySelectorAll('.day-checkbox').forEach(cb => {
         cb.checked = group.days.includes(parseInt(cb.value));
       });
       
-      document.getElementById('whatsappModalTitle').textContent = 'تعديل مجموعة واتساب';
+      document.getElementById('whatsappModalTitle').textContent = 'تعديل المجموعة';
       document.getElementById('whatsappModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function deleteWhatsApp(id) {
-      if (!confirm('هل أنت متأكد من حذف هذه المجموعة؟')) return;
+      if (!confirm('حذف هذه المجموعة؟')) return;
       
       showLoading(true);
       database.ref('whatsapp/groups/' + id).remove()
         .then(() => {
           showLoading(false);
-          showToast('success', 'تم حذف المجموعة');
+          showToast('success', 'تم الحذف');
         })
-        .catch(err => {
+        .catch(() => {
           showLoading(false);
-          showToast('error', 'حدث خطأ: ' + err.message);
+          showToast('error', 'حدث خطأ');
         });
     }
 
@@ -1916,30 +1893,25 @@
     function showToast(type, message) {
       const toast = document.getElementById('toast');
       toast.className = 'toast ' + type;
-      document.querySelector('.toast-icon i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      document.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
       document.getElementById('toastMessage').textContent = message;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Loading
+    // Loading - Only show for operations, not on startup
     function showLoading(show) {
       document.getElementById('loading').classList.toggle('active', show);
     }
 
     // Close modals on outside click
-    document.querySelectorAll('.modal').forEach(modal => {
+    document.querySelectorAll('.simple-modal').forEach(modal => {
       modal.addEventListener('click', function(e) {
         if (e.target === this) {
           if (this.id === 'academicModal') closeAcademicModal();
           if (this.id === 'whatsappModal') closeWhatsAppModal();
         }
       });
-    });
-
-    // Enter key to login
-    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') login();
     });
   </script>
 
