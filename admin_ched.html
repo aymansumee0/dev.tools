@@ -1839,4 +1839,109 @@
     }
 
     function saveWhatsApp() {
-      const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseIn
+      const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseInt(cb.value));
+      
+      if (days.length === 0) {
+        alert('الرجاء اختيار يوم واحد على الأقل');
+        return;
+      }
+
+      showLoading(true);
+      
+      const data = {
+        name: document.getElementById('whatsappName').value,
+        days: days,
+        openTime: document.getElementById('whatsappOpenTime').value,
+        closeTime: document.getElementById('whatsappCloseTime').value,
+        link: document.getElementById('whatsappLink').value
+      };
+
+      const id = document.getElementById('whatsappId').value;
+      let ref;
+      if (id) {
+        ref = database.ref('whatsapp/groups/' + id);
+      } else {
+        ref = database.ref('whatsapp/groups').push();
+      }
+
+      ref.set(data).then(() => {
+        showLoading(false);
+        closeWhatsAppModal();
+        showToast('success', id ? 'تم تحديث المجموعة' : 'تم إضافة المجموعة بنجاح');
+      }).catch(err => {
+        showLoading(false);
+        showToast('error', 'حدث خطأ: ' + err.message);
+      });
+    }
+
+    function editWhatsApp(id) {
+      const group = whatsappData.find(g => g.id === id);
+      if (!group) return;
+
+      document.getElementById('whatsappId').value = id;
+      document.getElementById('whatsappName').value = group.name;
+      document.getElementById('whatsappOpenTime').value = group.openTime;
+      document.getElementById('whatsappCloseTime').value = group.closeTime;
+      document.getElementById('whatsappLink').value = group.link;
+      
+      document.querySelectorAll('.day-checkbox').forEach(cb => {
+        cb.checked = group.days.includes(parseInt(cb.value));
+      });
+      
+      document.getElementById('whatsappModalTitle').textContent = 'تعديل مجموعة واتساب';
+      document.getElementById('whatsappModal').classList.add('active');
+    }
+
+    function deleteWhatsApp(id) {
+      if (!confirm('هل أنت متأكد من حذف هذه المجموعة؟')) return;
+      
+      showLoading(true);
+      database.ref('whatsapp/groups/' + id).remove()
+        .then(() => {
+          showLoading(false);
+          showToast('success', 'تم حذف المجموعة');
+        })
+        .catch(err => {
+          showLoading(false);
+          showToast('error', 'حدث خطأ: ' + err.message);
+        });
+    }
+
+    // Preview
+    function refreshPreview() {
+      document.getElementById('previewFrame').src = 'schedule.html?' + Date.now();
+    }
+
+    // Toast
+    function showToast(type, message) {
+      const toast = document.getElementById('toast');
+      toast.className = 'toast ' + type;
+      document.querySelector('.toast-icon i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Loading
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('active', show);
+    }
+
+    // Close modals on outside click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          if (this.id === 'academicModal') closeAcademicModal();
+          if (this.id === 'whatsappModal') closeWhatsAppModal();
+        }
+      });
+    });
+
+    // Enter key to login
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+
+</body>
+</html>
