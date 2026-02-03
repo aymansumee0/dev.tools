@@ -1042,7 +1042,7 @@ function formatTo12Hour(time24) {
               <h4>${group.name}</h4>
               <div class="group-time">
                 <i class="far fa-clock"></i>
-                ${group.days.map(d => ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][d]).join(' - ')}
+                ${group.days.map(d => ['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة',][d]).join(' - ')}
                 <br>
                 <span>
   ${formatTo12Hour(group.openTime)} - ${formatTo12Hour(group.closeTime)}
