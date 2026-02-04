@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>استلام النقاط - نظام الطلاب</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #2C3E94;
+  --primary-light: #3d4fa8;
+  --success: #059669;
+  --success-light: #d1fae5;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --warning: #d97706;
+  --bg-primary: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-input: #f0f2f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #5a5a7a;
+  --text-muted: #8a8aa0;
+  --border-color: #e0e2e8;
+  --shadow: 0 4px 20px rgba(44, 62, 148, 0.15);
+}
+
+html { 
+  font-size: 16px; 
+  height: 100%; 
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 0;
+  direction: rtl;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* الحاوية */
+.container {
+  width: 100%;
+  max-width: 420px;
+  min-width: 320px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* البطاقة الرئيسية */
+.main-card {
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* الهيدر */
+.header-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary) 0%, #1a237e 100%);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 8px 24px rgba(44, 62, 148, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* حقل الإدخال */
+.input-group {
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  padding-right: 4px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(44, 62, 148, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* حقل الكود الخاص */
+.code-input {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.code-input::placeholder {
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+}
+
+/* حقل كلمة المرور */
+.password-input {
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* زر إظهار/إخفاء كلمة المرور */
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}
+
+/* زر الاستلام */
+.redeem-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--primary) 0%, #1a237e 100%);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(44, 62, 148, 0.3);
+  margin-top: 24px;
+}
+
+.redeem-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 62, 148, 0.4);
+}
+
+.redeem-btn:active {
+  transform: translateY(0);
+}
+
+.redeem-btn:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* نتيجة الاستلام */
+.result-container {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.result-container.success {
+  display: block;
+  background: var(--success-light);
+  border: 2px solid var(--success);
+}
+
+.result-container.error {
+  display: block;
+  background: var(--danger-light);
+  border: 2px solid var(--danger);
+}
+
+.result-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+
+.result-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.result-container.success .result-title {
+  color: var(--success);
+}
+
+.result-container.error .result-title {
+  color: var(--danger);
+}
+
+.result-message {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* عرض النقاط */
+.points-display {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.points-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.points-value {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--success);
+  line-height: 1;
+}
+
+.points-value span {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* معلومات الطالب */
+.student-info {
+  background: var(--bg-input);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  text-align: right;
+}
+
+.student-info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.student-info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.student-info-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.student-info-value {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* زر إعادة المحاولة */
+.retry-btn {
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* التحميل */
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* الفوتر */
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.85rem;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+/* تأثيرات الخلفية */
+.bg-shapes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.shape {
+  position: absolute;
+  opacity: 0.1;
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+  width: 300px;
+  height: 300px;
+  background: #fff;
+  border-radius: 50%;
+  top: -150px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 200px;
+  height: 200px;
+  background: #fff;
+  border-radius: 50%;
+  bottom: -100px;
+  left: -50px;
+  animation-delay: 5s;
+}
+
+.shape-3 {
+  width: 150px;
+  height: 150px;
+  background: #fff;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  top: 50%;
+  left: 50%;
+  animation-delay: 10s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -30px) rotate(120deg); }
+  66% { transform: translate(-20px, 20px) rotate(240deg); }
+}
+
+/* للشاشات الصغيرة */
+@media (max-width: 360px) {
+  .container { padding: 16px; }
+  .main-card { padding: 24px 16px; }
+  .title { font-size: 1.3rem; }
+  .code-input { font-size: 1.2rem; letter-spacing: 3px; }
+}
+</style>
+</head>
+<body>
+
+<!-- خلفية متحركة -->
+<div class="bg-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+</div>
+
+<div class="container">
+  <div class="main-card">
+    <!-- الهيدر -->
+    <div class="header-icon">🎁</div>
+    <h1 class="title">استلام النقاط</h1>
+    <p class="subtitle">أدخل بياناتك لاستلام مكافأتك بأمان</p>
+
+    <!-- نموذج الإدخال -->
+    <form id="redeemForm" onsubmit="event.preventDefault(); redeemCode();">
+      
+      <!-- حقل الكود -->
+      <div class="input-group">
+        <label class="input-label">🔐 كود النقاط</label>
+        <input 
+          type="text" 
+          id="codeInput" 
+          class="input-field code-input" 
+          placeholder="XXXXXX" 
+          maxlength="10"
+          autocomplete="off"
+          required
+        />
+      </div>
+
+      <!-- حقل الرقم الأكاديمي -->
+      <div class="input-group">
+        <label class="input-label">🆔 الرقم الأكاديمي</label>
+        <input 
+          type="text" 
+          id="studentIdInput" 
+          class="input-field" 
+          placeholder="أدخل رقمك الأكاديمي" 
+          autocomplete="off"
+          required
+        />
+      </div>
+
+      <!-- حقل كلمة المرور -->
+      <div class="input-group">
+        <label class="input-label">🔒 كلمة المرور</label>
+        <div class="password-wrapper">
+          <input 
+            type="password" 
+            id="passwordInput" 
+            class="input-field password-input" 
+            placeholder="••••••" 
+            required
+          />
+          <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+        </div>
+      </div>
+
+      <!-- زر الاستلام -->
+      <button type="submit" class="redeem-btn" id="redeemBtn">
+        <span class="loader" id="loader"></span>
+        <span id="btnText">✨ استبدال الكود</span>
+      </button>
+    </form>
+
+    <!-- نتيجة الاستلام -->
+    <div id="resultContainer" class="result-container">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <div class="result-title" id="resultTitle">تم الاستبدال بنجاح!</div>
+      <div class="result-message" id="resultMessage">تم إضافة النقاط لحسابك</div>
+      
+      <!-- عرض النقاط (في حالة النجاح) -->
+      <div class="points-display" id="pointsDisplay" style="display: none;">
+        <div class="points-label">النقاط المستلمة</div>
+        <div class="points-value">+<span id="pointsValue">0</span> <span>نقطة</span></div>
+      </div>
+
+      <!-- معلومات الطالب (في حالة النجاح) -->
+      <div class="student-info" id="studentInfo" style="display: none;">
+        <div class="student-info-item">
+          <span class="student-info-label">الطالب:</span>
+          <span class="student-info-value" id="studentNameDisplay">-</span>
+        </div>
+        <div class="student-info-item">
+          <span class="student-info-label">الرقم الأكاديمي:</span>
+          <span class="student-info-value" id="studentIdDisplay">-</span>
+        </div>
+        <div class="student-info-item">
+          <span class="student-info-label">النقاط السابقة:</span>
+          <span class="student-info-value" id="oldPointsDisplay">-</span>
+        </div>
+        <div class="student-info-item">
+          <span class="student-info-label">الرصيد الجديد:</span>
+          <span class="student-info-value" id="newBalanceDisplay" style="color: var(--success);">-</span>
+        </div>
+      </div>
+
+      <!-- زر إعادة المحاولة -->
+      <button class="retry-btn" id="retryBtn" onclick="resetForm()" style="display: none;">
+        🔄 إدخال كود جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- الفوتر -->
+  <div class="footer">
+    نظام إدارة الطلاب | <a href="#" onclick="goToAdmin()">لوحة التحكم</a>
+  </div>
+</div>
+
+<script>
+// Firebase Configuration (نفس الإعدادات السابقة)
+const firebaseConfig = {
+  apiKey: "AIzaSyAEXAMPLEnY", 
+  authDomain: "store-points-7d2f4.firebaseapp.com",
+  databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "store-points-7d2f4",
+  storageBucket: "store-points-7d2f4.appspot.com",
+  messagingSenderId: "105011111111",
+  appId: "1:105011111111:web:abc123example"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// عناصر DOM
+const codeInput = document.getElementById('codeInput');
+const studentIdInput = document.getElementById('studentIdInput');
+const passwordInput = document.getElementById('passwordInput');
+const redeemBtn = document.getElementById('redeemBtn');
+const btnText = document.getElementById('btnText');
+const loader = document.getElementById('loader');
+const resultContainer = document.getElementById('resultContainer');
+const resultIcon = document.getElementById('resultIcon');
+const resultTitle = document.getElementById('resultTitle');
+const resultMessage = document.getElementById('resultMessage');
+const pointsDisplay = document.getElementById('pointsDisplay');
+const pointsValue = document.getElementById('pointsValue');
+const studentInfo = document.getElementById('studentInfo');
+const studentNameDisplay = document.getElementById('studentNameDisplay');
+const studentIdDisplay = document.getElementById('studentIdDisplay');
+const oldPointsDisplay = document.getElementById('oldPointsDisplay');
+const newBalanceDisplay = document.getElementById('newBalanceDisplay');
+const retryBtn = document.getElementById('retryBtn');
+
+// تحسين إدخال الكود (أحرف كبيرة وأرقام فقط)
+codeInput.addEventListener('input', function(e) {
+  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+// إظهار/إخفاء كلمة المرور
+function togglePassword() {
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  event.target.textContent = type === 'password' ? '👁️' : '🙈';
+}
+
+// التركيز التلقائي عند تحميل الصفحة
+window.onload = function() {
+  // التحقق من وجود كود في URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const codeParam = urlParams.get('code');
+  if (codeParam) {
+    codeInput.value = codeParam;
+    studentIdInput.focus();
+  } else {
+    codeInput.focus();
+  }
+};
+
+// دالة استلام الكود
+async function redeemCode() {
+  const code = codeInput.value.trim().toUpperCase();
+  const enteredStudentId = studentIdInput.value.trim();
+  const password = passwordInput.value.trim();
+  
+  // التحقق من تعبئة جميع الحقول
+  if (!code || !enteredStudentId || !password) {
+    showResult(false, 'بيانات ناقصة', 'يرجى إدخال الكود والرقم الأكاديمي وكلمة المرور', '⚠️');
+    shakeElement(codeInput.parentElement);
+    return;
+  }
+  
+  // تعطيل الزر وإظهار التحميل
+  setLoading(true);
+  
+  try {
+    // الخطوة 1: التحقق من وجود الكود وصلاحيته
+    const codeRef = db.ref('codes/' + code);
+    const codeSnapshot = await codeRef.once('value');
+    const codeData = codeSnapshot.val();
+    
+    if (!codeData) {
+      showResult(false, 'كود غير صالح', 'هذا الكود غير موجود في نظامنا، تأكد من إدخاله بشكل صحيح', '❌');
+      return;
+    }
+    
+    // التحقق من عدم استخدام الكود مسبقاً
+    if (codeData.used) {
+      const usedDate = new Date(codeData.usedAt).toLocaleDateString('ar-SA');
+      showResult(
+        false, 
+        'الكود مستخدم مسبقاً', 
+        `تم استخدام هذا الكود بتاريخ ${usedDate}، لا يمكن استخدام الكود أكثر من مرة`, 
+        '🚫'
+      );
+      return;
+    }
+    
+    // ⚠️ الخطوة 2: التحقق المهم - هل الكود مخصص لهذا الرقم الأكاديمي؟
+    // الكود يحتوي على studentId (الرقم المخصص له عند التوليد)
+    if (codeData.studentId !== enteredStudentId) {
+      showResult(
+        false, 
+        'الكود غير مخصص لك', 
+        `هذا الكود مخصص لطالب اخر ، لا يمكنك استخدام كود غير خاص بك`, 
+        '⛔'
+      );
+      shakeElement(studentIdInput.parentElement);
+      return;
+    }
+    
+    // الخطوة 3: التحقق من وجود الطالب في قاعدة البيانات
+    const studentRef = db.ref('users/' + enteredStudentId);
+    const studentSnapshot = await studentRef.once('value');
+    
+    if (!studentSnapshot.exists()) {
+      showResult(false, 'رقم أكاديمي غير صحيح', 'الرقم الأكاديمي غير مسجل في النظام', '❌');
+      shakeElement(studentIdInput.parentElement);
+      return;
+    }
+    
+    const studentData = studentSnapshot.val();
+    
+    // الخطوة 4: التحقق من كلمة المرور
+    if (studentData.password !== password) {
+      showResult(false, 'كلمة المرور غير صحيحة', 'كلمة المرور لا تتطابق مع الرقم الأكاديمي المدخل', '🔒');
+      shakeElement(passwordInput.parentElement);
+      passwordInput.value = '';
+      passwordInput.focus();
+      return;
+    }
+    
+    // ✅ جميع التحققات ناجحة - إضافة النقاط
+    const currentPoints = studentData.points || 0;
+    const newPoints = currentPoints + codeData.points;
+    
+    // تحديث الكود كمستخدم
+    await codeRef.update({
+      used: true,
+      usedAt: new Date().toISOString(),
+      usedBy: enteredStudentId,
+      redeemedByName: studentData.name
+    });
+    
+    // إضافة النقاط للطالب
+    await studentRef.update({
+      points: newPoints,
+      lastRedeem: new Date().toISOString(),
+      lastRedeemCode: code
+    });
+    
+    // عرض النجاح
+    showResult(
+      true, 
+      'تم الاستلام بنجاح! 🎉', 
+      `مبروك ${studentData.name}! تم إضافة ${codeData.points} نقطة لحسابك بنجاح`,
+      '🎁'
+    );
+    
+    // عرض التفاصيل
+    pointsValue.textContent = codeData.points;
+    pointsDisplay.style.display = 'block';
+    
+    studentNameDisplay.textContent = studentData.name;
+    studentIdDisplay.textContent = enteredStudentId;
+    oldPointsDisplay.textContent = currentPoints + ' نقطة';
+    newBalanceDisplay.textContent = newPoints + ' نقطة';
+    studentInfo.style.display = 'block';
+    
+    retryBtn.style.display = 'block';
+    
+  } catch (error) {
+    console.error(error);
+    showResult(false, 'خطأ في النظام', 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى لاحقاً', '⚠️');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// عرض النتيجة
+function showResult(success, title, message, icon) {
+  resultContainer.className = 'result-container ' + (success ? 'success' : 'error');
+  resultIcon.textContent = icon;
+  resultTitle.textContent = title;
+  resultMessage.textContent = message;
+  resultContainer.style.display = 'block';
+  
+  // إخفاء العناصر الخاصة بالنجاح في حالة الخطأ
+  if (!success) {
+    pointsDisplay.style.display = 'none';
+    studentInfo.style.display = 'none';
+    retryBtn.style.display = 'block';
+  }
+  
+  // تمرير إلى النتيجة
+  setTimeout(() => {
+    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+// تفعيل/تعطيل التحميل
+function setLoading(loading) {
+  redeemBtn.disabled = loading;
+  if (loading) {
+    btnText.style.display = 'none';
+    loader.style.display = 'block';
+  } else {
+    btnText.style.display = 'block';
+    loader.style.display = 'none';
+  }
+}
+
+// إعادة تعيين النموذج
+function resetForm() {
+  codeInput.value = '';
+  studentIdInput.value = '';
+  passwordInput.value = '';
+  resultContainer.style.display = 'none';
+  pointsDisplay.style.display = 'none';
+  studentInfo.style.display = 'none';
+  retryBtn.style.display = 'none';
+  codeInput.focus();
+  
+  // إزالة الكود من URL
+  if (window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
+// تأثير الاهتزاز عند الخطأ
+function shakeElement(element) {
+  element.style.animation = 'shake 0.5s';
+  setTimeout(() => {
+    element.style.animation = '';
+  }, 500);
+}
+
+// إضافة animation للاهتزاز
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+`;
+document.head.appendChild(style);
+
+// الانتقال لصفحة الأدمن
+function goToAdmin() {
+  window.location.href = 'index.html';
+}
+
+// إرسال عند الضغط على Enter في آخر حقل
+passwordInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    redeemCode();
+  }
+});
+</script>
+
+</body>
+</html>
