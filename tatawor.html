@@ -920,6 +920,7 @@ const allContent = {
   'b_tut_2': {
     title: 'الذكاء الاصطناعي',
     major: 'ذكاء اصطناعي',
+    isPublic: 'true' ,
     videos: [
       {url: 'https://youtu.be/i5jYrMmzPy0?si=VRYnjvHbN4vvZRGw', title: 'إنشاء الأغاني بالذكاء الاصطناعي'},
       {url: 'https://youtu.be/c7WiTwqTueA?si=fDRZa8vf0fhYy-UK', title: 'استخدام الذكاء الاصطناعي المدفوع'},
@@ -1031,15 +1032,23 @@ function logout() {
 }
 
 // Check Access - نفس المنطق للكل
+// Check Access - تدعم المحتوى العام والخاص
 function checkAccess(contentId, requiredMajor) {
   if (!currentUser) {
     showAlert('⚠️', 'تنبيه', 'الرجاء تسجيل الدخول أولاً');
     return;
   }
   
+  const content = allContent[contentId];
   const userMajor = (currentUser.major || '').trim();
   
-  // مقارنة مباشرة (مطابقة نصية كاملة)
+  // ✅ المحتوى العام متاح للجميع (مثل الذكاء الاصطناعي)
+  if (content.isPublic) {
+    openBoard(contentId);
+    return;
+  }
+  
+  // المحتوى الخاص: يحتاج مطابقة التخصص فقط
   if (userMajor === requiredMajor) {
     openBoard(contentId);
   } else {
@@ -1049,6 +1058,7 @@ function checkAccess(contentId, requiredMajor) {
       'تخصصك الحالي: <strong>' + (userMajor || 'غير محدد') + '</strong>');
   }
 }
+
 
 // Toggle Dropdown
 function toggleDropdown(dropdownId) {
