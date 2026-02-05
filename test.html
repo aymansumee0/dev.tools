@@ -1,238 +1,747 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>الدورات والمستويات</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة التخصصات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<style>
-body{
-  margin:0;
-  padding:16px;
-  font-family:Tahoma,sans-serif;
-  background:#f0f4f8;
-}
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --card: rgba(255,255,255,0.03);
+        }
 
-/* container */
-#courses{
-  max-width:420px;
-  margin:auto;
-}
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--dark);
+            min-height: 100vh;
+            color: white;
+            font-size: 13px;
+        }
 
-/* course */
-.course{
-  margin-bottom:14px;
-}
-.course-btn{
-  width:100%;
-  padding:18px;
-  font-size:18px;
-  background:#667eea;
-  color:#fff;
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  text-align:right;
-}
+        /* الهيدر المضغوط */
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
 
-/* levels */
-.levels{
-  display:none;
-  margin-top:10px;
-}
-.level-btn{
-  width:100%;
-  margin-bottom:6px;
-  padding:12px;
-  font-size:16px;
-  background:#fff;
-  border:1px solid #ddd;
-  border-radius:10px;
-  display:flex;
-  justify-content:space-between;
-  cursor:pointer;
-}
-.count{
-  background:#444;
-  color:#fff;
-  padding:2px 8px;
-  border-radius:8px;
-  font-size:12px;
-}
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-/* modal */
-#modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  justify-content:center;
-  align-items:center;
-}
-#modalBox{
-  background:#fff;
-  padding:20px;
-  width:90%;
-  max-width:300px;
-  border-radius:12px;
-  text-align:center;
-  position:relative;
-}
+        .logo {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
 
-/* زر الإغلاق */
-.close-btn{
-  position:absolute;
-  top:8px;
-  left:8px;
-  width:28px;
-  height:28px;
-  border:none;
-  border-radius:50%;
-  background:#eee;
-  font-size:18px;
-  cursor:pointer;
-}
+        .header-text h1 {
+            font-size: 15px;
+            font-weight: 700;
+        }
 
-#modalBox input{
-  width:100%;
-  padding:8px;
-  margin-bottom:8px;
-}
-#modalBox button.login{
-  width:100%;
-  padding:8px;
-}
-</style>
+        .header-text p {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        /* البحث المضغوط */
+        .search-box {
+            padding: 10px 15px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* الحاوية */
+        .container {
+            padding: 0 10px 20px;
+        }
+
+        /* بطاقة التخصص المضغوطة */
+        .specialty-card {
+            background: var(--card);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .specialty-header {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .specialty-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+        }
+
+        .specialty-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .specialty-info {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .specialty-title {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .specialty-meta {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .toggle-btn {
+            width: 26px;
+            height: 26px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: transform 0.3s;
+            z-index: 1;
+        }
+
+        .toggle-btn.active {
+            transform: rotate(180deg);
+        }
+
+        /* المستويات المضغوطة */
+        .levels {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s;
+        }
+
+        .levels.active {
+            max-height: 600px;
+        }
+
+        .levels-content {
+            padding: 0 10px 10px;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .level {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .level:hover:not(.disabled) {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .level.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .level.disabled::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .level-num {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .level-status {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .level.disabled .level-status {
+            color: var(--danger);
+        }
+
+        /* المودال المضغوط */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .modal-icon.success { background: rgba(16, 185, 129, 0.2); }
+        .modal-icon.error { background: rgba(239, 68, 68, 0.2); }
+        .modal-icon.warning { background: rgba(245, 158, 11, 0.2); }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .modal-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ألوان التخصصات */
+        .s1 .specialty-header::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .s2 .specialty-header::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .s3 .specialty-header::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .s4 .specialty-header::before { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .s5 .specialty-header::before { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .s6 .specialty-header::before { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+        .s7 .specialty-header::before { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .s8 .specialty-header::before { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .s9 .specialty-header::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .s10 .specialty-header::before { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .s11 .specialty-header::before { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
+        .s12 .specialty-header::before { background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%); }
+        .s13 .specialty-header::before { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
+        .s14 .specialty-header::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    </style>
 </head>
-
 <body>
 
-<div id="courses"></div>
+    <!-- الهيدر -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🎓</div>
+            <div class="header-text">
+                <h1>اختبار المستويات</h1>
+                <p>اختر تخصصك وابدأ التعلم</p>
+            </div>
+        </div>
+    </div>
 
-<!-- نافذة تسجيل الدخول -->
-<div id="modal" onclick="closeOnOutside(event)">
-  <div id="modalBox">
-    <button class="close-btn" onclick="closeModal()">×</button>
+    <!-- البحث -->
+    <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تخصص..." oninput="searchSpecialties(this.value)">
+    </div>
 
-    <h3>تسجيل الدخول</h3>
-    <input id="sid" placeholder="الرقم الأكاديمي">
-    <input id="spass" type="password" placeholder="كلمة السر">
-    <button class="login" onclick="login()">دخول</button>
-    <p id="msg" style="color:red"></p>
-  </div>
-</div>
+    <!-- الحاوية -->
+    <div class="container" id="container"></div>
 
-<script>
-/* ===== الأقسام ===== */
-var courses = [
-  { id:'graphics',   name:'دورة الجرافيكس' },
-  { id:'programming',name:'دورة البرمجة' },
-  { id:'design',     name:'دورة التصميم' },
-  { id:'animation',  name:'دورة الأنيميشن' },
-  { id:'ai',         name:'دورة الذكاء الاصطناعي' },
-  { id:'cyber',      name:'دورة الأمن السيبراني' },
-  { id:'office',     name:'دورة تطبيقات الأوفيس' },
-  { id:'network',    name:'دورة الشبكات' },
-  { id:'hardware',   name:'دورة الهاردوير' },
-  { id:'mobile',     name:'دورة تطوير التطبيقات' },
-  { id:'web',        name:'دورة تطوير الويب' },
-  { id:'data',       name:'دورة تحليل البيانات' }
-];
+    <!-- المودال -->
+    <div class="modal-overlay" id="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-icon" id="modalIcon">📚</div>
+            <h3 class="modal-title" id="modalTitle">عنوان</h3>
+            <p class="modal-text" id="modalText">نص</p>
+            <button class="modal-btn modal-btn-primary" id="modalBtn" onclick="handleModalAction()">موافق</button>
+            <button class="modal-btn modal-btn-secondary" onclick="closeModal()">إغلاق</button>
+        </div>
+    </div>
 
-/* ===== عدد الطلاب ===== */
-var studentCounts = {
-  'graphics-1':4,
-  'graphics-2':0,
-  'programming-1':0,
-  'programming-2':0
-};
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-/* ===== صلاحيات الدخول ===== */
-var accessData = {
-  'graphics-1':[
-    {id:'1003',pass:'1003'},
-    {id:'2',pass:'dev.771944205'}
-  ]
-};
+    <script>
+        // تحويل الرقم لاسم المستوى
+        function getLevelName(num) {
+            const names = [
+                'المستوى الأول',
+                'المستوى الثاني', 
+                'المستوى الثالث',
+                'المستوى الرابع',
+                'المستوى الخامس',
+                'المستوى السادس',
+                'المستوى السابع',
+                'المستوى الثامن',
+                'المستوى التاسع',
+                'المستوى العاشر'
+            ];
+            return names[num - 1] || 'المستوى ' + num;
+        }
 
-var currentKey = "";
-var box = document.getElementById("courses");
+        // بيانات التخصصات مع الروابط
+        const specialties = [
+            { 
+                id: 1, 
+                name: 'إدارة أعمال', 
+                icon: '💼',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/business-level1.html',
+                    2: 'https://example.com/business-level2.html',
+                    3: 'https://example.com/business-level3.html',
+                    4: 'https://example.com/business-level4.html',
+                    5: 'https://example.com/business-level5.html'
+                }
+            },
+            { 
+                id: 2, 
+                name: 'الكتابة', 
+                icon: '✍️',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/writing-level1.html',
+                    2: 'https://example.com/writing-level2.html',
+                    3: 'https://example.com/writing-level3.html'
+                }
+            },
+            { 
+                id: 3, 
+                name: 'برمجة', 
+                icon: '💻',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/programming-level1.html',
+                    2: 'https://example.com/programming-level2.html',
+                    3: 'https://example.com/programming-level3.html',
+                    4: 'https://example.com/programming-level4.html',
+                    5: 'https://example.com/programming-level5.html',
+                    6: 'https://example.com/programming-level6.html',
+                    7: 'https://example.com/programming-level7.html',
+                    8: 'https://example.com/programming-level8.html',
+                    9: 'https://example.com/programming-level9.html',
+                    10: 'https://example.com/programming-level10.html'
+                }
+            },
+            { 
+                id: 4, 
+                name: 'برمجة تطبيقات', 
+                icon: '📱',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/app-level1.html',
+                    2: 'https://example.com/app-level2.html'
+                }
+            },
+            { 
+                id: 5, 
+                name: 'برمجة جوال', 
+                icon: '📲',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/mobile-level1.html',
+                    2: 'https://example.com/mobile-level2.html',
+                    3: 'https://example.com/mobile-level3.html',
+                    4: 'https://example.com/mobile-level4.html'
+                }
+            },
+            { 
+                id: 6, 
+                name: 'تصميم مواقع', 
+                icon: '🎨',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/web-level1.html',
+                    2: 'https://example.com/web-level2.html',
+                    3: 'https://example.com/web-level3.html',
+                    4: 'https://example.com/web-level4.html',
+                    5: 'https://example.com/web-level5.html',
+                    6: 'https://example.com/web-level6.html'
+                }
+            },
+            { 
+                id: 7, 
+                name: 'تصوير', 
+                icon: '📷',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/photo-level1.html'
+                }
+            },
+            { 
+                id: 8, 
+                name: 'تعليق صوتي', 
+                icon: '🎤',
+                availableLevels: [],
+                links: {}
+            },
+            { 
+                id: 10, 
+                name: 'جرافيكس الجوال', 
+                icon: '📱',
+                availableLevels: [1],
+                links: {
+                    1: 'https://aymansumee0.github.io/dev.tools/gp1.html',
+                    2: 'https://example.com/mobilegfx-level2.html',
+                    3: 'https://example.com/mobilegfx-level3.html'
+                }
+            },
+            { 
+                id: 11, 
+                name: 'جرافيكس الكمبيوتر', 
+                icon: '🖥️',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/pcgfx-level1.html',
+                    2: 'https://example.com/pcgfx-level2.html',
+                    3: 'https://example.com/pcgfx-level3.html',
+                    4: 'https://example.com/pcgfx-level4.html'
+                }
+            },
+            { 
+                id: 12, 
+                name: 'حاسوب', 
+                icon: '💻',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/computer-level1.html',
+                    2: 'https://example.com/computer-level2.html',
+                    3: 'https://example.com/computer-level3.html',
+                    4: 'https://example.com/computer-level4.html',
+                    5: 'https://example.com/computer-level5.html',
+                    6: 'https://example.com/computer-level6.html',
+                    7: 'https://example.com/computer-level7.html'
+                }
+            },
+            { 
+                id: 13, 
+                name: 'خط', 
+                icon: '🔤',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/font-level1.html',
+                    2: 'https://example.com/font-level2.html'
+                }
+            },
+            { 
+                id: 14, 
+                name: 'رسم', 
+                icon: '✏️',
+                availableLevels: [],
+                links: {
+                    1: 'https://example.com/drawing-level1.html',
+                    2: 'https://example.com/drawing-level2.html',
+                    3: 'https://example.com/drawing-level3.html',
+                    4: 'https://example.com/drawing-level4.html',
+                    5: 'https://example.com/drawing-level5.html',
+                    6: 'https://example.com/drawing-level6.html',
+                    7: 'https://example.com/drawing-level7.html',
+                    8: 'https://example.com/drawing-level8.html',
+                    9: 'https://example.com/drawing-level9.html',
+                    10: 'https://example.com/drawing-level10.html'
+                }
+            }
+        ];
 
-/* ===== بناء الصفحة ===== */
-for(var i=0;i<courses.length;i++){
-  var c = courses[i];
+        let currentLevel = null;
+        let openCards = new Set();
 
-  var courseDiv = document.createElement("div");
-  courseDiv.className = "course";
+        // عرض التخصصات
+        function renderSpecialties(filter = '') {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+            
+            specialties.forEach((spec) => {
+                if (filter && !spec.name.includes(filter)) return;
+                
+                const card = document.createElement('div');
+                card.className = `specialty-card s${spec.id}`;
+                
+                const isOpen = openCards.has(spec.id);
+                
+                let levelsHTML = '';
+                for (let i = 1; i <= 10; i++) {
+                    const isAvailable = spec.availableLevels.includes(i);
+                    const statusText = isAvailable ? 'متاح' : 'مغلق';
+                    
+                    levelsHTML += `
+                        <div class="level ${isAvailable ? '' : 'disabled'}" 
+                             onclick="handleLevelClick(${spec.id}, ${i}, '${spec.name}', '${spec.icon}', ${isAvailable})">
+                            <div class="level-num">${getLevelName(i)}</div>
+                            <div class="level-status">${statusText}</div>
+                        </div>
+                    `;
+                }
 
-  var btn = document.createElement("button");
-  btn.className = "course-btn";
-  btn.textContent = c.name;
-  btn.onclick = (function(id){
-    return function(){
-      var el = document.getElementById(id);
-      el.style.display = el.style.display==="block" ? "none" : "block";
-    };
-  })(c.id);
+                card.innerHTML = `
+                    <div class="specialty-header" onclick="toggleCard(${spec.id})">
+                        <div class="specialty-icon">${spec.icon}</div>
+                        <div class="specialty-info">
+                            <div class="specialty-title">${spec.name}</div>
+                            <div class="specialty-meta">${spec.availableLevels.length} من 10 مستويات متاحة</div>
+                        </div>
+                        <div class="toggle-btn ${isOpen ? 'active' : ''}" id="toggle-${spec.id}">
+                            ▼
+                        </div>
+                    </div>
+                    <div class="levels ${isOpen ? 'active' : ''}" id="levels-${spec.id}">
+                        <div class="levels-content">
+                            <div class="level-grid">
+                                ${levelsHTML}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
 
-  var levels = document.createElement("div");
-  levels.className = "levels";
-  levels.id = c.id;
+        // تبديل البطاقة
+        function toggleCard(id) {
+            const levels = document.getElementById(`levels-${id}`);
+            const toggle = document.getElementById(`toggle-${id}`);
+            
+            if (openCards.has(id)) {
+                openCards.delete(id);
+                levels.classList.remove('active');
+                toggle.classList.remove('active');
+            } else {
+                openCards.add(id);
+                levels.classList.add('active');
+                toggle.classList.add('active');
+            }
+        }
 
-  for(var l=1;l<=10;l++){
-    var key = c.id + "-" + l;
-    var count = studentCounts[key] || 0;
+        // معالجة ضغط المستوى
+        function handleLevelClick(specId, levelNum, specName, icon, isAvailable) {
+            if (!isAvailable) {
+                showModal(
+                    '🔒',
+                    'المستوى غير متاح',
+                    `${getLevelName(levelNum)} في تخصص ${specName} غير متاح حالياً. سيتم فتحه قريباً.`,
+                    'error',
+                    false
+                );
+                return;
+            }
+            
+            currentLevel = { specId, levelNum, specName, icon };
+            showModal(
+                icon,
+                `${specName}`,
+                `${getLevelName(levelNum)} - هل تريد بدء الاختبار؟`,
+                'success',
+                true
+            );
+        }
 
-    var lbtn = document.createElement("button");
-    lbtn.className = "level-btn";
-    lbtn.innerHTML =
-      "<span>اختبار المستوى "+l+"</span>" +
-      "<span class='count'>"+count+"</span>";
+        // إظهار المودال
+        function showModal(icon, title, text, type, showAction) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalIcon').className = `modal-icon ${type}`;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            
+            const btn = document.getElementById('modalBtn');
+            if (showAction) {
+                btn.style.display = 'block';
+                btn.textContent = 'بدء الاختبار';
+            } else {
+                btn.style.display = 'none';
+            }
+            
+            document.getElementById('modal').classList.add('active');
+        }
 
-    lbtn.onclick = (function(k){
-      return function(){
-        currentKey = k;
-        document.getElementById("modal").style.display="flex";
-        document.getElementById("msg").textContent="";
-        document.getElementById("sid").value="";
-        document.getElementById("spass").value="";
-      };
-    })(key);
+        // معالجة إجراء المودال
+        function handleModalAction() {
+            if (!currentLevel) return;
+            
+            const { specId, levelNum, specName } = currentLevel;
+            
+            const spec = specialties.find(s => s.id === specId);
+            const url = spec.links[levelNum];
+            
+            if (!url) {
+                showToast('الرابط غير موجود!');
+                return;
+            }
+            
+            showToast(`جاري فتح: ${specName} - ${getLevelName(levelNum)}`);
+            
+            setTimeout(() => {
+                if (window.Android) {
+                    window.Android.openUrl(url);
+                } else {
+                    window.open(url, '_blank');
+                }
+            }, 300);
+            
+            closeModal();
+        }
 
-    levels.appendChild(lbtn);
-  }
+        // إغلاق المودال
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modal').classList.remove('active');
+            currentLevel = null;
+        }
 
-  courseDiv.appendChild(btn);
-  courseDiv.appendChild(levels);
-  box.appendChild(courseDiv);
-}
+        // البحث
+        function searchSpecialties(query) {
+            renderSpecialties(query.trim());
+        }
 
-/* ===== إغلاق النافذة ===== */
-function closeModal(){
-  document.getElementById("modal").style.display="none";
-}
-function closeOnOutside(e){
-  if(e.target.id === "modal"){
-    closeModal();
-  }
-}
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
 
-/* ===== تسجيل الدخول ===== */
-function login(){
-  var id = document.getElementById("sid").value;
-  var pass = document.getElementById("spass").value;
-  var list = accessData[currentKey] || [];
+        // تهيئة
+        window.onload = () => {
+            renderSpecialties();
+        };
 
-  for(var i=0;i<list.length;i++){
-    if(list[i].id===id && list[i].pass===pass){
-      alert("تم الدخول بنجاح");
-      closeModal();
-      return;
-    }
-  }
-  document.getElementById("msg").textContent="غير مصرح بالدخول";
-}
-</script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
 
 </body>
 </html>
