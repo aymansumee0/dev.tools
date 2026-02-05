@@ -470,10 +470,7 @@
   <div id="loginPage" class="page active">
     <div class="login-card">
       <div class="logo">🎓</div>
-      <h1 class="login-title">جرافيكس الجوال</h1>
-      <h3 class="login-title">المستوى  الاول</h3>
-    
-    
+      <h1 class="login-title">جرافيكس الجوال مستوى اول</h1>
       
       <div class="input-group">
         <label>الرقم الأكاديمي</label>
@@ -613,20 +610,20 @@ let quizSubmitted = false;
 // ==========================================
 const quizQuestions = [
   {
-    question: "ما هو التصميم الجرافيكي؟",
+    question: "ما هو الجرافيكس؟",
     options: [
-      "فن تواصل بصري",      // 0 - صح
+      "لغة بصرية",      // 0 - صح
       "نوع من الطباعة",      // 1
       "لغة برمجة"            // 2
     ],
     correct: 0
   },
   {
-    question: "أي من الألوان التالية هو لون أساسي؟",
+    question: "أيهما افضل بتطوير المهارات؟",
     options: [
-      "البرتقالي",           // 0
-      "الأحمر",              // 1 - صح
-      "الأخضر"               // 2
+      "التغذية البصرية",           // 0
+      "التفكير الابداعي",              // 1 - صح
+      "التقليد والممارسة"               // 2
     ],
     correct: 1
   },
@@ -640,16 +637,71 @@ const quizQuestions = [
     correct: 2
   },
   {
-    question: "أي برنامج يستخدم للتصميم المتجهي؟",
+    question: "مالفرق بين الفيكتور والريستور؟",
     options: [
-      "فوتوشوب",             // 0
-      "الستريتور",           // 1 - صح
-      "بوربوينت"             // 2
+      "الفيكتور يتكسر عند التكبير والريستور لايتكسر عند التكبير",             // 0
+      "الريستور يتكسر عند التكبير والفيكتور لايتكسر عند التكبير",           // 1 - صح
+      "لايوجد اختلاف بينهم"             // 2
     ],
     correct: 1
   },
   {
-    question: "ما هو RGB؟",
+    question: "ماهو cmyk؟",
+    options: [
+      "نظام الوان للشاشات",             // 0
+      "نظام ألوان للطباعة",           // 1 - صح
+      "نوع من انواع الملفات"             // 2
+    ],
+    correct: 1
+  },
+  {
+    question: "اي من امدادات الصور يدعم الشفافية",
+    options: [
+      "png",             // 0
+      "jpg",           // 1 - صح
+      "gif"             // 2
+    ],
+    correct: 0
+  },
+  {
+    question: "اي من الصور اللي تقبل الضغط وتقليل الحجم",
+    options: [
+      "png",             // 0
+      "gif",           // 1 - صح
+      "jpg"             // 2
+    ],
+    correct: 2
+  },
+  
+  {
+    question: "اي من هذه الامدادات تدعم اقل الوان",
+    options: [
+      "jpg",             // 0
+      "gif",           // 1 - صح
+      "png"             // 2
+    ],
+    correct: 1
+  },
+  {
+    question: "ماهو التفكير الابداعي؟",
+    options: [
+      "البحث والاستلهام",             // 0
+      "القدرة على رؤية الاشياء بشكل مختلف",           // 1 - صح
+      "التقليد والممارسة"             // 2
+    ],
+    correct: 1
+  },
+  {
+    question: "ماهو نظام الالوان اللي يدعم مليونين لون ؟",
+    options: [
+      "RGB",             // 0
+      "GIF",           // 1 - صح
+      "CMYK"             // 2
+    ],
+    correct: 2
+  },
+  {
+    question: "ماهو RGB؟",
     options: [
       "نظام ألوان للطباعة",  // 0
       "نظام ألوان للشاشات",  // 1 - صح
@@ -839,9 +891,9 @@ async function checkResults() {
   
   showResults(wrongCount, allCorrect);
   
-  // إذا كل الإجابات صحيحة → رفع النسبة
+  // إذا كل الإجابات صحيحة → رفع النسبة والنقاط
   if (allCorrect) {
-    await updateGrade();
+    await updateGradeAndPoints();
   }
 }
 
@@ -862,7 +914,7 @@ function showResults(wrongCount, allCorrect) {
         أجبت على جميع الأسئلة بشكل صحيح
       </p>
       <div class="success-box" id="successBox">
-        <div class="success-text">🌟 جاري رفع نسبتك...</div>
+        <div class="success-text">🌟 جاري رفع نسبتك ونقاطك...</div>
       </div>
     `;
   } else {
@@ -880,14 +932,21 @@ function showResults(wrongCount, allCorrect) {
 }
 
 // ==========================================
-// تحديث النسبة في قاعدة البيانات
+// تحديث النسبة والنقاط في قاعدة البيانات
 // ==========================================
-async function updateGrade() {
+async function updateGradeAndPoints() {
   try {
     const newGrade = 10; // نسبة ثابتة 10%
     
+    // جلب البيانات الحالية أولاً
+    const snapshot = await db.ref('users/' + currentStudent.id).once('value');
+    const studentData = snapshot.val();
+    const currentPoints = studentData.points || 0;
+    const newPoints = currentPoints + 10; // إضافة 10 نقاط
+    
     await db.ref('users/' + currentStudent.id).update({
       grade: newGrade + '%',
+      points: newPoints, // ← إضافة 10 نقاط
       quizCompletedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
@@ -896,8 +955,9 @@ async function updateGrade() {
     const box = document.getElementById('successBox');
     if (box) {
       box.innerHTML = `
-        <div class="success-text">✅ تهانينا! لقد ارتفعت نسبتك</div>
+        <div class="success-text">✅ تهانينا! لقد ارتفعت نسبتك ونقاطك</div>
         <div style="margin-top: 10px; font-size: 1.3rem;">النسبة الجديدة: 10%</div>
+        <div style="margin-top: 5px; font-size: 1.1rem; color: #059669;">النقاط الجديدة: ${newPoints}</div>
       `;
     }
     
@@ -910,7 +970,7 @@ async function updateGrade() {
     btn.onclick = logout;
     card.appendChild(btn);
     
-    showAlert('✅ تم تحديث نسبتك بنجاح!', 'success');
+    showAlert('✅ تم تحديث نسبتك ونقاطك بنجاح!', 'success');
     
   } catch (error) {
     console.error(error);
