@@ -4,22 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>أبواب الحظ</title>
-  
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --primary: #f59e0b;
       --secondary: #ef4444;
       --accent: #8b5cf6;
       --success: #10b981;
+      --danger: #ef4444; /* (تعريف فقط - بدون تغيير تصميم) */
       --dark: #0f172a;
       --glass: rgba(255, 255, 255, 0.08);
       --glass-border: rgba(255, 255, 255, 0.15);
@@ -38,18 +35,14 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* خلفية متحركة */
     .bg-animation {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: -1;
       overflow: hidden;
       pointer-events: none;
     }
-
     .bg-animation span {
       position: absolute;
       display: block;
@@ -57,18 +50,15 @@
       border-radius: 50%;
       animation: float 20s infinite linear;
     }
-
     .bg-animation span:nth-child(1) { left: 10%; width: 60px; height: 60px; animation-delay: 0s; }
     .bg-animation span:nth-child(2) { left: 30%; width: 40px; height: 40px; animation-delay: 2s; animation-duration: 15s; }
     .bg-animation span:nth-child(3) { left: 50%; width: 80px; height: 80px; animation-delay: 4s; }
     .bg-animation span:nth-child(4) { left: 70%; width: 50px; height: 50px; animation-delay: 0s; animation-duration: 18s; }
-
     @keyframes float {
       0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
       100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
 
-    /* الكرت الرئيسي */
     .card {
       width: 100%;
       max-width: 450px;
@@ -82,26 +72,17 @@
       position: relative;
       overflow: hidden;
     }
-
     .card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       height: 4px;
       background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
     }
 
-    /* الهيدر */
-    .header {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
+    .header { text-align: center; margin-bottom: 25px; }
     .icon-wrapper {
-      width: 70px;
-      height: 70px;
+      width: 70px; height: 70px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       border-radius: 20px;
       display: flex;
@@ -111,46 +92,18 @@
       box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
     }
+    .icon-wrapper i { font-size: 32px; color: #fff; }
 
-    .icon-wrapper i {
-      font-size: 32px;
-      color: #fff;
-    }
+    h1 { color: #fff; font-size: 24px; font-weight: 900; margin-bottom: 5px; }
+    .subtitle { color: rgba(255,255,255,0.6); font-size: 13px; }
 
-    h1 {
-      color: #fff;
-      font-size: 24px;
-      font-weight: 900;
-      margin-bottom: 5px;
-    }
-
-    .subtitle {
-      color: rgba(255,255,255,0.6);
-      font-size: 13px;
-    }
-
-    /* الحقول */
-    .input-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      color: rgba(255,255,255,0.8);
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
+    .input-group { margin-bottom: 15px; }
+    label { color: rgba(255,255,255,0.8); display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; }
+    .input-wrapper { position: relative; }
     .input-wrapper i {
       position: absolute;
       right: 15px;
@@ -159,7 +112,6 @@
       color: rgba(255,255,255,0.5);
       font-size: 18px;
     }
-
     input {
       width: 100%;
       padding: 14px 45px 14px 15px;
@@ -171,18 +123,13 @@
       font-family: 'Tajawal', sans-serif;
       transition: all 0.3s;
     }
-
-    input::placeholder {
-      color: rgba(255,255,255,0.4);
-    }
-
+    input::placeholder { color: rgba(255,255,255,0.4); }
     input:focus {
       border-color: var(--primary);
       outline: none;
       box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
     }
 
-    /* زر البدء */
     .btn-primary {
       width: 100%;
       padding: 16px;
@@ -200,33 +147,12 @@
       gap: 10px;
       margin-top: 10px;
     }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
-    }
-
-    .btn-primary:active {
-      transform: scale(0.98);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* قسم اللعبة */
-    .game-section {
-      display: none;
-      margin-top: 25px;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .game-section.active {
-      display: block;
-    }
-
+    .game-section { display: none; margin-top: 25px; animation: fadeIn 0.5s ease; }
+    .game-section.active { display: block; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -243,13 +169,8 @@
       line-height: 1.6;
       text-align: center;
     }
+    .welcome-msg i { color: var(--primary); margin-left: 5px; }
 
-    .welcome-msg i {
-      color: var(--primary);
-      margin-left: 5px;
-    }
-
-    /* الأبواب */
     .doors-container {
       display: flex;
       justify-content: center;
@@ -277,28 +198,20 @@
     .door-btn::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
       opacity: 0;
       transition: opacity 0.3s;
     }
 
-    .door-btn:hover::before {
-      opacity: 1;
-    }
+    .door-btn:hover::before { opacity: 1; }
 
     .door-btn:hover {
       transform: translateY(-5px) scale(1.05);
       border-color: var(--primary);
       box-shadow: 0 15px 30px rgba(245, 158, 11, 0.3);
     }
-
-    .door-btn:active {
-      transform: scale(0.95);
-    }
+    .door-btn:active { transform: scale(0.95); }
 
     .door-btn.disabled {
       opacity: 0.5;
@@ -306,18 +219,9 @@
       transform: none;
     }
 
-    .door-icon {
-      font-size: 40px;
-      margin-bottom: 8px;
-    }
+    .door-icon { font-size: 40px; margin-bottom: 8px; }
+    .door-number { color: #fff; font-weight: 800; font-size: 14px; }
 
-    .door-number {
-      color: #fff;
-      font-weight: 800;
-      font-size: 14px;
-    }
-
-    /* معلومات المشاركين */
     .participants-info {
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid rgba(16, 185, 129, 0.3);
@@ -331,18 +235,12 @@
       justify-content: center;
       gap: 8px;
     }
+    .participants-info i { color: var(--success); }
 
-    .participants-info i {
-      color: var(--success);
-    }
-
-    /* المودال */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0,0,0,0.85);
       backdrop-filter: blur(5px);
       display: none;
@@ -353,11 +251,7 @@
       transition: opacity 0.3s;
       padding: 20px;
     }
-
-    .modal-overlay.active {
-      display: flex;
-      opacity: 1;
-    }
+    .modal-overlay.active { display: flex; opacity: 1; }
 
     .modal-content {
       background: linear-gradient(145deg, #1e1b4b, #312e81);
@@ -370,10 +264,7 @@
       transform: scale(0.9);
       transition: transform 0.3s;
     }
-
-    .modal-overlay.active .modal-content {
-      transform: scale(1);
-    }
+    .modal-overlay.active .modal-content { transform: scale(1); }
 
     .modal-icon {
       width: 70px;
@@ -386,36 +277,16 @@
       font-size: 32px;
       animation: bounce 0.5s;
     }
-
     @keyframes bounce {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.2); }
     }
 
-    .modal-icon.success {
-      background: rgba(16, 185, 129, 0.2);
-      color: var(--success);
-    }
+    .modal-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .modal-icon.error { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-    .modal-icon.error {
-      background: rgba(239, 68, 68, 0.2);
-      color: var(--danger);
-    }
-
-    .modal-title {
-      color: #fff;
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .modal-text {
-      color: rgba(255,255,255,0.7);
-      font-size: 16px;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
+    .modal-title { color: #fff; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .modal-text { color: rgba(255,255,255,0.7); font-size: 16px; margin-bottom: 20px; line-height: 1.5; }
     .modal-points {
       font-size: 36px;
       font-weight: 900;
@@ -438,12 +309,8 @@
       width: 100%;
       transition: transform 0.2s;
     }
+    .modal-btn:hover { transform: scale(1.02); }
 
-    .modal-btn:hover {
-      transform: scale(1.02);
-    }
-
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -464,17 +331,9 @@
       transition: all 0.3s;
       z-index: 3000;
     }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast i { font-size: 18px; }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast i {
-      font-size: 18px;
-    }
-
-    /* للـ WebView */
     .no-select {
       -webkit-user-select: none;
       -webkit-touch-callout: none;
@@ -504,7 +363,6 @@
       <p class="subtitle">اختر الباب المناسب واكشف عن جوائزك</p>
     </div>
 
-    <!-- نموذج تسجيل الدخول -->
     <div id="loginForm">
       <div class="input-group">
         <label>الرقم الأكاديمي</label>
@@ -528,7 +386,6 @@
       </button>
     </div>
 
-    <!-- قسم اللعبة -->
     <div class="game-section" id="gameSection">
       <div class="welcome-msg">
         <i class="fas fa-star"></i>
@@ -557,7 +414,6 @@
     </div>
   </div>
 
-  <!-- المودال -->
   <div class="modal-overlay" id="modal">
     <div class="modal-content">
       <div class="modal-icon" id="modalIcon">
@@ -570,7 +426,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast">
     <i class="fas fa-info-circle"></i>
     <span id="toastText">رسالة</span>
@@ -580,49 +435,63 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase
+    // ========= Firebase init (safe) =========
     const firebaseConfig = {
       databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
-    // Audio
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
+    // ========= Safe wrapper =========
+    function safeFirebase(promise, onSuccess, onError){
+      promise.then(res => {
+        if(onSuccess) onSuccess(res);
+      }).catch(err => {
+        console.log("Firebase error:", err);
+        if(onError) onError(err);
+      });
+    }
+
+    // ========= Audio (safe) =========
+    let audioCtx = null;
     function playSound(type) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      
-      if (type === 'success') {
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.4);
-      } else if (type === 'error') {
-        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      } else if (type === 'click') {
-        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.08);
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'success') {
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        } else if (type === 'error') {
+          osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'click') {
+          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+        }
+      } catch(e) {
+        console.log("Audio skipped:", e);
       }
     }
 
-    // Elements
+    // ========= Elements =========
     const startBtn = document.getElementById('startBtn');
     const studentIdInput = document.getElementById('studentIdInput');
     const passwordInput = document.getElementById('passwordInput');
@@ -635,10 +504,15 @@
     let hasPlayed = false;
     const doorPoints = [10, 20, 30, 40, 50];
 
-    // Start Game
-    startBtn.addEventListener('click', async () => {
+    function resetStartBtn(){
+      startBtn.disabled = false;
+      startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ اللعبة';
+    }
+
+    // ========= Start Game =========
+    startBtn.addEventListener('click', () => {
       playSound('click');
-      
+
       const studentId = studentIdInput.value.trim();
       const password = passwordInput.value.trim();
 
@@ -651,146 +525,151 @@
       startBtn.disabled = true;
       startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
 
-      try {
-        const snap = await db.ref("users/" + studentId).get();
-        if (!snap.exists()) {
-          showModal('error', 'خطأ', 'الطالب غير موجود');
+      safeFirebase(
+        db.ref("users/" + studentId).once("value"),
+        snap => {
+          if (!snap.exists()) {
+            showModal('error', 'خطأ', 'الطالب غير موجود');
+            playSound('error');
+            resetStartBtn();
+            return;
+          }
+
+          const data = snap.val();
+          if (data.password !== password) {
+            showModal('error', 'خطأ', 'كلمة السر غير صحيحة');
+            playSound('error');
+            resetStartBtn();
+            return;
+          }
+
+          currentStudent = { id: studentId, ...data };
+
+          safeFirebase(
+            db.ref("users/" + studentId + "/usedCodes/chooseDoor").once("value"),
+            playedSnap => {
+              hasPlayed = playedSnap.exists() ? playedSnap.val() : false;
+
+              if (hasPlayed) {
+                showModal('error', 'تم اللعب مسبقاً', 'لقد استخدمت اللعبة مسبقاً، لا يمكنك اللعب مرة أخرى');
+                playSound('error');
+                resetStartBtn();
+                return;
+              }
+
+              loginForm.style.display = 'none';
+              gameSection.classList.add('active');
+              playSound('success');
+
+              if (window.Android && window.Android.onGameStart) {
+                try { window.Android.onGameStart(studentId); } catch(e){}
+              }
+
+              updateParticipants();
+            },
+            () => {
+              showModal('error', 'خطأ', 'حدث خطأ في الاتصال، حاول مرة أخرى');
+              playSound('error');
+              resetStartBtn();
+            }
+          );
+        },
+        () => {
+          showModal('error', 'خطأ', 'حدث خطأ في الاتصال، حاول مرة أخرى');
           playSound('error');
-          startBtn.disabled = false;
-          startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ اللعبة';
-          return;
+          resetStartBtn();
         }
-
-        const data = snap.val();
-        if (data.password !== password) {
-          showModal('error', 'خطأ', 'كلمة السر غير صحيحة');
-          playSound('error');
-          startBtn.disabled = false;
-          startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ اللعبة';
-          return;
-        }
-
-        currentStudent = { id: studentId, ...data };
-
-        const playedSnap = await db.ref("users/" + studentId + "/usedCodes/chooseDoor").get();
-        hasPlayed = playedSnap.exists() ? playedSnap.val() : false;
-
-        if (hasPlayed) {
-          showModal('error', 'تم اللعب مسبقاً', 'لقد استخدمت اللعبة مسبقاً، لا يمكنك اللعب مرة أخرى');
-          playSound('error');
-          startBtn.disabled = false;
-          startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ اللعبة';
-          return;
-        }
-
-        // إخفاء النموذج وإظهار اللعبة
-        loginForm.style.display = 'none';
-        gameSection.classList.add('active');
-        playSound('success');
-
-        // WebView
-        if (window.Android) {
-          window.Android.onGameStart(studentId);
-        }
-
-        // تحديث عدد المشاركين
-        updateParticipants();
-
-      } catch (error) {
-        showModal('error', 'خطأ', 'حدث خطأ في الاتصال، حاول مرة أخرى');
-        playSound('error');
-        startBtn.disabled = false;
-        startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ اللعبة';
-      }
+      );
     });
 
-    // Door Click
+    // ========= Door Click =========
     doors.forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         if (hasPlayed) return;
-        
+
         playSound('click');
         const index = parseInt(btn.dataset.index);
-        
-        // تعطيل جميع الأبواب
+
         doors.forEach(d => d.classList.add('disabled'));
-        
-        // تأثير الباب المختار
         btn.style.transform = 'scale(1.1)';
         btn.style.borderColor = 'var(--success)';
-        
+
         const shuffledPoints = [...doorPoints].sort(() => 0.5 - Math.random());
         const wonPoints = shuffledPoints[index];
-        
-        setTimeout(async () => {
-          try {
-            const newPoints = (currentStudent.points || 0) + wonPoints;
-            await db.ref("users/" + currentStudent.id + "/points").set(newPoints);
-            await db.ref("users/" + currentStudent.id + "/usedCodes/chooseDoor").set(true);
-            
-            showModal('success', 'مبروك!', `لقد فزت بـ ${wonPoints} نقطة`, `+${wonPoints}`);
-            playSound('success');
-            
-            hasPlayed = true;
-            
-            // WebView
-            if (window.Android) {
-              window.Android.onDoorSelected(wonPoints, newPoints);
+
+        setTimeout(() => {
+          const newPoints = (currentStudent.points || 0) + wonPoints;
+
+          safeFirebase(
+            db.ref("users/" + currentStudent.id + "/points").set(newPoints),
+            () => {
+              safeFirebase(db.ref("users/" + currentStudent.id + "/usedCodes/chooseDoor").set(true));
+
+              currentStudent.points = newPoints;
+              hasPlayed = true;
+
+              showModal('success', 'مبروك!', `لقد فزت بـ ${wonPoints} نقطة`, `+${wonPoints}`);
+              playSound('success');
+
+              if (window.Android && window.Android.onDoorSelected) {
+                try { window.Android.onDoorSelected(wonPoints, newPoints); } catch(e){}
+              }
+            },
+            () => {
+              showModal('error', 'خطأ', 'حدث خطأ في حفظ النتيجة');
+              playSound('error');
             }
-            
-          } catch (error) {
-            showModal('error', 'خطأ', 'حدث خطأ في حفظ النتيجة');
-            playSound('error');
-          }
+          );
         }, 500);
       });
     });
 
-    // Update Participants
-    async function updateParticipants() {
-      try {
-        const participantsSnap = await db.ref("users").get();
-        const usersObj = participantsSnap.val() || {};
-        let actualParticipants = 0;
-        
-        for (const id in usersObj) {
-          if (usersObj[id].usedCodes && usersObj[id].usedCodes.chooseDoor) {
-            actualParticipants++;
+    // ========= Participants =========
+    function updateParticipants() {
+      safeFirebase(
+        db.ref("users").once("value"),
+        snap => {
+          const usersObj = snap.val() || {};
+          let actualParticipants = 0;
+
+          for (const id in usersObj) {
+            if (usersObj[id]?.usedCodes?.chooseDoor) actualParticipants++;
           }
+
+          participantsInfo.innerHTML = `
+            <i class="fas fa-users"></i>
+            <span>عدد المشاركين في هذه الفعالية: ${actualParticipants} مشارك</span>
+          `;
+        },
+        () => {
+          participantsInfo.innerHTML = `
+            <i class="fas fa-users"></i>
+            <span>تعذر تحميل العدد</span>
+          `;
         }
-        
-        participantsInfo.innerHTML = `
-          <i class="fas fa-users"></i>
-          <span>عدد المشاركين في هذه الفعالية: ${actualParticipants} مشارك</span>
-        `;
-      } catch (error) {
-        participantsInfo.innerHTML = `
-          <i class="fas fa-users"></i>
-          <span>تعذر تحميل العدد</span>
-        `;
-      }
+      );
     }
 
-    // Modal
+    // ========= Modal =========
     function showModal(type, title, text, points = null) {
       const modal = document.getElementById('modal');
       const icon = document.getElementById('modalIcon');
       const titleEl = document.getElementById('modalTitle');
       const textEl = document.getElementById('modalText');
       const pointsEl = document.getElementById('modalPoints');
-      
+
       icon.className = 'modal-icon ' + type;
       icon.innerHTML = type === 'success' ? '<i class="fas fa-trophy"></i>' : '<i class="fas fa-exclamation"></i>';
       titleEl.textContent = title;
       textEl.textContent = text;
-      
+
       if (points) {
         pointsEl.textContent = points + ' نقطة';
         pointsEl.style.display = 'block';
       } else {
         pointsEl.style.display = 'none';
       }
-      
+
       modal.classList.add('active');
     }
 
@@ -799,7 +678,7 @@
       document.getElementById('modal').classList.remove('active');
     }
 
-    // Toast
+    // ========= Toast =========
     function showToast(message) {
       const toast = document.getElementById('toast');
       document.getElementById('toastText').textContent = message;
@@ -807,12 +686,10 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // Close modal on outside click
     document.getElementById('modal').addEventListener('click', (e) => {
       if (e.target === document.getElementById('modal')) closeModal();
     });
 
-    // Prevent context menu
     document.addEventListener('contextmenu', e => e.preventDefault());
   </script>
 
