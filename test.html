@@ -3,745 +3,1355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة التخصصات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>منصة التعلم الذكية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         :root {
             --primary: #6366f1;
+            --primary-light: #818cf8;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --info: #3b82f6;
             --dark: #0f172a;
-            --card: rgba(255,255,255,0.03);
+            --darker: #020617;
+            --card: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: var(--dark);
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1e1b4b 100%);
             min-height: 100vh;
-            color: white;
-            font-size: 13px;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* الهيدر المضغوط */
-        .header {
-            background: rgba(15, 23, 42, 0.95);
-            padding: 12px 15px;
-            position: sticky;
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
             top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        /* Header Glass */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            transition: var(--transition);
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .logo {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-text h1 {
             font-size: 18px;
-        }
-
-        .header-text h1 {
-            font-size: 15px;
             font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .header-text p {
-            font-size: 10px;
+        .brand-text p {
+            font-size: 11px;
             color: #94a3b8;
+            font-weight: 400;
         }
 
-        /* البحث المضغوط */
-        .search-box {
-            padding: 10px 15px;
+        .header-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 5px 10px;
+            background: var(--glass);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: #64748b;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-top: 90px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-container {
             position: relative;
+            background: var(--glass);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            transition: var(--transition);
         }
 
-        .search-input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-family: 'Cairo', sans-serif;
-            font-size: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .search-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
         .search-icon {
             position: absolute;
-            right: 25px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
+            color: var(--primary-light);
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .clear-search {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--glass);
+            border: none;
             color: #94a3b8;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 12px;
         }
 
-        /* الحاوية */
-        .container {
-            padding: 0 10px 20px;
+        .search-container.has-value .clear-search {
+            opacity: 1;
         }
 
-        /* بطاقة التخصص المضغوطة */
-        .specialty-card {
-            background: var(--card);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
+        .clear-search:hover {
+            background: var(--danger);
+            color: #fff;
         }
 
-        .specialty-header {
-            padding: 12px 15px;
+        /* Filter Tags */
+        .filter-tags {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-tag {
+            padding: 6px 14px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            font-size: 12px;
             cursor: pointer;
+            transition: var(--transition);
+            color: #94a3b8;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            padding: 0 20px 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Specialty Card - Glass Design */
+        .specialty-card {
+            background: var(--glass);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
             position: relative;
         }
 
-        .specialty-header::before {
+        .specialty-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .specialty-card:hover::before {
+            opacity: 1;
+        }
+
+        .specialty-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .specialty-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+
+        .specialty-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .specialty-card:hover .specialty-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        }
+
+        .specialty-info {
+            flex: 1;
+        }
+
+        .specialty-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .specialty-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: var(--success);
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .specialty-badge.locked {
+            background: var(--danger);
+        }
+
+        .specialty-meta {
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .toggle-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--glass);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+        }
+
+        .toggle-btn.active {
+            transform: rotate(180deg);
+            background: var(--primary);
+        }
+
+        /* Levels Grid */
+        .levels {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .levels.active {
+            max-height: 800px;
+        }
+
+        .levels-content {
+            padding: 0 20px 20px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .level-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            opacity: 0.1;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: var(--transition);
         }
 
-        .specialty-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            z-index: 1;
+        .level-card:hover::before {
+            opacity: 1;
         }
 
-        .specialty-info {
-            flex: 1;
-            z-index: 1;
+        .level-card:hover:not(.locked) {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
         }
 
-        .specialty-title {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .specialty-meta {
-            font-size: 10px;
-            color: #94a3b8;
-        }
-
-        .toggle-btn {
-            width: 26px;
-            height: 26px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            transition: transform 0.3s;
-            z-index: 1;
-        }
-
-        .toggle-btn.active {
-            transform: rotate(180deg);
-        }
-
-        /* المستويات المضغوطة */
-        .levels {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s;
-        }
-
-        .levels.active {
-            max-height: 600px;
-        }
-
-        .levels-content {
-            padding: 0 10px 10px;
-        }
-
-        .level-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-        }
-
-        .level {
-            background: rgba(255,255,255,0.05);
-            padding: 12px 8px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-        }
-
-        .level:hover:not(.disabled) {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-
-        .level.disabled {
-            opacity: 0.4;
+        .level-card.locked {
+            opacity: 0.5;
             cursor: not-allowed;
             background: rgba(239, 68, 68, 0.05);
-            border-color: rgba(239, 68, 68, 0.2);
         }
 
-        .level.disabled::after {
+        .level-card.locked::after {
             content: '🔒';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 20px;
-            opacity: 0.9;
+            font-size: 24px;
+            filter: grayscale(100%);
         }
 
-        .level-num {
-            font-size: 11px;
+        .level-number {
+            width: 35px;
+            height: 35px;
+            background: var(--glass);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
             font-weight: 700;
-            margin-bottom: 4px;
-            line-height: 1.3;
+            font-size: 14px;
+            border: 2px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .level-card:hover:not(.locked) .level-number {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .level-card.locked .level-number {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .level-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .level-status {
-            font-size: 9px;
-            color: #94a3b8;
+            font-size: 11px;
+            color: var(--success);
+            font-weight: 500;
         }
 
-        .level.disabled .level-status {
+        .level-card.locked .level-status {
             color: var(--danger);
         }
 
-        /* المودال المضغوط */
+        /* Modal System */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+            z-index: 2000;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .modal-overlay.active {
             display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .modal-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .modal-icon.success { background: rgba(16, 185, 129, 0.2); }
-        .modal-icon.error { background: rgba(239, 68, 68, 0.2); }
-        .modal-icon.warning { background: rgba(245, 158, 11, 0.2); }
-
-        .modal-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .modal-text {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .modal-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .modal-btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .modal-btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(15, 23, 42, 0.95);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 12px;
-            z-index: 2000;
-            opacity: 0;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
 
-        /* ألوان التخصصات */
-        .s1 .specialty-header::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .s2 .specialty-header::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .s3 .specialty-header::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .s4 .specialty-header::before { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .s5 .specialty-header::before { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-        .s6 .specialty-header::before { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-        .s7 .specialty-header::before { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-        .s8 .specialty-header::before { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
-        .s9 .specialty-header::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .s10 .specialty-header::before { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-        .s11 .specialty-header::before { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
-        .s12 .specialty-header::before { background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%); }
-        .s13 .specialty-header::before { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
-        .s14 .specialty-header::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .modal-container {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 30px 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-icon-wrapper.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-icon-wrapper.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-icon-wrapper.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .modal-icon-wrapper.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .modal-body {
+            padding: 0 30px 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: var(--glass);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .modal-footer {
+            padding: 0 30px 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: #fff;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 250px;
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .toast.success .toast-icon { background: rgba(16, 185, 129, 0.2); }
+        .toast.error .toast-icon { background: rgba(239, 68, 68, 0.2); }
+        .toast.warning .toast-icon { background: rgba(245, 158, 11, 0.2); }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--darker);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--glass);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 14px;
+            color: #94a3b8;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .empty-state.show {
+            display: block;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #94a3b8;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .levels-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-stats {
+                display: none;
+            }
+            
+            .modal-container {
+                margin: 10px;
+            }
+        }
+
+        /* WebView Optimizations */
+        .webview-optimized * {
+            will-change: auto;
+        }
     </style>
 </head>
-<body>
+<body class="webview-optimized">
 
-    <!-- الهيدر -->
-    <div class="header">
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">جاري التحميل...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
         <div class="header-content">
-            <div class="logo">🎓</div>
-            <div class="header-text">
-                <h1>اختبار المستويات</h1>
-                <p>اختر تخصصك وابدأ التعلم</p>
+            <div class="brand">
+                <div class="logo">🎓</div>
+                <div class="brand-text">
+                    <h1>منصة التعلم الذكية</h1>
+                    <p>تعلم بذكاء، اختبر مهاراتك</p>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalSpecs">0</div>
+                    <div class="stat-label">تخصص</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalLevels">0</div>
+                    <div class="stat-label">مستوى</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container" id="searchContainer">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تخصص..." autocomplete="off">
+            <button class="clear-search" id="clearSearch">✕</button>
+        </div>
+        <div class="filter-tags" id="filterTags">
+            <span class="filter-tag active" data-filter="all">الكل</span>
+            <span class="filter-tag" data-filter="available">متاح</span>
+            <span class="filter-tag" data-filter="locked">مغلق</span>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container" id="container">
+        <!-- Cards will be inserted here -->
+    </main>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">لا توجد نتائج</div>
+        <p style="color: #64748b; font-size: 14px;">جرب بحثاً مختلفاً</p>
+    </div>
+
+    <!-- Modal System -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon-wrapper" id="modalIcon">📚</div>
+                <h3 class="modal-title" id="modalTitle">عنوان</h3>
+                <p class="modal-subtitle" id="modalSubtitle">وصف</p>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid" id="modalInfo">
+                    <!-- Dynamic info -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="modalPrimaryBtn">بدء الاختبار</button>
+                <button class="btn btn-secondary" id="modalSecondaryBtn">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- البحث -->
-    <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تخصص..." oninput="searchSpecialties(this.value)">
-    </div>
-
-    <!-- الحاوية -->
-    <div class="container" id="container"></div>
-
-    <!-- المودال -->
-    <div class="modal-overlay" id="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-icon" id="modalIcon">📚</div>
-            <h3 class="modal-title" id="modalTitle">عنوان</h3>
-            <p class="modal-text" id="modalText">نص</p>
-            <button class="modal-btn modal-btn-primary" id="modalBtn" onclick="handleModalAction()">موافق</button>
-            <button class="modal-btn modal-btn-secondary" onclick="closeModal()">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // تحويل الرقم لاسم المستوى
-        function getLevelName(num) {
-            const names = [
-                'المستوى الأول',
-                'المستوى الثاني', 
-                'المستوى الثالث',
-                'المستوى الرابع',
-                'المستوى الخامس',
-                'المستوى السادس',
-                'المستوى السابع',
-                'المستوى الثامن',
-                'المستوى التاسع',
-                'المستوى العاشر'
-            ];
-            return names[num - 1] || 'المستوى ' + num;
-        }
-
-        // بيانات التخصصات مع الروابط
-        const specialties = [
-            { 
-                id: 1, 
-                name: 'إدارة أعمال', 
-                icon: '💼',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/business-level1.html',
-                    2: 'https://example.com/business-level2.html',
-                    3: 'https://example.com/business-level3.html',
-                    4: 'https://example.com/business-level4.html',
-                    5: 'https://example.com/business-level5.html'
-                }
-            },
-            { 
-                id: 2, 
-                name: 'الكتابة', 
-                icon: '✍️',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/writing-level1.html',
-                    2: 'https://example.com/writing-level2.html',
-                    3: 'https://example.com/writing-level3.html'
-                }
-            },
-            { 
-                id: 3, 
-                name: 'برمجة', 
-                icon: '💻',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/programming-level1.html',
-                    2: 'https://example.com/programming-level2.html',
-                    3: 'https://example.com/programming-level3.html',
-                    4: 'https://example.com/programming-level4.html',
-                    5: 'https://example.com/programming-level5.html',
-                    6: 'https://example.com/programming-level6.html',
-                    7: 'https://example.com/programming-level7.html',
-                    8: 'https://example.com/programming-level8.html',
-                    9: 'https://example.com/programming-level9.html',
-                    10: 'https://example.com/programming-level10.html'
-                }
-            },
-            { 
-                id: 4, 
-                name: 'برمجة تطبيقات', 
-                icon: '📱',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/app-level1.html',
-                    2: 'https://example.com/app-level2.html'
-                }
-            },
-            { 
-                id: 5, 
-                name: 'برمجة جوال', 
-                icon: '📲',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/mobile-level1.html',
-                    2: 'https://example.com/mobile-level2.html',
-                    3: 'https://example.com/mobile-level3.html',
-                    4: 'https://example.com/mobile-level4.html'
-                }
-            },
-            { 
-                id: 6, 
-                name: 'تصميم مواقع', 
-                icon: '🎨',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/web-level1.html',
-                    2: 'https://example.com/web-level2.html',
-                    3: 'https://example.com/web-level3.html',
-                    4: 'https://example.com/web-level4.html',
-                    5: 'https://example.com/web-level5.html',
-                    6: 'https://example.com/web-level6.html'
-                }
-            },
-            { 
-                id: 7, 
-                name: 'تصوير', 
-                icon: '📷',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/photo-level1.html'
-                }
-            },
-            { 
-                id: 8, 
-                name: 'تعليق صوتي', 
-                icon: '🎤',
-                availableLevels: [],
-                links: {}
-            },
-            { 
-                id: 10, 
-                name: 'جرافيكس الجوال', 
-                icon: '📱',
-                availableLevels: [1],
-                links: {
-                    1: 'https://aymansumee0.github.io/dev.tools/gp1.html',
-                    2: 'https://example.com/mobilegfx-level2.html',
-                    3: 'https://example.com/mobilegfx-level3.html'
-                }
-            },
-            { 
-                id: 11, 
-                name: 'جرافيكس الكمبيوتر', 
-                icon: '🖥️',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/pcgfx-level1.html',
-                    2: 'https://example.com/pcgfx-level2.html',
-                    3: 'https://example.com/pcgfx-level3.html',
-                    4: 'https://example.com/pcgfx-level4.html'
-                }
-            },
-            { 
-                id: 12, 
-                name: 'حاسوب', 
-                icon: '💻',
-                availableLevels: [1],
-                links: {
-                    1: 'https://example.com/computer-level1.html',
-                    2: 'https://example.com/computer-level2.html',
-                    3: 'https://example.com/computer-level3.html',
-                    4: 'https://example.com/computer-level4.html',
-                    5: 'https://example.com/computer-level5.html',
-                    6: 'https://example.com/computer-level6.html',
-                    7: 'https://example.com/computer-level7.html'
-                }
-            },
-            { 
-                id: 13, 
-                name: 'خط', 
-                icon: '🔤',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/font-level1.html',
-                    2: 'https://example.com/font-level2.html'
-                }
-            },
-            { 
-                id: 14, 
-                name: 'رسم', 
-                icon: '✏️',
-                availableLevels: [],
-                links: {
-                    1: 'https://example.com/drawing-level1.html',
-                    2: 'https://example.com/drawing-level2.html',
-                    3: 'https://example.com/drawing-level3.html',
-                    4: 'https://example.com/drawing-level4.html',
-                    5: 'https://example.com/drawing-level5.html',
-                    6: 'https://example.com/drawing-level6.html',
-                    7: 'https://example.com/drawing-level7.html',
-                    8: 'https://example.com/drawing-level8.html',
-                    9: 'https://example.com/drawing-level9.html',
-                    10: 'https://example.com/drawing-level10.html'
-                }
-            }
+        // Data Structure
+        const specialtiesData = [
+            { id: 1, name: 'إدارة أعمال', icon: '💼', available: [], total: 5, color: '#667eea' },
+            { id: 2, name: 'الكتابة', icon: '✍️', available: [], total: 3, color: '#f093fb' },
+            { id: 3, name: 'برمجة', icon: '💻', available: [], total: 10, color: '#4facfe' },
+            { id: 4, name: 'برمجة تطبيقات', icon: '📱', available: [], total: 2, color: '#43e97b' },
+            { id: 5, name: 'برمجة جوال', icon: '📲', available: [], total: 4, color: '#fa709a' },
+            { id: 6, name: 'تصميم مواقع', icon: '🎨', available: [], total: 6, color: '#30cfd0' },
+            { id: 7, name: 'تصوير', icon: '📷', available: [], total: 1, color: '#a8edea' },
+            { id: 8, name: 'تعليق صوتي', icon: '🎤', available: [], total: 0, color: '#ff9a9e' },
+            { id: 10, name: 'جرافيكس الجوال', icon: '📱', available: [1], total: 3, color: '#11998e', 
+              links: { 1: 'https://aymansumee0.github.io/dev.tools/gp1.html' } },
+            { id: 11, name: 'جرافيكس الكمبيوتر', icon: '🖥️', available: [], total: 4, color: '#fc5c7d' },
+            { id: 12, name: 'حاسوب', icon: '💻', available: [], total: 7, color: '#13547a' },
+            { id: 13, name: 'خط', icon: '🔤', available: [], total: 2, color: '#e0c3fc' },
+            { id: 14, name: 'رسم', icon: '✏️', available: [], total: 10, color: '#f093fb' }
         ];
 
-        let currentLevel = null;
-        let openCards = new Set();
+        // State Management
+        const state = {
+            openCards: new Set(),
+            currentFilter: 'all',
+            searchQuery: '',
+            currentLevel: null
+        };
 
-        // عرض التخصصات
-        function renderSpecialties(filter = '') {
-            const container = document.getElementById('container');
-            container.innerHTML = '';
-            
-            specialties.forEach((spec) => {
-                if (filter && !spec.name.includes(filter)) return;
-                
-                const card = document.createElement('div');
-                card.className = `specialty-card s${spec.id}`;
-                
-                const isOpen = openCards.has(spec.id);
-                
-                let levelsHTML = '';
-                for (let i = 1; i <= 10; i++) {
-                    const isAvailable = spec.availableLevels.includes(i);
-                    const statusText = isAvailable ? 'متاح' : 'مغلق';
-                    
-                    levelsHTML += `
-                        <div class="level ${isAvailable ? '' : 'disabled'}" 
-                             onclick="handleLevelClick(${spec.id}, ${i}, '${spec.name}', '${spec.icon}', ${isAvailable})">
-                            <div class="level-num">${getLevelName(i)}</div>
-                            <div class="level-status">${statusText}</div>
-                        </div>
-                    `;
+        // DOM Elements
+        const elements = {
+            container: document.getElementById('container'),
+            searchInput: document.getElementById('searchInput'),
+            searchContainer: document.getElementById('searchContainer'),
+            clearSearch: document.getElementById('clearSearch'),
+            filterTags: document.getElementById('filterTags'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            modalIcon: document.getElementById('modalIcon'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalSubtitle: document.getElementById('modalSubtitle'),
+            modalInfo: document.getElementById('modalInfo'),
+            modalPrimaryBtn: document.getElementById('modalPrimaryBtn'),
+            modalSecondaryBtn: document.getElementById('modalSecondaryBtn'),
+            toastContainer: document.getElementById('toastContainer'),
+            emptyState: document.getElementById('emptyState'),
+            loader: document.getElementById('loader'),
+            totalSpecs: document.getElementById('totalSpecs'),
+            totalLevels: document.getElementById('totalLevels')
+        };
+
+        // Utility Functions
+        const utils = {
+            getLevelName: (num) => {
+                const names = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر'];
+                return `المستوى ${names[num - 1] || num}`;
+            },
+
+            formatNumber: (num) => num.toLocaleString('ar-SA'),
+
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+        };
+
+        // WebView Interface Handler
+        const webviewHandler = {
+            openUrl: (url) => {
+                // Try Android Interface
+                if (window.Android && window.Android.openUrl) {
+                    try {
+                        window.Android.openUrl(url);
+                        return true;
+                    } catch (e) {
+                        console.log('Android interface failed:', e);
+                    }
                 }
 
+                // Try iOS Interface
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.openUrl) {
+                    try {
+                        window.webkit.messageHandlers.openUrl.postMessage(url);
+                        return true;
+                    } catch (e) {
+                        console.log('iOS interface failed:', e);
+                    }
+                }
+
+                // Fallback: Open in same window
+                window.location.href = url;
+                return true;
+            },
+
+            openInNewView: (url) => {
+                // For WebView apps that support multiple windows
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.click();
+            }
+        };
+
+        // Toast System
+        const toast = {
+            show: (message, type = 'success', duration = 3000) => {
+                const toastEl = document.createElement('div');
+                toastEl.className = `toast ${type}`;
+                
+                const icons = { success: '✓', error: '✕', warning: '!' };
+                const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b' };
+                
+                toastEl.innerHTML = `
+                    <div class="toast-icon" style="color: ${colors[type]}">${icons[type]}</div>
+                    <span>${message}</span>
+                `;
+                
+                elements.toastContainer.appendChild(toastEl);
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    toastEl.classList.add('show');
+                });
+
+                setTimeout(() => {
+                    toastEl.classList.remove('show');
+                    setTimeout(() => toastEl.remove(), 400);
+                }, duration);
+            }
+        };
+
+        // Modal System
+        const modal = {
+            show: (config) => {
+                const { icon, title, subtitle, type = 'info', info = [], primaryBtn, secondaryBtn } = config;
+                
+                elements.modalIcon.textContent = icon;
+                elements.modalIcon.className = `modal-icon-wrapper ${type}`;
+                elements.modalTitle.textContent = title;
+                elements.modalSubtitle.textContent = subtitle;
+                
+                // Build info grid
+                elements.modalInfo.innerHTML = info.map(item => `
+                    <div class="info-item">
+                        <div class="info-label">${item.label}</div>
+                        <div class="info-value" style="color: ${item.color || '#fff'}">${item.value}</div>
+                    </div>
+                `).join('');
+                
+                // Setup buttons
+                elements.modalPrimaryBtn.textContent = primaryBtn.text;
+                elements.modalPrimaryBtn.className = `btn ${primaryBtn.class || 'btn-primary'}`;
+                elements.modalPrimaryBtn.onclick = () => {
+                    primaryBtn.action();
+                    modal.hide();
+                };
+                
+                elements.modalSecondaryBtn.textContent = secondaryBtn.text;
+                elements.modalSecondaryBtn.onclick = () => {
+                    secondaryBtn.action();
+                    modal.hide();
+                };
+                
+                elements.modalOverlay.classList.add('active');
+            },
+
+            hide: () => {
+                elements.modalOverlay.classList.remove('active');
+                state.currentLevel = null;
+            }
+        };
+
+        // Render Functions
+        const render = {
+            specialties: () => {
+                const filtered = specialtiesData.filter(spec => {
+                    const matchesSearch = spec.name.includes(state.searchQuery);
+                    const matchesFilter = state.currentFilter === 'all' ? true :
+                                         state.currentFilter === 'available' ? spec.available.length > 0 :
+                                         spec.available.length === 0;
+                    return matchesSearch && matchesFilter;
+                });
+
+                elements.container.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    elements.emptyState.classList.add('show');
+                } else {
+                    elements.emptyState.classList.remove('show');
+                    filtered.forEach(spec => {
+                        elements.container.appendChild(render.card(spec));
+                    });
+                }
+
+                // Update stats
+                elements.totalSpecs.textContent = utils.formatNumber(specialtiesData.length);
+                elements.totalLevels.textContent = utils.formatNumber(
+                    specialtiesData.reduce((acc, spec) => acc + spec.total, 0)
+                );
+            },
+
+            card: (spec) => {
+                const card = document.createElement('div');
+                card.className = 'specialty-card';
+                card.style.setProperty('--spec-color', spec.color);
+                
+                const isOpen = state.openCards.has(spec.id);
+                const availableCount = spec.available.length;
+                const isFullyLocked = availableCount === 0;
+                
                 card.innerHTML = `
-                    <div class="specialty-header" onclick="toggleCard(${spec.id})">
+                    <div class="specialty-header" onclick="handlers.toggleCard(${spec.id})">
                         <div class="specialty-icon">${spec.icon}</div>
                         <div class="specialty-info">
-                            <div class="specialty-title">${spec.name}</div>
-                            <div class="specialty-meta">${spec.availableLevels.length} من 10 مستويات متاحة</div>
+                            <div class="specialty-title">
+                                ${spec.name}
+                                <span class="specialty-badge ${isFullyLocked ? 'locked' : ''}">
+                                    ${availableCount}/${spec.total}
+                                </span>
+                            </div>
+                            <div class="specialty-meta">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(availableCount / spec.total) * 100}%"></div>
+                                </div>
+                                <span>${isFullyLocked ? 'غير متاح' : `${availableCount} مستويات متاحة`}</span>
+                            </div>
                         </div>
-                        <div class="toggle-btn ${isOpen ? 'active' : ''}" id="toggle-${spec.id}">
-                            ▼
-                        </div>
+                        <div class="toggle-btn ${isOpen ? 'active' : ''}">▼</div>
                     </div>
-                    <div class="levels ${isOpen ? 'active' : ''}" id="levels-${spec.id}">
+                    <div class="levels ${isOpen ? 'active' : ''}">
                         <div class="levels-content">
-                            <div class="level-grid">
-                                ${levelsHTML}
+                            <div class="levels-grid">
+                                ${render.levelsGrid(spec)}
                             </div>
                         </div>
                     </div>
                 `;
                 
-                container.appendChild(card);
-            });
-        }
+                return card;
+            },
 
-        // تبديل البطاقة
-        function toggleCard(id) {
-            const levels = document.getElementById(`levels-${id}`);
-            const toggle = document.getElementById(`toggle-${id}`);
-            
-            if (openCards.has(id)) {
-                openCards.delete(id);
-                levels.classList.remove('active');
-                toggle.classList.remove('active');
-            } else {
-                openCards.add(id);
-                levels.classList.add('active');
-                toggle.classList.add('active');
+            levelsGrid: (spec) => {
+                return Array.from({ length: spec.total || 10 }, (_, i) => {
+                    const levelNum = i + 1;
+                    const isAvailable = spec.available.includes(levelNum);
+                    const hasLink = spec.links && spec.links[levelNum];
+                    
+                    return `
+                        <div class="level-card ${isAvailable ? '' : 'locked'}" 
+                             onclick="handlers.levelClick(${spec.id}, ${levelNum}, ${isAvailable}, ${!!hasLink})">
+                            <div class="level-number">${levelNum}</div>
+                            <div class="level-name">${utils.getLevelName(levelNum)}</div>
+                            <div class="level-status">${isAvailable ? 'متاح ✓' : 'مغلق 🔒'}</div>
+                        </div>
+                    `;
+                }).join('');
             }
-        }
-
-        // معالجة ضغط المستوى
-        function handleLevelClick(specId, levelNum, specName, icon, isAvailable) {
-            if (!isAvailable) {
-                showModal(
-                    '🔒',
-                    'المستوى غير متاح',
-                    `${getLevelName(levelNum)} في تخصص ${specName} غير متاح حالياً. سيتم فتحه قريباً.`,
-                    'error',
-                    false
-                );
-                return;
-            }
-            
-            currentLevel = { specId, levelNum, specName, icon };
-            showModal(
-                icon,
-                `${specName}`,
-                `${getLevelName(levelNum)} - هل تريد بدء الاختبار؟`,
-                'success',
-                true
-            );
-        }
-
-        // إظهار المودال
-        function showModal(icon, title, text, type, showAction) {
-            document.getElementById('modalIcon').textContent = icon;
-            document.getElementById('modalIcon').className = `modal-icon ${type}`;
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalText').textContent = text;
-            
-            const btn = document.getElementById('modalBtn');
-            if (showAction) {
-                btn.style.display = 'block';
-                btn.textContent = 'بدء الاختبار';
-            } else {
-                btn.style.display = 'none';
-            }
-            
-            document.getElementById('modal').classList.add('active');
-        }
-
-        // معالجة إجراء المودال
-        function handleModalAction() {
-            if (!currentLevel) return;
-            
-            const { specId, levelNum, specName } = currentLevel;
-            
-            const spec = specialties.find(s => s.id === specId);
-            const url = spec.links[levelNum];
-            
-            if (!url) {
-                showToast('الرابط غير موجود!');
-                return;
-            }
-            
-            showToast(`جاري فتح: ${specName} - ${getLevelName(levelNum)}`);
-            
-            setTimeout(() => {
-                if (window.Android) {
-                    window.Android.openUrl(url);
-                } else {
-                    window.open(url, '_blank');
-                }
-            }, 300);
-            
-            closeModal();
-        }
-
-        // إغلاق المودال
-        function closeModal(event) {
-            if (event && event.target !== event.currentTarget) return;
-            document.getElementById('modal').classList.remove('active');
-            currentLevel = null;
-        }
-
-        // البحث
-        function searchSpecialties(query) {
-            renderSpecialties(query.trim());
-        }
-
-        // Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        // تهيئة
-        window.onload = () => {
-            renderSpecialties();
         };
 
-        document.addEventListener('contextmenu', e => e.preventDefault());
-    </script>
+        // Event Handlers
+        const handlers = {
+            toggleCard: (id) => {
+                if (state.openCards.has(id)) {
+                    state.openCards.delete(id);
+                } else {
+                    state.openCards.add(id);
+                }
+                render.specialties();
+            },
 
+            levelClick: (specId, levelNum, isAvailable, hasLink) => {
+                const spec = specialtiesData.find(s => s.id === specId);
+                
+                if (!isAvailable) {
+                    modal.show({
+                        icon: '🔒',
+                        title: 'المستوى مغلق',
+                        subtitle: `${spec.name} - ${utils.getLevelName(levelNum)} غير متاح حالياً. سيتم فتحه قريباً.`,
+                        type: 'error',
+                        info: [
+                            { label: 'التخصص', value: spec.name },
+                            { label: 'المستوى', value: levelNum }
+                        ],
+                        primaryBtn: {
+                            text: 'فهمت',
+                            class: 'btn-secondary',
+                            action: () => {}
+                        },
+                        secondaryBtn: {
+                            text: 'إغلاق',
+                            action: () => {}
+                        }
+                    });
+                    return;
+                }
+
+                if (!hasLink) {
+                    modal.show({
+                        icon: '⚠️',
+                        title: 'الرابط غير متوفر',
+                        subtitle: 'سيتم إضافة هذا المستوى قريباً.',
+                        type: 'warning',
+                        primaryBtn: {
+                            text: 'حسناً',
+                            class: 'btn-secondary',
+                            action: () => {}
+                        },
+                        secondaryBtn: {
+                            text: 'إلغاء',
+                            action: () => {}
+                        }
+                    });
+                    return;
+                }
+
+                state.currentLevel = { specId, levelNum, spec };
+                
+                modal.show({
+                    icon: spec.icon,
+                    title: spec.name,
+                    subtitle: `${utils.getLevelName(levelNum)} - هل أنت مستعد لبدء الاختبار؟`,
+                    type: 'success',
+                    info: [
+                        { label: 'التخصص', value: spec.name, color: spec.color },
+                        { label: 'المستوى', value: levelNum },
+                        { label: 'الحالة', value: 'متاح', color: '#10b981' }
+                    ],
+                    primaryBtn: {
+                        text: 'بدء الاختبار ▶',
+                        class: 'btn-success',
+                        action: () => {
+                            const url = spec.links[levelNum];
+                            toast.show(`جاري فتح: ${spec.name}...`, 'success');
+                            
+                            setTimeout(() => {
+                                if (webviewHandler.openUrl(url)) {
+                                    toast.show('تم فتح الرابط بنجاح', 'success');
+                                } else {
+                                    toast.show('تعذر فتح الرابط', 'error');
+                                }
+                            }, 500);
+                        }
+                    },
+                    secondaryBtn: {
+                        text: 'لاحقاً',
+                        action: () => {}
+                    }
+                });
+            },
+
+            search: utils.debounce((value) => {
+                state.searchQuery = value.trim();
+                elements.searchContainer.classList.toggle('has-value', value.length > 0);
+                render.specialties();
+            }, 300),
+
+            clearSearch: () => {
+                elements.searchInput.value = '';
+                state.searchQuery = '';
+                elements.searchContainer.classList.remove('has-value');
+                render.specialties();
+            },
+
+            filter: (filterType) => {
+                state.currentFilter = filterType;
+                document.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.classList.toggle('active', tag.dataset.filter === filterType);
+                });
+                render.specialties();
+            }
+        };
+
+        // Initialization
+        const init = () => {
+            // Event Listeners
+            elements.searchInput.addEventListener('input', (e) => handlers.search(e.target.value));
+            elements.clearSearch.addEventListener('click', handlers.clearSearch);
+            
+            elements.filterTags.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-tag')) {
+                    handlers.filter(e.target.dataset.filter);
+                }
+            });
+
+            elements.modalOverlay.addEventListener('click', (e) => {
+                if (e.target === elements.modalOverlay) modal.hide();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.hide();
+            });
+
+            // Prevent default touch behaviors for WebView optimization
+            document.addEventListener('touchmove', (e) => {
+                if (e.target.closest('.levels.active')) {
+                    e.stopPropagation();
+                }
+            }, { passive: true });
+
+            // Initial render
+            render.specialties();
+
+            // Hide loader
+            setTimeout(() => {
+                elements.loader.classList.add('hidden');
+            }, 500);
+        };
+
+        // Start
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Expose handlers globally for inline onclick
+        window.handlers = handlers;
+    </script>
 </body>
 </html>
