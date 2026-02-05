@@ -1,1073 +1,1357 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>نظام الاختبارات الذكي</title>
-  
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    
-    :root {
-      --primary: #2C3E94;
-      --success: #059669;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --bg-card: #ffffff;
-      --text-primary: #1a1a2e;
-      --text-secondary: #5a5a7a;
-      --shadow: 0 4px 20px rgba(44, 62, 148, 0.15);
-    }
-    
-    body {
-      font-family: 'Cairo', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      direction: rtl;
-    }
-    
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    
-    /* الصفحات */
-    .page {
-      display: none;
-      animation: fadeIn 0.4s ease;
-    }
-    
-    .page.active {
-      display: block;
-    }
-    
-    /* صفحة تسجيل الدخول */
-    .login-card {
-      background: var(--bg-card);
-      border-radius: 20px;
-      padding: 30px;
-      margin-top: 50px;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-    
-    .logo {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--primary), #764ba2);
-      border-radius: 20px;
-      margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      color: white;
-    }
-    
-    .login-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    
-    .input-group {
-      margin: 15px 0;
-      text-align: right;
-    }
-    
-    .input-group label {
-      display: block;
-      font-weight: 700;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      font-size: 0.85rem;
-    }
-    
-    .input-field {
-      width: 100%;
-      padding: 14px;
-      border: 2px solid #e0e2e8;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-family: 'Cairo', sans-serif;
-      text-align: center;
-      background: #f8f9fa;
-    }
-    
-    .input-field:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: white;
-    }
-    
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--primary), #764ba2);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 15px;
-      font-family: 'Cairo', sans-serif;
-    }
-    
-    /* الهيدر */
-    .header {
-      background: rgba(255,255,255,0.95);
-      border-radius: 16px;
-      padding: 15px 20px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-    }
-    
-    .student-info h3 {
-      font-size: 0.95rem;
-      color: var(--text-primary);
-    }
-    
-    .student-info p {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-    
-    /* شريط التقدم */
-    .progress-bar {
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-    
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      margin-bottom: 10px;
-    }
-    
-    .progress-track {
-      height: 8px;
-      background: #e0e2e8;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), #764ba2);
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
-    
-    /* بطاقة السؤال */
-    .quiz-card {
-      background: var(--bg-card);
-      border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-    
-    .question-number {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--primary), #764ba2);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-    
-    .question-text {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    
-    /* خيارات الإجابة - 3 خيارات فقط */
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .option {
-      background: #f8f9fa;
-      border: 2px solid #e0e2e8;
-      border-radius: 12px;
-      padding: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .option:hover {
-      border-color: var(--primary);
-      background: #f0f2f5;
-    }
-    
-    .option.selected {
-      border-color: var(--primary);
-      background: rgba(44, 62, 148, 0.05);
-    }
-    
-    .option-letter {
-      width: 32px;
-      height: 32px;
-      background: white;
-      border: 2px solid #e0e2e8;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-    
-    .option.selected .option-letter {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-    
-    /* أزرار التنقل */
-    .nav-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .btn-nav {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Cairo', sans-serif;
-    }
-    
-    .btn-prev {
-      background: #f0f2f5;
-      color: var(--text-secondary);
-    }
-    
-    .btn-next, .btn-submit {
-      background: linear-gradient(135deg, var(--primary), #764ba2);
-      color: white;
-    }
-    
-    /* بطاقة النتيجة */
-    .result-card {
-      background: var(--bg-card);
-      border-radius: 20px;
-      padding: 40px 30px;
-      text-align: center;
-      box-shadow: var(--shadow);
-      margin-top: 50px;
-    }
-    
-    .result-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-    }
-    
-    .result-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
-    
-    .result-message {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      line-height: 1.8;
-      margin-bottom: 25px;
-    }
-    
-    .success-box {
-      background: #d1fae5;
-      border: 2px solid var(--success);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-      animation: pulse 2s infinite;
-    }
-    
-    .success-text {
-      color: var(--success);
-      font-weight: 800;
-      font-size: 1.2rem;
-    }
-    
-    /* المودال */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
-    }
-    
-    .modal-overlay.active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      width: 100%;
-      max-width: 340px;
-      text-align: center;
-    }
-    
-    .modal-icon {
-      font-size: 60px;
-      margin-bottom: 15px;
-    }
-    
-    .modal-title {
-      font-size: 1.3rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-    
-    .modal-text {
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-    
-    .modal-btn {
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Cairo', sans-serif;
-      margin: 5px;
-    }
-    
-    .modal-btn-confirm {
-      background: linear-gradient(135deg, var(--primary), #764ba2);
-      color: white;
-    }
-    
-    .modal-btn-cancel {
-      background: #f0f2f5;
-      color: var(--text-secondary);
-    }
-    
-    /* التنبيهات */
-    .alert {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      left: 20px;
-      background: white;
-      padding: 16px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      display: none;
-      z-index: 3000;
-      border-right: 4px solid;
-    }
-    
-    .alert.show {
-      display: block;
-    }
-    
-    .alert.error { border-right-color: var(--danger); }
-    .alert.success { border-right-color: var(--success); }
-    
-    /* حماية */
-    .security-notice {
-      background: #fee2e2;
-      border: 1px solid var(--danger);
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 0.8rem;
-      color: var(--danger);
-    }
-    
-    /* تنبيه الخروج */
-    .exit-warning {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(220, 38, 38, 0.95);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 5000;
-      color: white;
-      text-align: center;
-      padding: 40px;
-    }
-    
-    .exit-warning.active {
-      display: flex;
-    }
-    
-    .exit-warning-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-    }
-    
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة التعلم الذكية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --card: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        /* Header Glass */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            transition: var(--transition);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 5px 10px;
+            background: var(--glass);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: #64748b;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-top: 90px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-container {
+            position: relative;
+            background: var(--glass);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .search-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-light);
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .clear-search {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--glass);
+            border: none;
+            color: #94a3b8;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .search-container.has-value .clear-search {
+            opacity: 1;
+        }
+
+        .clear-search:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* Filter Tags */
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-tag {
+            padding: 6px 14px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #94a3b8;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            padding: 0 20px 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Specialty Card - Glass Design */
+        .specialty-card {
+            background: var(--glass);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .specialty-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .specialty-card:hover::before {
+            opacity: 1;
+        }
+
+        .specialty-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .specialty-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+
+        .specialty-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .specialty-card:hover .specialty-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        }
+
+        .specialty-info {
+            flex: 1;
+        }
+
+        .specialty-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .specialty-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: var(--success);
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .specialty-badge.locked {
+            background: var(--danger);
+        }
+
+        .specialty-meta {
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .toggle-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--glass);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+        }
+
+        .toggle-btn.active {
+            transform: rotate(180deg);
+            background: var(--primary);
+        }
+
+        /* Levels Grid */
+        .levels {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .levels.active {
+            max-height: 800px;
+        }
+
+        .levels-content {
+            padding: 0 20px 20px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .level-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .level-card:hover::before {
+            opacity: 1;
+        }
+
+        .level-card:hover:not(.locked) {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .level-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .level-card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            filter: grayscale(100%);
+        }
+
+        .level-number {
+            width: 35px;
+            height: 35px;
+            background: var(--glass);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 2px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .level-card:hover:not(.locked) .level-number {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .level-card.locked .level-number {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .level-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .level-status {
+            font-size: 11px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .level-card.locked .level-status {
+            color: var(--danger);
+        }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 30px 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-icon-wrapper.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-icon-wrapper.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-icon-wrapper.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .modal-icon-wrapper.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .modal-body {
+            padding: 0 30px 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: var(--glass);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .modal-footer {
+            padding: 0 30px 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: #fff;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 250px;
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .toast.success .toast-icon { background: rgba(16, 185, 129, 0.2); }
+        .toast.error .toast-icon { background: rgba(239, 68, 68, 0.2); }
+        .toast.warning .toast-icon { background: rgba(245, 158, 11, 0.2); }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--darker);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--glass);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 14px;
+            color: #94a3b8;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .empty-state.show {
+            display: block;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #94a3b8;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .levels-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-stats {
+                display: none;
+            }
+            
+            .modal-container {
+                margin: 10px;
+            }
+        }
+
+        /* WebView Optimizations */
+        .webview-optimized * {
+            will-change: auto;
+        }
+    </style>
 </head>
-<body>
+<body class="webview-optimized">
 
-<div class="container">
-  
-  <!-- صفحة تسجيل الدخول -->
-  <div id="loginPage" class="page active">
-    <div class="login-card">
-      <div class="logo">🎓</div>
-      <h1 class="login-title">جرافيكس الجوال مستوى اول</h1>
-      
-      <div class="input-group">
-        <label>الرقم الأكاديمي</label>
-        <input type="text" id="loginId" class="input-field" placeholder="أدخل رقمك الأكاديمي" />
-      </div>
-      
-      <div class="input-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="loginPass" class="input-field" placeholder="أدخل كلمة المرور" />
-      </div>
-      
-      <button class="btn-primary" onclick="handleLogin()">دخول</button>
-      
-      <div class="security-notice">
-        🔒 نظام مؤمن | يمنع النسخ والغش
-      </div>
-    </div>
-  </div>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
 
-  <!-- صفحة الرفض - التخصص غير مطابق -->
-  <div id="rejectMajorPage" class="page">
-    <div class="result-card">
-      <div class="result-icon">🚫</div>
-      <h2 class="result-title" style="color: var(--danger);">غير مصرح</h2>
-      <p class="result-message">
-        هذا الاختبار مخصص لتخصص معين<br>
-        تخصصك غير مطابق للمتطلبات
-      </p>
-      <button class="btn-primary" onclick="logout()">خروج</button>
-    </div>
-  </div>
-
-  <!-- صفحة الاختبار منجز -->
-  <div id="alreadyDonePage" class="page">
-    <div class="result-card">
-      <div class="result-icon">✅</div>
-      <h2 class="result-title" style="color: var(--success);">لقد اجتزت الاختبار</h2>
-      <p class="result-message">
-        لقد قمت بإجتياز هذا الاختبار مسبقاً<br>
-        نسبتك الحالية: <span id="currentGradeDisplay">0%</span>
-      </p>
-      <button class="btn-primary" onclick="logout()">خروج</button>
-    </div>
-  </div>
-
-  <!-- صفحة الاختبار -->
-  <div id="quizPage" class="page">
-    <div class="header">
-      <div class="student-info">
-        <h3 id="headerName">اسم الطالب</h3>
-        <p id="headerId">الرقم الأكاديمي</p>
-      </div>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">جاري التحميل...</div>
     </div>
 
-    <div class="progress-bar">
-      <div class="progress-header">
-        <span>تقدم الاختبار</span>
-        <span id="progressText">1 / 5</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill" style="width: 20%"></div>
-      </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="logo">🎓</div>
+                <div class="brand-text">
+                    <h1>اختبار المستويات</h1>
+                    <p>تعلم بذكاء، اختبر مهاراتك</p>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalSpecs">0</div>
+                    <div class="stat-label">تخصص</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalLevels">0</div>
+                    <div class="stat-label">مستوى</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container" id="searchContainer">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تخصص..." autocomplete="off">
+            <button class="clear-search" id="clearSearch">✕</button>
+        </div>
+        <div class="filter-tags" id="filterTags">
+            <span class="filter-tag active" data-filter="all">الكل</span>
+            <span class="filter-tag" data-filter="available">متاح</span>
+            <span class="filter-tag" data-filter="locked">مغلق</span>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container" id="container">
+        <!-- Cards will be inserted here -->
+    </main>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">لا توجد نتائج</div>
+        <p style="color: #64748b; font-size: 14px;">جرب بحثاً مختلفاً</p>
     </div>
 
-    <div class="quiz-card">
-      <span class="question-number" id="qNumber">السؤال 1</span>
-      <h2 class="question-text" id="qText">جاري التحميل...</h2>
-      
-      <div class="options" id="optionsContainer"></div>
+    <!-- Modal System -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon-wrapper" id="modalIcon">📚</div>
+                <h3 class="modal-title" id="modalTitle">عنوان</h3>
+                <p class="modal-subtitle" id="modalSubtitle">وصف</p>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid" id="modalInfo">
+                    <!-- Dynamic info -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="modalPrimaryBtn">بدء الاختبار</button>
+                <button class="btn btn-secondary" id="modalSecondaryBtn">إلغاء</button>
+            </div>
+        </div>
     </div>
 
-    <div class="nav-buttons">
-      <button class="btn-nav btn-prev" id="prevBtn" onclick="prevQuestion()" style="display: none;">السابق</button>
-      <button class="btn-nav btn-next" id="nextBtn" onclick="nextQuestion()">التالي</button>
-      <button class="btn-nav btn-submit" id="submitBtn" onclick="submitQuiz()" style="display: none;">إنهاء</button>
-    </div>
-  </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
-  <!-- صفحة النتائج -->
-  <div id="resultPage" class="page">
-    <div class="result-card" id="resultCard"></div>
-  </div>
+    <script>
+        // Data Structure
+        const specialtiesData = [
+            { id: 1, name: 'إدارة أعمال', icon: '💼', available: [], total: 10, color: '#667eea' },
+            { id: 2, name: 'الكتابة', icon: '✍️', available: [], total: 10, color: '#f093fb' },
+            { id: 3, name: 'برمجة', icon: '💻', available: [], total: 10, color: '#4facfe' },
+            { id: 4, name: 'برمجة تطبيقات', icon: '📱', available: [], total: 10, color: '#43e97b' },
+            { id: 5, name: 'برمجة جوال', icon: '📲', available: [], total: 10, color: '#fa709a' },
+            { id: 6, name: 'تصميم مواقع', icon: '🎨', available: [], total: 6, color: '#30cfd0' },
+            { id: 7, name: 'تصوير', icon: '📷', available: [], total: 10, color: '#a8edea' },
+            { id: 8, name: 'تعليق صوتي', icon: '🎤', available: [], total: 10, color: '#ff9a9e' },
+            { id: 10, name: 'جرافيكس الجوال', icon: '📱', available: [1], total: 10, color: '#11998e', 
+              links: { 1: 'https://aymansumee0.github.io/dev.tools/gp1.html' } },
+            { id: 11, name: 'جرافيكس الكمبيوتر', icon: '🖥️', available: [], total: 10, color: '#fc5c7d' },
+            { id: 12, name: 'حاسوب', icon: '💻', available: [], total: 10, color: '#13547a' },
+            { id: 13, name: 'خط', icon: '🔤', available: [], total: 10, color: '#e0c3fc' },
+            { id: 14, name: 'رسم', icon: '✏️', available: [], total: 10, color: '#f093fb' }
+        ];
 
-</div>
+        // State Management
+        const state = {
+            openCards: new Set(),
+            currentFilter: 'all',
+            searchQuery: '',
+            currentLevel: null
+        };
 
-<!-- تنبيه الخروج -->
-<div id="exitWarning" class="exit-warning">
-  <div class="exit-warning-icon">⚠️</div>
-  <h2>تم إيقاف الاختبار!</h2>
-  <p>لقد غادرت النافذة. تم إلغاء إجاباتك.</p>
-  <button class="btn-primary" onclick="logout()" style="margin-top: 20px;">إعادة الدخول</button>
-</div>
+        // DOM Elements
+        const elements = {
+            container: document.getElementById('container'),
+            searchInput: document.getElementById('searchInput'),
+            searchContainer: document.getElementById('searchContainer'),
+            clearSearch: document.getElementById('clearSearch'),
+            filterTags: document.getElementById('filterTags'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            modalIcon: document.getElementById('modalIcon'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalSubtitle: document.getElementById('modalSubtitle'),
+            modalInfo: document.getElementById('modalInfo'),
+            modalPrimaryBtn: document.getElementById('modalPrimaryBtn'),
+            modalSecondaryBtn: document.getElementById('modalSecondaryBtn'),
+            toastContainer: document.getElementById('toastContainer'),
+            emptyState: document.getElementById('emptyState'),
+            loader: document.getElementById('loader'),
+            totalSpecs: document.getElementById('totalSpecs'),
+            totalLevels: document.getElementById('totalLevels')
+        };
 
-<!-- المودال -->
-<div id="modal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-icon" id="modalIcon">⚠️</div>
-    <h3 class="modal-title" id="modalTitle">تنبيه</h3>
-    <p class="modal-text" id="modalText">رسالة</p>
-    <div id="modalButtons">
-      <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn">تأكيد</button>
-      <button class="modal-btn modal-btn-cancel" id="modalCancelBtn">إلغاء</button>
-    </div>
-  </div>
-</div>
+        // Utility Functions
+        const utils = {
+            getLevelName: (num) => {
+                const names = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر'];
+                return `المستوى ${names[num - 1] || num}`;
+            },
 
-<!-- التنبيه -->
-<div id="alert" class="alert"></div>
+            formatNumber: (num) => num.toLocaleString('ar-SA'),
 
-<script>
-// ==========================================
-// إعدادات Firebase - عدلها حسب قاعدة بياناتك
-// ==========================================
-const firebaseConfig = {
-  apiKey: "AIzaSyAEXAMPLEnY", 
-  authDomain: "store-points-7d2f4.firebaseapp.com",
-  databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "store-points-7d2f4",
-  storageBucket: "store-points-7d2f4.appspot.com",
-  messagingSenderId: "105011111111",
-  appId: "1:105011111111:web:abc123example"
-};
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+        };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+        // WebView Interface Handler
+        const webviewHandler = {
+            openUrl: (url) => {
+                // Try Android Interface
+                if (window.Android && window.Android.openUrl) {
+                    try {
+                        window.Android.openUrl(url);
+                        return true;
+                    } catch (e) {
+                        console.log('Android interface failed:', e);
+                    }
+                }
 
-// ==========================================
-// المتغيرات العامة
-// ==========================================
-let currentStudent = null;
-let currentQuestion = 0;
-let answers = {};
-let quizSubmitted = false;
+                // Try iOS Interface
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.openUrl) {
+                    try {
+                        window.webkit.messageHandlers.openUrl.postMessage(url);
+                        return true;
+                    } catch (e) {
+                        console.log('iOS interface failed:', e);
+                    }
+                }
 
-// ==========================================
-// الأسئلة - 3 خيارات لكل سؤال
-// ==========================================
-const quizQuestions = [
-  {
-    question: "ما هو الجرافيكس؟",
-    options: [
-      "لغة بصرية",      // 0 - صح
-      "نوع من الطباعة",      // 1
-      "لغة برمجة"            // 2
-    ],
-    correct: 0
-  },
-  {
-    question: "أيهما افضل بتطوير المهارات؟",
-    options: [
-      "التغذية البصرية",           // 0
-      "التفكير الابداعي",              // 1 - صح
-      "التقليد والممارسة"               // 2
-    ],
-    correct: 1
-  },
-  {
-    question: "ما هي دقة الصورة المثالية للطباعة؟",
-    options: [
-      "72 DPI",              // 0
-      "150 DPI",             // 1
-      "300 DPI"              // 2 - صح
-    ],
-    correct: 2
-  },
-  {
-    question: "مالفرق بين الفيكتور والريستور؟",
-    options: [
-      "الفيكتور يتكسر عند التكبير والريستور لايتكسر عند التكبير",             // 0
-      "الريستور يتكسر عند التكبير والفيكتور لايتكسر عند التكبير",           // 1 - صح
-      "لايوجد اختلاف بينهم"             // 2
-    ],
-    correct: 1
-  },
-  {
-    question: "ماهو cmyk؟",
-    options: [
-      "نظام الوان للشاشات",             // 0
-      "نظام ألوان للطباعة",           // 1 - صح
-      "نوع من انواع الملفات"             // 2
-    ],
-    correct: 1
-  },
-  {
-    question: "اي من امدادات الصور يدعم الشفافية",
-    options: [
-      "png",             // 0
-      "jpg",           // 1 - صح
-      "gif"             // 2
-    ],
-    correct: 0
-  },
-  {
-    question: "اي من الصور اللي تقبل الضغط وتقليل الحجم",
-    options: [
-      "png",             // 0
-      "gif",           // 1 - صح
-      "jpg"             // 2
-    ],
-    correct: 2
-  },
-  
-  {
-    question: "اي من هذه الامدادات تدعم اقل الوان",
-    options: [
-      "jpg",             // 0
-      "gif",           // 1 - صح
-      "png"             // 2
-    ],
-    correct: 1
-  },
-  {
-    question: "ماهو التفكير الابداعي؟",
-    options: [
-      "البحث والاستلهام",             // 0
-      "القدرة على رؤية الاشياء بشكل مختلف",           // 1 - صح
-      "التقليد والممارسة"             // 2
-    ],
-    correct: 1
-  },
-  {
-    question: "ماهو نظام الالوان اللي يدعم مليونين لون ؟",
-    options: [
-      "RGB",             // 0
-      "GIF",           // 1 - صح
-      "CMYK"             // 2
-    ],
-    correct: 2
-  },
-  {
-    question: "ماهو RGB؟",
-    options: [
-      "نظام ألوان للطباعة",  // 0
-      "نظام ألوان للشاشات",  // 1 - صح
-      "نوع من الملفات"       // 2
-    ],
-    correct: 1
-  }
-];
+                // Fallback: Open in same window
+                window.location.href = url;
+                return true;
+            },
 
-// ==========================================
-// تسجيل الدخول والتحقق
-// ==========================================
-async function handleLogin() {
-  const id = document.getElementById('loginId').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
-  
-  if (!id || !pass) {
-    showAlert('⚠️ أدخل جميع البيانات', 'error');
-    return;
-  }
-  
-  try {
-    // جلب بيانات الطالب
-    const snapshot = await db.ref('users/' + id).once('value');
-    const student = snapshot.val();
-    
-    if (!student) {
-      showAlert('❌ الرقم غير موجود', 'error');
-      return;
-    }
-    
-    // التحقق من كلمة المرور
-    if (student.password !== pass && student.id !== pass) {
-      showAlert('❌ كلمة المرور خطأ', 'error');
-      return;
-    }
-    
-    currentStudent = { id, ...student };
-    
-    // ==========================================
-    // التحقق من التخصص (عدل هنا التخصص المطلوب)
-    // ==========================================
-    const allowedMajor = "جرافيكس الجوال"; // ← غير التخصص هنا
-    const studentMajor = (student.major || '').trim();
-    
-    if (studentMajor !== allowedMajor) {
-      showPage('rejectMajorPage');
-      return;
-    }
-    
-    // ==========================================
-    // التحقق من النسبة (هل اجتاز الاختبار مسبقاً؟)
-    // ==========================================
-    const currentGrade = parseInt(student.grade) || 0;
-    
-    if (currentGrade >= 10) {
-      // اجتاز الاختبار مسبقاً
-      document.getElementById('currentGradeDisplay').textContent = student.grade || '10%';
-      showPage('alreadyDonePage');
-      return;
-    }
-    
-    // ==========================================
-    // النسبة 0% - السماح بالدخول للاختبار
-    // ==========================================
-    startQuiz();
-    
-  } catch (error) {
-    console.error(error);
-    showAlert('❌ خطأ في الاتصال', 'error');
-  }
-}
+            openInNewView: (url) => {
+                // For WebView apps that support multiple windows
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.click();
+            }
+        };
 
-// ==========================================
-// بدء الاختبار
-// ==========================================
-function startQuiz() {
-  showPage('quizPage');
-  
-  document.getElementById('headerName').textContent = currentStudent.name;
-  document.getElementById('headerId').textContent = currentStudent.id;
-  
-  currentQuestion = 0;
-  answers = {};
-  quizSubmitted = false;
-  
-  // منع الخروج
-  preventExit();
-  
-  renderQuestion();
-}
+        // Toast System
+        const toast = {
+            show: (message, type = 'success', duration = 3000) => {
+                const toastEl = document.createElement('div');
+                toastEl.className = `toast ${type}`;
+                
+                const icons = { success: '✓', error: '✕', warning: '!' };
+                const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b' };
+                
+                toastEl.innerHTML = `
+                    <div class="toast-icon" style="color: ${colors[type]}">${icons[type]}</div>
+                    <span>${message}</span>
+                `;
+                
+                elements.toastContainer.appendChild(toastEl);
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    toastEl.classList.add('show');
+                });
 
-// ==========================================
-// عرض السؤال
-// ==========================================
-function renderQuestion() {
-  const q = quizQuestions[currentQuestion];
-  
-  document.getElementById('qNumber').textContent = `السؤال ${currentQuestion + 1} من ${quizQuestions.length}`;
-  document.getElementById('qText').textContent = q.question;
-  
-  // التقدم
-  const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
-  document.getElementById('progressFill').style.width = progress + '%';
-  document.getElementById('progressText').textContent = `${currentQuestion + 1} / ${quizQuestions.length}`;
-  
-  // الخيارات (3 خيارات)
-  const container = document.getElementById('optionsContainer');
-  container.innerHTML = '';
-  
-  const letters = ['أ', 'ب', 'ج']; // 3 حروف فقط
-  
-  q.options.forEach((opt, idx) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    if (answers[currentQuestion] === idx) div.classList.add('selected');
-    
-    div.innerHTML = `
-      <div class="option-letter">${letters[idx]}</div>
-      <div>${opt}</div>
-    `;
-    
-    div.onclick = () => {
-      answers[currentQuestion] = idx;
-      renderQuestion();
-    };
-    
-    container.appendChild(div);
-  });
-  
-  // الأزرار
-  document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'block' : 'none';
-  
-  if (currentQuestion === quizQuestions.length - 1) {
-    document.getElementById('nextBtn').style.display = 'none';
-    document.getElementById('submitBtn').style.display = 'block';
-  } else {
-    document.getElementById('nextBtn').style.display = 'block';
-    document.getElementById('submitBtn').style.display = 'none';
-  }
-}
+                setTimeout(() => {
+                    toastEl.classList.remove('show');
+                    setTimeout(() => toastEl.remove(), 400);
+                }, duration);
+            }
+        };
 
-// ==========================================
-// التنقل
-// ==========================================
-function nextQuestion() {
-  if (answers[currentQuestion] === undefined) {
-    showAlert('⚠️ اختر إجابة', 'error');
-    return;
-  }
-  currentQuestion++;
-  renderQuestion();
-}
+        // Modal System
+        const modal = {
+            show: (config) => {
+                const { icon, title, subtitle, type = 'info', info = [], primaryBtn, secondaryBtn } = config;
+                
+                elements.modalIcon.textContent = icon;
+                elements.modalIcon.className = `modal-icon-wrapper ${type}`;
+                elements.modalTitle.textContent = title;
+                elements.modalSubtitle.textContent = subtitle;
+                
+                // Build info grid
+                elements.modalInfo.innerHTML = info.map(item => `
+                    <div class="info-item">
+                        <div class="info-label">${item.label}</div>
+                        <div class="info-value" style="color: ${item.color || '#fff'}">${item.value}</div>
+                    </div>
+                `).join('');
+                
+                // Setup buttons
+                elements.modalPrimaryBtn.textContent = primaryBtn.text;
+                elements.modalPrimaryBtn.className = `btn ${primaryBtn.class || 'btn-primary'}`;
+                elements.modalPrimaryBtn.onclick = () => {
+                    primaryBtn.action();
+                    modal.hide();
+                };
+                
+                elements.modalSecondaryBtn.textContent = secondaryBtn.text;
+                elements.modalSecondaryBtn.onclick = () => {
+                    secondaryBtn.action();
+                    modal.hide();
+                };
+                
+                elements.modalOverlay.classList.add('active');
+            },
 
-function prevQuestion() {
-  currentQuestion--;
-  renderQuestion();
-}
+            hide: () => {
+                elements.modalOverlay.classList.remove('active');
+                state.currentLevel = null;
+            }
+        };
 
-// ==========================================
-// إنهاء الاختبار
-// ==========================================
-async function submitQuiz() {
-  if (answers[currentQuestion] === undefined) {
-    showAlert('⚠️ اختر إجابة', 'error');
-    return;
-  }
-  
-  const confirmed = await showModal('📝', 'تأكيد', 'هل أنت متأكد من إنهاء الاختبار؟');
-  if (!confirmed) return;
-  
-  quizSubmitted = true;
-  checkResults();
-}
+        // Render Functions
+        const render = {
+            specialties: () => {
+                const filtered = specialtiesData.filter(spec => {
+                    const matchesSearch = spec.name.includes(state.searchQuery);
+                    const matchesFilter = state.currentFilter === 'all' ? true :
+                                         state.currentFilter === 'available' ? spec.available.length > 0 :
+                                         spec.available.length === 0;
+                    return matchesSearch && matchesFilter;
+                });
 
-// ==========================================
-// فحص النتائج
-// ==========================================
-async function checkResults() {
-  let wrongCount = 0;
-  
-  quizQuestions.forEach((q, idx) => {
-    if (answers[idx] !== q.correct) wrongCount++;
-  });
-  
-  const allCorrect = wrongCount === 0;
-  
-  showResults(wrongCount, allCorrect);
-  
-  // إذا كل الإجابات صحيحة → رفع النسبة والنقاط
-  if (allCorrect) {
-    await updateGradeAndPoints();
-  }
-}
+                elements.container.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    elements.emptyState.classList.add('show');
+                } else {
+                    elements.emptyState.classList.remove('show');
+                    filtered.forEach(spec => {
+                        elements.container.appendChild(render.card(spec));
+                    });
+                }
 
-// ==========================================
-// عرض النتائج
-// ==========================================
-function showResults(wrongCount, allCorrect) {
-  showPage('resultPage');
-  
-  const card = document.getElementById('resultCard');
-  
-  if (allCorrect) {
-    // نجاح كامل
-    card.innerHTML = `
-      <div class="result-icon">🎉</div>
-      <h2 class="result-title" style="color: var(--success);">مبروك! نجاح كامل</h2>
-      <p class="result-message">
-        أجبت على جميع الأسئلة بشكل صحيح
-      </p>
-      <div class="success-box" id="successBox">
-        <div class="success-text">🌟 جاري رفع نسبتك ونقاطك...</div>
-      </div>
-    `;
-  } else {
-    // فشل - يظهر عدد الأخطاء فقط
-    card.innerHTML = `
-      <div class="result-icon">😔</div>
-      <h2 class="result-title" style="color: var(--danger);">لم تنجح</h2>
-      <p class="result-message">
-        عدد الأخطاء: <strong>${wrongCount}</strong> أخطاء<br>
-        يجب الإجابة على جميع الأسئلة بشكل صحيح
-      </p>
-      <button class="btn-primary" onclick="logout()">حاول مرة أخرى</button>
-    `;
-  }
-}
+                // Update stats
+                elements.totalSpecs.textContent = utils.formatNumber(specialtiesData.length);
+                elements.totalLevels.textContent = utils.formatNumber(
+                    specialtiesData.reduce((acc, spec) => acc + spec.total, 0)
+                );
+            },
 
-// ==========================================
-// تحديث النسبة والنقاط في قاعدة البيانات
-// ==========================================
-async function updateGradeAndPoints() {
-  try {
-    const newGrade = 10; // نسبة ثابتة 10%
-    
-    // جلب البيانات الحالية أولاً
-    const snapshot = await db.ref('users/' + currentStudent.id).once('value');
-    const studentData = snapshot.val();
-    const currentPoints = studentData.points || 0;
-    const newPoints = currentPoints + 10; // إضافة 10 نقاط
-    
-    await db.ref('users/' + currentStudent.id).update({
-      grade: newGrade + '%',
-      points: newPoints, // ← إضافة 10 نقاط
-      quizCompletedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    });
-    
-    // تحديث الواجهة
-    const box = document.getElementById('successBox');
-    if (box) {
-      box.innerHTML = `
-        <div class="success-text">✅ تهانينا! لقد ارتفعت نسبتك ونقاطك</div>
-        <div style="margin-top: 10px; font-size: 1.3rem;">النسبة الجديدة: 10%</div>
-        <div style="margin-top: 5px; font-size: 1.1rem; color: #059669;">النقاط الجديدة: ${newPoints}</div>
-      `;
-    }
-    
-    // إضافة زر الخروج
-    const card = document.getElementById('resultCard');
-    const btn = document.createElement('button');
-    btn.className = 'btn-primary';
-    btn.style.marginTop = '20px';
-    btn.textContent = 'خروج';
-    btn.onclick = logout;
-    card.appendChild(btn);
-    
-    showAlert('✅ تم تحديث نسبتك ونقاطك بنجاح!', 'success');
-    
-  } catch (error) {
-    console.error(error);
-    showAlert('❌ خطأ في التحديث', 'error');
-  }
-}
+            card: (spec) => {
+                const card = document.createElement('div');
+                card.className = 'specialty-card';
+                card.style.setProperty('--spec-color', spec.color);
+                
+                const isOpen = state.openCards.has(spec.id);
+                const availableCount = spec.available.length;
+                const isFullyLocked = availableCount === 0;
+                
+                card.innerHTML = `
+                    <div class="specialty-header" onclick="handlers.toggleCard(${spec.id})">
+                        <div class="specialty-icon">${spec.icon}</div>
+                        <div class="specialty-info">
+                            <div class="specialty-title">
+                                ${spec.name}
+                                <span class="specialty-badge ${isFullyLocked ? 'locked' : ''}">
+                                    ${availableCount}/${spec.total}
+                                </span>
+                            </div>
+                            <div class="specialty-meta">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(availableCount / spec.total) * 100}%"></div>
+                                </div>
+                                <span>${isFullyLocked ? 'غير متاح' : `${availableCount} مستويات متاحة`}</span>
+                            </div>
+                        </div>
+                        <div class="toggle-btn ${isOpen ? 'active' : ''}">▼</div>
+                    </div>
+                    <div class="levels ${isOpen ? 'active' : ''}">
+                        <div class="levels-content">
+                            <div class="levels-grid">
+                                ${render.levelsGrid(spec)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                return card;
+            },
 
-// ==========================================
-// دوال مساعدة
-// ==========================================
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-}
+            levelsGrid: (spec) => {
+                return Array.from({ length: spec.total || 10 }, (_, i) => {
+                    const levelNum = i + 1;
+                    const isAvailable = spec.available.includes(levelNum);
+                    const hasLink = spec.links && spec.links[levelNum];
+                    
+                    return `
+                        <div class="level-card ${isAvailable ? '' : 'locked'}" 
+                             onclick="handlers.levelClick(${spec.id}, ${levelNum}, ${isAvailable}, ${!!hasLink})">
+                            <div class="level-number">${levelNum}</div>
+                            <div class="level-name">${utils.getLevelName(levelNum)}</div>
+                            <div class="level-status">${isAvailable ? 'متاح ✓' : 'مغلق 🔒'}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        };
 
-function showModal(icon, title, text) {
-  return new Promise(resolve => {
-    document.getElementById('modalIcon').textContent = icon;
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalText').textContent = text;
-    
-    const confirmBtn = document.getElementById('modalConfirmBtn');
-    const cancelBtn = document.getElementById('modalCancelBtn');
-    
-    confirmBtn.onclick = () => {
-      closeModal();
-      resolve(true);
-    };
-    
-    cancelBtn.onclick = () => {
-      closeModal();
-      resolve(false);
-    };
-    
-    document.getElementById('modal').classList.add('active');
-  });
-}
+        // Event Handlers
+        const handlers = {
+            toggleCard: (id) => {
+                if (state.openCards.has(id)) {
+                    state.openCards.delete(id);
+                } else {
+                    state.openCards.add(id);
+                }
+                render.specialties();
+            },
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('active');
-}
+            levelClick: (specId, levelNum, isAvailable, hasLink) => {
+                const spec = specialtiesData.find(s => s.id === specId);
+                
+                if (!isAvailable) {
+                    modal.show({
+                        icon: '🔒',
+                        title: 'المستوى مغلق',
+                        subtitle: `${spec.name} - ${utils.getLevelName(levelNum)} غير متاح حالياً. سيتم فتحه قريباً.`,
+                        type: 'error',
+                        info: [
+                            { label: 'التخصص', value: spec.name },
+                            { label: 'المستوى', value: levelNum }
+                        ],
+                        primaryBtn: {
+                            text: 'فهمت',
+                            class: 'btn-secondary',
+                            action: () => {}
+                        },
+                        secondaryBtn: {
+                            text: 'إغلاق',
+                            action: () => {}
+                        }
+                    });
+                    return;
+                }
 
-function showAlert(text, type) {
-  const alert = document.getElementById('alert');
-  alert.textContent = text;
-  alert.className = 'alert show ' + type;
-  setTimeout(() => alert.classList.remove('show'), 3000);
-}
+                if (!hasLink) {
+                    modal.show({
+                        icon: '⚠️',
+                        title: 'الرابط غير متوفر',
+                        subtitle: 'سيتم إضافة هذا المستوى قريباً.',
+                        type: 'warning',
+                        primaryBtn: {
+                            text: 'حسناً',
+                            class: 'btn-secondary',
+                            action: () => {}
+                        },
+                        secondaryBtn: {
+                            text: 'إلغاء',
+                            action: () => {}
+                        }
+                    });
+                    return;
+                }
 
-function logout() {
-  location.reload();
-}
+                state.currentLevel = { specId, levelNum, spec };
+                
+                modal.show({
+                    icon: spec.icon,
+                    title: spec.name,
+                    subtitle: `${utils.getLevelName(levelNum)} - هل أنت مستعد لبدء الاختبار؟`,
+                    type: 'success',
+                    info: [
+                        { label: 'التخصص', value: spec.name, color: spec.color },
+                        { label: 'المستوى', value: levelNum },
+                        { label: 'الحالة', value: 'متاح', color: '#10b981' }
+                    ],
+                    primaryBtn: {
+                        text: 'بدء الاختبار ▶',
+                        class: 'btn-success',
+                        action: () => {
+                            const url = spec.links[levelNum];
+                            toast.show(`جاري فتح: ${spec.name}...`, 'success');
+                            
+                            setTimeout(() => {
+                                if (webviewHandler.openUrl(url)) {
+                                    toast.show('تم فتح الرابط بنجاح', 'success');
+                                } else {
+                                    toast.show('تعذر فتح الرابط', 'error');
+                                }
+                            }, 500);
+                        }
+                    },
+                    secondaryBtn: {
+                        text: 'لاحقاً',
+                        action: () => {}
+                    }
+                });
+            },
 
-// ==========================================
-// منع الخروج والغش
-// ==========================================
-function preventExit() {
-  // منع الرجوع
-  history.pushState(null, null, location.href);
-  window.addEventListener('popstate', () => {
-    history.pushState(null, null, location.href);
-    if (!quizSubmitted) showExitWarning();
-  });
-  
-  // كشف تبديل التبويب
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && !quizSubmitted) {
-      showExitWarning();
-    }
-  });
-  
-  // منع النسخ
-  document.addEventListener('copy', e => {
-    e.preventDefault();
-    showAlert('⛔ النسخ ممنوع!', 'error');
-  });
-  
-  document.addEventListener('paste', e => {
-    e.preventDefault();
-    showAlert('⛔ اللصق ممنوع!', 'error');
-  });
-  
-  document.addEventListener('contextmenu', e => e.preventDefault());
-}
+            search: utils.debounce((value) => {
+                state.searchQuery = value.trim();
+                elements.searchContainer.classList.toggle('has-value', value.length > 0);
+                render.specialties();
+            }, 300),
 
-function showExitWarning() {
-  document.getElementById('exitWarning').classList.add('active');
-  quizSubmitted = true;
-}
+            clearSearch: () => {
+                elements.searchInput.value = '';
+                state.searchQuery = '';
+                elements.searchContainer.classList.remove('has-value');
+                render.specialties();
+            },
 
-// منع إغلاق الصفحة
-window.addEventListener('beforeunload', e => {
-  if (!quizSubmitted && document.getElementById('quizPage').classList.contains('active')) {
-    e.returnValue = 'ستفقد تقدمك!';
-  }
-});
-</script>
+            filter: (filterType) => {
+                state.currentFilter = filterType;
+                document.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.classList.toggle('active', tag.dataset.filter === filterType);
+                });
+                render.specialties();
+            }
+        };
 
+        // Initialization
+        const init = () => {
+            // Event Listeners
+            elements.searchInput.addEventListener('input', (e) => handlers.search(e.target.value));
+            elements.clearSearch.addEventListener('click', handlers.clearSearch);
+            
+            elements.filterTags.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-tag')) {
+                    handlers.filter(e.target.dataset.filter);
+                }
+            });
+
+            elements.modalOverlay.addEventListener('click', (e) => {
+                if (e.target === elements.modalOverlay) modal.hide();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.hide();
+            });
+
+            // Prevent default touch behaviors for WebView optimization
+            document.addEventListener('touchmove', (e) => {
+                if (e.target.closest('.levels.active')) {
+                    e.stopPropagation();
+                }
+            }, { passive: true });
+
+            // Initial render
+            render.specialties();
+
+            // Hide loader
+            setTimeout(() => {
+                elements.loader.classList.add('hidden');
+            }, 500);
+        };
+
+        // Start
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Expose handlers globally for inline onclick
+        window.handlers = handlers;
+    </script>
 </body>
 </html>
