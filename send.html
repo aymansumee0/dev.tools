@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لوحة تحكم الإشعارات</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { 
+            font-family: 'Cairo', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .gradient-bg { 
+            background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); 
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .notification-card {
+            transition: all 0.2s ease;
+            border-right: 2px solid transparent;
+        }
+        
+        .notification-card.unread {
+            border-right-color: #EC4899;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #7C3AED; border-radius: 2px; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .compact-input {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            height: 36px;
+        }
+        
+        .search-result {
+            animation: slideDown 0.2s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .password-dot {
+            transition: all 0.3s;
+            width: 10px;
+            height: 10px;
+        }
+
+        .password-dot.filled {
+            background: #7C3AED;
+            transform: scale(1.2);
+        }
+        
+        /* Modal for WebView */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .user-item {
+            transition: all 0.2s;
+        }
+        
+        .user-item:active {
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-sm">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-purple-900 to-pink-900 z-50 flex items-center justify-center">
+        <div class="glass-card w-full max-w-xs p-5 rounded-2xl shadow-2xl m-4">
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 gradient-bg rounded-2xl mx-auto mb-3 flex items-center justify-center shadow-lg relative">
+                    <i class="fas fa-lock text-white text-xl"></i>
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                        <i class="fas fa-shield-alt text-white text-[10px]"></i>
+                    </div>
+                </div>
+                <h1 class="text-xl font-black text-gray-800 mb-0.5">نظام الإشعارات</h1>
+                <p class="text-gray-500 text-xs">لوحة تحكم المشرفين</p>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-center gap-2 mb-3" id="password-dots">
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
+                </div>
+                <input type="password" id="admin-password" placeholder="كلمة المرور" maxlength="6"
+                       class="w-full p-2.5 text-center text-lg tracking-[0.5em] border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none font-bold"
+                       oninput="updatePasswordDots()" onkeypress="handleKeyPress(event)">
+            </div>
+            
+            <button onclick="login()" class="w-full btn-primary text-white p-2.5 rounded-lg font-bold flex items-center justify-center gap-2 text-sm">
+                <span>دخول</span>
+                <i class="fas fa-arrow-left text-xs"></i>
+            </button>
+            
+            <div id="login-error" class="text-red-500 text-xs text-center mt-3 hidden font-bold bg-red-50 p-2 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-3 sticky top-0 z-40 shadow-lg">
+            <div class="max-w-5xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-broadcast-tower text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-black">لوحة التحكم</h1>
+                        <p class="text-[10px] opacity-80 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full pulse-dot"></span>
+                            متصل
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="refreshData()" class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition text-xs">
+                        <i class="fas fa-sync-alt" id="refresh-icon"></i>
+                    </button>
+                    <button onclick="logout()" class="px-2.5 py-1.5 bg-white/20 rounded-lg hover:bg-white/30 transition font-bold text-xs">
+                        <i class="fas fa-sign-out-alt ml-1"></i> خروج
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-5xl mx-auto p-3 grid grid-cols-1 lg:grid-cols-12 gap-3">
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-3 space-y-2">
+                <div class="glass-card rounded-xl p-3 shadow-sm">
+                    <h3 class="font-bold text-gray-700 mb-2 text-xs flex items-center gap-1.5">
+                        <i class="fas fa-chart-pie text-purple-500 text-[10px]"></i>
+                        الإحصائيات
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-purple-50 p-2 rounded-lg border border-purple-100 text-center">
+                            <div class="text-lg font-black text-purple-600 leading-none" id="stat-total">0</div>
+                            <div class="text-[9px] text-gray-500 font-bold mt-0.5">الإشعارات</div>
+                        </div>
+                        
+                        <div class="bg-pink-50 p-2 rounded-lg border border-pink-100 text-center">
+                            <div class="text-lg font-black text-pink-600 leading-none" id="stat-unread">0</div>
+                            <div class="text-[9px] text-gray-500 font-bold mt-0.5">غير مقروء</div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 text-center">
+                            <div class="text-lg font-black text-blue-600 leading-none" id="stat-users">0</div>
+                            <div class="text-[9px] text-gray-500 font-bold mt-0.5">المستخدمين</div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-2 rounded-lg border border-green-100 text-center">
+                            <div class="text-lg font-black text-green-600 leading-none" id="stat-read-rate">0%</div>
+                            <div class="text-[9px] text-gray-500 font-bold mt-0.5">القراءة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-xl p-3 shadow-sm">
+                    <h3 class="font-bold text-gray-700 mb-2 text-xs flex items-center gap-1.5">
+                        <i class="fas fa-circle text-green-500 text-[8px]"></i>
+                        المتصلون
+                    </h3>
+                    <div id="online-users" class="flex flex-wrap gap-1 max-h-28 overflow-y-auto">
+                        <div class="text-[10px] text-gray-400">جاري التحميل...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-5 space-y-3">
+                <!-- Send Form -->
+                <div class="glass-card rounded-xl p-3 shadow-lg">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-sm font-black text-gray-800 flex items-center gap-2">
+                            <span class="w-7 h-7 gradient-bg rounded-lg flex items-center justify-center text-white text-xs">
+                                <i class="fas fa-plus text-[10px]"></i>
+                            </span>
+                            إشعار جديد
+                        </h2>
+                        
+                        <div class="flex gap-1">
+                            <button onclick="setTemplate('welcome')" class="w-7 h-7 bg-blue-100 text-blue-600 rounded font-bold hover:bg-blue-200 transition text-xs">👋</button>
+                            <button onclick="setTemplate('update')" class="w-7 h-7 bg-green-100 text-green-600 rounded font-bold hover:bg-green-200 transition text-xs">📢</button>
+                            <button onclick="setTemplate('alert')" class="w-7 h-7 bg-red-100 text-red-600 rounded font-bold hover:bg-red-200 transition text-xs">⚠️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2.5">
+                        <!-- Target Type -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">الاستهداف</label>
+                            <select id="target-type" onchange="handleTargetChange()" 
+                                    class="w-full compact-input border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none bg-white">
+                                <option value="all">الجميع</option>
+                                <option value="academic">رقم أكاديمي</option>
+                                <option value="major">التخصص</option>
+                                <option value="level">المستوى</option>
+                                <option value="points">النقاط</option>
+                            </select>
+                        </div>
+
+                        <!-- Academic Search - Fixed -->
+                        <div id="academic-search" class="hidden">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">البحث بالرقم الأكاديمي أو الاسم</label>
+                            <div class="relative">
+                                <input type="text" id="academic-input" placeholder="اكتب للبحث..." 
+                                       class="w-full compact-input border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none pl-8"
+                                       oninput="searchAcademic()" autocomplete="off">
+                                <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400 text-xs"></i>
+                            </div>
+                            <!-- Search Results Container -->
+                            <div id="search-results" class="mt-1.5 space-y-1 max-h-32 overflow-y-auto hidden bg-gray-50 rounded-lg p-1.5 border border-gray-200"></div>
+                            
+                            <!-- Selected User Display -->
+                            <div id="selected-user-display" class="hidden mt-2 p-2 bg-purple-50 rounded-lg border border-purple-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="text-xs">
+                                        <span class="font-bold text-purple-700">المختار:</span>
+                                        <span id="selected-user-name" class="text-purple-600 mr-1"></span>
+                                    </div>
+                                    <button onclick="clearSelectedUser()" class="text-red-400 hover:text-red-600 text-xs">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="text-[10px] text-gray-500 mt-0.5" id="selected-user-id"></div>
+                            </div>
+                        </div>
+
+                        <!-- Major Selection -->
+                        <div id="major-selection" class="hidden">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">اختر التخصص</label>
+                            <select id="major-select" onchange="selectMajor(this.value)" 
+                                    class="w-full compact-input border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none bg-white">
+                                <option value="">اختر التخصص...</option>
+                            </select>
+                        </div>
+
+                        <!-- Dynamic Options -->
+                        <div id="dynamic-options" class="hidden space-y-2">
+                            <div id="level-selector" class="hidden grid grid-cols-4 gap-1"></div>
+                            <div id="points-range" class="hidden flex gap-2">
+                                <input type="number" id="points-min" placeholder="من" class="w-1/2 compact-input border-2 rounded-lg">
+                                <input type="number" id="points-max" placeholder="إلى" class="w-1/2 compact-input border-2 rounded-lg">
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">العنوان</label>
+                            <input type="text" id="notif-title" placeholder="عنوان الإشعار..." 
+                                   class="w-full compact-input border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">المحتوى</label>
+                            <textarea id="notif-body" rows="2" placeholder="اكتب هنا..." 
+                                      class="w-full compact-input border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none resize-none"></textarea>
+                            <div class="text-[9px] text-gray-400 mt-0.5 text-left" id="char-count">0/200</div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="flex items-center gap-4 p-2 bg-gray-50 rounded-lg">
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" id="auto-delete" class="w-3.5 h-3.5 text-purple-600 rounded">
+                                <span class="text-[10px] font-bold text-gray-600">حذف تلقائي</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" id="priority" class="w-3.5 h-3.5 text-purple-600 rounded">
+                                <span class="text-[10px] font-bold text-gray-600">مهم جداً</span>
+                            </label>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="previewNotification()" class="flex-1 py-2 border-2 border-purple-200 text-purple-600 rounded-lg font-bold text-xs hover:bg-purple-50 transition">
+                                <i class="fas fa-eye ml-1"></i> معاينة
+                            </button>
+                            <button onclick="sendNotification()" class="flex-[2] btn-primary text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5">
+                                <span>إرسال</span>
+                                <i class="fas fa-paper-plane text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div id="preview-card" class="hidden glass-card rounded-xl p-3 shadow-sm border-r-4 border-purple-500">
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-9 h-9 gradient-bg rounded-lg flex items-center justify-center text-white shrink-0">
+                            <i class="fas fa-bell text-xs"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-gray-800 text-xs mb-0.5 truncate" id="preview-title">عنوان</h4>
+                            <p class="text-[11px] text-gray-600 line-clamp-2" id="preview-body">محتوى...</p>
+                            <div class="flex items-center gap-2 mt-1.5 text-[9px] text-gray-400">
+                                <i class="fas fa-clock text-[8px]"></i>
+                                <span>الآن</span>
+                                <span>•</span>
+                                <span id="preview-target">الجميع</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="lg:col-span-4">
+                <div class="glass-card rounded-xl p-3 shadow-sm h-[420px] flex flex-col">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-gray-700 text-xs flex items-center gap-1.5">
+                            <i class="fas fa-history text-purple-500 text-[10px]"></i>
+                            السجل
+                        </h3>
+                        <button onclick="showClearModal()" class="text-[10px] text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded hover:bg-red-50 transition">
+                            مسح الكل
+                        </button>
+                    </div>
+                    
+                    <div id="notifications-log" class="flex-1 overflow-y-auto space-y-1.5 pr-0.5">
+                        <div class="text-center text-gray-400 py-6">
+                            <i class="fas fa-inbox text-xl mb-1 opacity-30"></i>
+                            <p class="text-xs">لا توجد إشعارات</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-red-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                </div>
+                <h3 class="font-bold text-gray-800 mb-1">تأكيد الحذف</h3>
+                <p class="text-xs text-gray-500">هل أنت متأكد من حذف جميع الإشعارات؟</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="hideClearModal()" class="flex-1 py-2.5 border-2 border-gray-200 text-gray-600 rounded-lg font-bold text-xs hover:bg-gray-50 transition">
+                    إلغاء
+                </button>
+                <button onclick="confirmClearAll()" class="flex-1 py-2.5 bg-red-500 text-white rounded-lg font-bold text-xs hover:bg-red-600 transition">
+                    حذف الكل
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-2 rounded-lg shadow-xl z-50 hidden items-center gap-2 text-xs font-bold">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">تم!</span>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-xl p-4 flex flex-col items-center gap-2">
+            <div class="w-8 h-8 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            <p class="font-bold text-gray-700 text-xs">جاري الإرسال...</p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEXAMPLEnY",
+            authDomain: "store-points-7d2f4.firebaseapp.com",
+            databaseURL: "https://store-points-7d2f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "store-points-7d2f4",
+            storageBucket: "store-points-7d2f4.appspot.com",
+            messagingSenderId: "105011111111",
+            appId: "1:105011111111:web:abc123example"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const ADMIN_PASSWORD = "123456";
+        
+        let isLoggedIn = false;
+        let allUsers = {};
+        let selectedTarget = { type: 'all', value: null, userData: null };
+        let notificationsCache = [];
+        let majorsList = new Set();
+
+        const templates = {
+            welcome: { title: "👋 أهلاً بك!", body: "سعداء بانضمامك!" },
+            update: { title: "📢 تحديث جديد", body: "تم إضافة محتوى!" },
+            alert: { title: "⚠️ تنبيه", body: "يرجى الانتباه!" }
+        };
+
+        const levels = ['ضعيف', 'مبتدئ', 'مقبول', 'متوسط', 'جيد', 'جيد جداً', 'مجتهد', 'مثابر', 'متألق', 'متفوق', 'امتياز'];
+
+        function updatePasswordDots() {
+            const password = document.getElementById('admin-password').value;
+            const dots = document.querySelectorAll('.password-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('filled', index < password.length);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') login();
+        }
+
+        function login() {
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (password === ADMIN_PASSWORD) {
+                isLoggedIn = true;
+                document.getElementById('login-screen').style.opacity = '0';
+                document.getElementById('login-screen').style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    initializeDashboard();
+                }, 300);
+            } else {
+                errorDiv.textContent = "❌ خطأ في كلمة المرور";
+                errorDiv.classList.remove('hidden');
+                document.getElementById('admin-password').value = '';
+                updatePasswordDots();
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function initializeDashboard() {
+            loadUsers();
+            setupListeners();
+            setupRealtimeStats();
+            populateLevelSelector();
+        }
+
+        function populateLevelSelector() {
+            const container = document.getElementById('level-selector');
+            container.innerHTML = levels.map(level => `
+                <button onclick="selectLevel('${level}')" class="level-btn py-1 px-1 rounded border border-gray-200 hover:border-purple-500 text-[9px] font-bold transition">
+                    ${level}
+                </button>
+            `).join('');
+        }
+
+        function populateMajors() {
+            const select = document.getElementById('major-select');
+            const majors = Array.from(majorsList).sort();
+            select.innerHTML = '<option value="">اختر التخصص...</option>' + 
+                majors.map(major => `<option value="${major}">${major}</option>`).join('');
+        }
+
+        function loadUsers() {
+            db.ref('users').on('value', (snapshot) => {
+                allUsers = snapshot.val() || {};
+                majorsList.clear();
+                
+                Object.entries(allUsers).forEach(([id, user]) => {
+                    if (user.major) majorsList.add(user.major);
+                });
+                
+                populateMajors();
+                updateOnlineUsers();
+            });
+        }
+
+        function updateOnlineUsers() {
+            const container = document.getElementById('online-users');
+            const onlineUsers = Object.entries(allUsers).filter(([id, user]) => 
+                user.lastActive && (Date.now() - user.lastActive) < 300000
+            );
+            
+            container.innerHTML = onlineUsers.length === 0 ? 
+                '<div class="text-[10px] text-gray-400">لا أحد</div>' :
+                onlineUsers.map(([id, user]) => `
+                    <div class="px-2 py-1 bg-gray-100 rounded text-[9px] font-bold flex items-center gap-1 cursor-pointer hover:bg-purple-500 hover:text-white transition" 
+                         onclick="quickSelectUser('${id}')">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        ${user.name || id.substring(0, 6)}
+                    </div>
+                `).join('');
+        }
+
+        function quickSelectUser(id) {
+            const user = allUsers[id];
+            if (!user) return;
+            
+            document.getElementById('target-type').value = 'academic';
+            handleTargetChange();
+            
+            // Set the search input
+            const searchInput = document.getElementById('academic-input');
+            searchInput.value = user.academicId || user.studentId || id;
+            
+            // Auto select this user
+            selectAcademicUser(id, user);
+        }
+
+        function handleTargetChange() {
+            const type = document.getElementById('target-type').value;
+            
+            // Reset selection
+            selectedTarget = { type, value: null, userData: null };
+            
+            // Hide all sections
+            document.getElementById('academic-search').classList.add('hidden');
+            document.getElementById('major-selection').classList.add('hidden');
+            document.getElementById('dynamic-options').classList.add('hidden');
+            document.getElementById('level-selector').classList.add('hidden');
+            document.getElementById('points-range').classList.add('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('selected-user-display').classList.add('hidden');
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('bg-purple-500', 'text-white'));
+            
+            // Clear inputs
+            document.getElementById('academic-input').value = '';
+            document.getElementById('major-select').value = '';
+            document.getElementById('points-min').value = '';
+            document.getElementById('points-max').value = '';
+            
+            switch(type) {
+                case 'all':
+                    selectedTarget.value = 'all';
+                    break;
+                case 'academic':
+                    document.getElementById('academic-search').classList.remove('hidden');
+                    break;
+                case 'major':
+                    document.getElementById('major-selection').classList.remove('hidden');
+                    break;
+                case 'level':
+                    document.getElementById('dynamic-options').classList.remove('hidden');
+                    document.getElementById('level-selector').classList.remove('hidden');
+                    break;
+                case 'points':
+                    document.getElementById('dynamic-options').classList.remove('hidden');
+                    document.getElementById('points-range').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // FIXED: Academic Search Function
+        function searchAcademic() {
+            const input = document.getElementById('academic-input').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (input.length < 1) {
+                resultsDiv.classList.add('hidden');
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            // Search in all users
+            const matches = Object.entries(allUsers).filter(([id, user]) => {
+                const academicId = (user.academicId || user.studentId || user.id || '').toString().toLowerCase();
+                const name = (user.name || user.fullName || '').toString().toLowerCase();
+                const email = (user.email || '').toString().toLowerCase();
+                
+                return academicId.includes(input) || 
+                       name.includes(input) ||
+                       email.includes(input) ||
+                       id.toLowerCase().includes(input);
+            }).slice(0, 5);
+            
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = '<div class="text-[10px] text-gray-400 p-2 text-center">لا توجد نتائج</div>';
+                resultsDiv.classList.remove('hidden');
+                return;
+            }
+            
+            resultsDiv.innerHTML = matches.map(([id, user]) => {
+                const displayName = user.name || user.fullName || 'مستخدم';
+                const displayId = user.academicId || user.studentId || id.substring(0, 12);
+                const major = user.major || 'عام';
+                
+                return `
+                    <div class="user-item p-2 bg-white rounded border border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm transition" 
+                         onclick="selectAcademicUser('${id}', ${JSON.stringify(user).replace(/"/g, '&quot;')})">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold text-xs text-gray-800 truncate">${displayName}</div>
+                                <div class="text-[9px] text-gray-500">رقم: ${displayId}</div>
+                            </div>
+                            <span class="text-[9px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded font-bold whitespace-nowrap mr-1">${major}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // FIXED: Select Academic User
+        function selectAcademicUser(id, user) {
+            // Ensure user is an object
+            if (typeof user === 'string') {
+                user = JSON.parse(user);
+            }
+            
+            selectedTarget = { 
+                type: 'academic', 
+                value: id, 
+                userData: user 
+            };
+            
+            // Hide results
+            document.getElementById('search-results').classList.add('hidden');
+            
+            // Show selected user
+            const displayName = user.name || user.fullName || 'مستخدم';
+            const displayId = user.academicId || user.studentId || id;
+            
+            document.getElementById('selected-user-name').textContent = displayName;
+            document.getElementById('selected-user-id').textContent = `الرقم: ${displayId} | التخصص: ${user.major || 'عام'}`;
+            document.getElementById('selected-user-display').classList.remove('hidden');
+            
+            // Update input to show selected
+            document.getElementById('academic-input').value = displayId;
+            
+            showToast(`تم اختيار: ${displayName}`, 'success');
+        }
+
+        function clearSelectedUser() {
+            selectedTarget = { type: 'academic', value: null, userData: null };
+            document.getElementById('selected-user-display').classList.add('hidden');
+            document.getElementById('academic-input').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+        }
+
+        function selectMajor(major) {
+            if (!major) return;
+            selectedTarget.value = major;
+            showToast(`التخصص: ${major}`, 'success');
+        }
+
+        function selectLevel(level) {
+            selectedTarget.value = level;
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.toggle('bg-purple-500', btn.textContent.trim() === level);
+                btn.classList.toggle('text-white', btn.textContent.trim() === level);
+            });
+        }
+
+        function setTemplate(templateName) {
+            const template = templates[templateName];
+            document.getElementById('notif-title').value = template.title;
+            document.getElementById('notif-body').value = template.body;
+            document.getElementById('char-count').textContent = `${template.body.length}/200`;
+        }
+
+        function previewNotification() {
+            const title = document.getElementById('notif-title').value || 'عنوان';
+            const body = document.getElementById('notif-body').value || 'محتوى...';
+            const targetType = document.getElementById('target-type');
+            const targetText = targetType.options[targetType.selectedIndex].text;
+            
+            document.getElementById('preview-title').textContent = title;
+            document.getElementById('preview-body').textContent = body;
+            document.getElementById('preview-target').textContent = targetText;
+            document.getElementById('preview-card').classList.remove('hidden');
+        }
+
+        async function sendNotification() {
+            const title = document.getElementById('notif-title').value.trim();
+            const body = document.getElementById('notif-body').value.trim();
+            
+            if (!title || !body) {
+                showToast('أكمل الحقول', 'error');
+                return;
+            }
+            
+            // Validation based on target type
+            if (selectedTarget.type === 'academic' && !selectedTarget.value) {
+                showToast('اختر مستخدم من البحث', 'error');
+                document.getElementById('academic-input').focus();
+                return;
+            }
+            
+            if (selectedTarget.type === 'major' && !selectedTarget.value) {
+                showToast('اختر التخصص', 'error');
+                return;
+            }
+            
+            if (selectedTarget.type === 'level' && !selectedTarget.value) {
+                showToast('اختر المستوى', 'error');
+                return;
+            }
+            
+            if (selectedTarget.type === 'points') {
+                const min = document.getElementById('points-min').value;
+                const max = document.getElementById('points-max').value;
+                if (!min && !max) {
+                    showToast('أدخل نطاق النقاط', 'error');
+                    return;
+                }
+            }
+            
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+            
+            const notification = {
+                title, body,
+                timestamp: Date.now(),
+                sentBy: 'admin',
+                targetType: selectedTarget.type,
+                targetValue: selectedTarget.value,
+                priority: document.getElementById('priority').checked,
+                autoDelete: document.getElementById('auto-delete').checked,
+                read: false,
+                deleted: false
+            };
+            
+            try {
+                let targetUsers = [];
+                
+                switch(selectedTarget.type) {
+                    case 'all':
+                        targetUsers = Object.keys(allUsers);
+                        break;
+                    case 'academic':
+                        targetUsers = [selectedTarget.value];
+                        break;
+                    case 'major':
+                        targetUsers = Object.entries(allUsers)
+                            .filter(([id, user]) => user.major === selectedTarget.value)
+                            .map(([id]) => id);
+                        break;
+                    case 'level':
+                        targetUsers = Object.entries(allUsers)
+                            .filter(([id, user]) => {
+                                const grade = parseInt((user.grade || user.percentage || '0%').toString().replace('%', ''));
+                                return getLevelName(grade) === selectedTarget.value;
+                            })
+                            .map(([id]) => id);
+                        break;
+                    case 'points':
+                        const min = parseInt(document.getElementById('points-min').value) || 0;
+                        const max = parseInt(document.getElementById('points-max').value) || Infinity;
+                        targetUsers = Object.entries(allUsers)
+                            .filter(([id, user]) => {
+                                const points = user.points || user.score || 0;
+                                return points >= min && points <= max;
+                            })
+                            .map(([id]) => id);
+                        break;
+                }
+                
+                if (targetUsers.length === 0) {
+                    showToast('لا يوجد مستهدفين', 'error');
+                    return;
+                }
+                
+                const sendPromises = targetUsers.map(userId => 
+                    db.ref(`notifications/${userId}`).push(notification)
+                );
+                
+                await Promise.all(sendPromises);
+                
+                showToast(`تم لـ ${targetUsers.length} مستخدم`, 'success');
+                resetForm();
+                
+            } catch (error) {
+                console.error(error);
+                showToast('خطأ في الإرسال', 'error');
+            } finally {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('loading-overlay').classList.remove('flex');
+            }
+        }
+
+        function getLevelName(grade) {
+            if (grade >= 100) return 'امتياز';
+            if (grade >= 90) return 'متفوق';
+            if (grade >= 80) return 'متألق';
+            if (grade >= 70) return 'مثابر';
+            if (grade >= 60) return 'مجتهد';
+            if (grade >= 50) return 'جيد جداً';
+            if (grade >= 40) return 'جيد';
+            if (grade >= 30) return 'متوسط';
+            if (grade >= 20) return 'مقبول';
+            if (grade >= 10) return 'مبتدئ';
+            return 'ضعيف';
+        }
+
+        function resetForm() {
+            document.getElementById('notif-title').value = '';
+            document.getElementById('notif-body').value = '';
+            document.getElementById('char-count').textContent = '0/200';
+            document.getElementById('preview-card').classList.add('hidden');
+            document.getElementById('auto-delete').checked = false;
+            document.getElementById('priority').checked = false;
+            document.getElementById('target-type').value = 'all';
+            clearSelectedUser();
+            handleTargetChange();
+        }
+
+        // Modal Functions for WebView
+        function showClearModal() {
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function hideClearModal() {
+            document.getElementById('delete-modal').classList.remove('active');
+        }
+
+        function confirmClearAll() {
+            hideClearModal();
+            
+            if (notificationsCache.length === 0) {
+                showToast('لا يوجد إشعارات', 'error');
+                return;
+            }
+            
+            const updates = {};
+            notificationsCache.forEach(notif => {
+                updates[`notifications/${notif.userId}/${notif.id}/deleted`] = true;
+                updates[`notifications/${notif.userId}/${notif.id}/deletedAt`] = Date.now();
+            });
+            
+            db.ref().update(updates)
+                .then(() => showToast('تم حذف الكل', 'success'))
+                .catch(() => showToast('خطأ في الحذف', 'error'));
+        }
+
+        function setupListeners() {
+            db.ref('notifications').on('value', (snapshot) => {
+                const data = snapshot.val();
+                notificationsCache = [];
+                
+                if (data) {
+                    Object.entries(data).forEach(([userId, userNotifs]) => {
+                        Object.entries(userNotifs).forEach(([notifId, notif]) => {
+                            if (!notif.deleted) {
+                                notificationsCache.push({ id: notifId, userId, ...notif });
+                            }
+                        });
+                    });
+                    notificationsCache.sort((a, b) => b.timestamp - a.timestamp);
+                }
+                
+                renderNotificationsLog();
+            });
+        }
+
+        function setupRealtimeStats() {
+            db.ref('notifications').on('value', (snapshot) => {
+                let total = 0, unread = 0, read = 0;
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.values(data).forEach(userNotifs => {
+                        Object.values(userNotifs).forEach(notif => {
+                            if (!notif.deleted) {
+                                total++;
+                                if (notif.read) read++;
+                                else unread++;
+                            }
+                        });
+                    });
+                }
+                
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-unread').textContent = unread;
+                document.getElementById('stat-users').textContent = Object.keys(allUsers).length;
+                document.getElementById('stat-read-rate').textContent = total > 0 ? Math.round((read / total) * 100) + '%' : '0%';
+            });
+        }
+
+        function renderNotificationsLog() {
+            const container = document.getElementById('notifications-log');
+            
+            if (notificationsCache.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-6">
+                        <i class="fas fa-inbox text-xl mb-1 opacity-30"></i>
+                        <p class="text-xs">لا توجد إشعارات</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = notificationsCache.slice(0, 25).map(notif => `
+                <div class="notification-card ${notif.read ? '' : 'unread'} bg-white rounded-lg p-2 shadow-sm">
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                            <span class="text-xs">${notif.priority ? '🔴' : '🔵'}</span>
+                            <span class="font-bold text-xs text-gray-800 truncate">${notif.title}</span>
+                        </div>
+                        <button onclick="deleteSingleNotif('${notif.userId}', '${notif.id}')" 
+                                class="text-gray-400 hover:text-red-500 transition text-xs p-1">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-gray-500 line-clamp-1 mb-1">${notif.body}</p>
+                    <div class="flex justify-between items-center text-[9px]">
+                        <span class="text-gray-400">${notif.userId.substring(0, 8)}...</span>
+                        <span class="${notif.read ? 'text-green-500' : 'text-pink-500'} font-bold">
+                            ${notif.read ? '✓' : '○'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteSingleNotif(userId, notifId) {
+            if (confirm('حذف هذا الإشعار؟')) {
+                db.ref(`notifications/${userId}/${notifId}`).update({ 
+                    deleted: true, 
+                    deletedAt: Date.now() 
+                });
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.style.background = type === 'success' ? '#10B981' : '#EF4444';
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2000);
+        }
+
+        function refreshData() {
+            document.getElementById('refresh-icon').classList.add('fa-spin');
+            setTimeout(() => document.getElementById('refresh-icon').classList.remove('fa-spin'), 1000);
+            loadUsers();
+            showToast('تم التحديث', 'success');
+        }
+
+        // Close modal on outside click
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideClearModal();
+            }
+        });
+    </script>
+</body>
+</html>
