@@ -560,8 +560,16 @@ body {
           <span class="student-info-value" id="oldPointsDisplay">-</span>
         </div>
         <div class="student-info-item">
+          <span class="student-info-label">النقاط الأسبوعية السابقة:</span>
+          <span class="student-info-value" id="oldWeeklyPointsDisplay">-</span>
+        </div>
+        <div class="student-info-item">
           <span class="student-info-label">الرصيد الجديد:</span>
           <span class="student-info-value" id="newBalanceDisplay" style="color: var(--success);">-</span>
+        </div>
+        <div class="student-info-item">
+          <span class="student-info-label">النقاط الأسبوعية الجديدة:</span>
+          <span class="student-info-value" id="newWeeklyPointsDisplay" style="color: var(--success);">-</span>
         </div>
       </div>
 
@@ -607,7 +615,9 @@ const studentInfo = document.getElementById('studentInfo');
 const studentNameDisplay = document.getElementById('studentNameDisplay');
 const studentIdDisplay = document.getElementById('studentIdDisplay');
 const oldPointsDisplay = document.getElementById('oldPointsDisplay');
+const oldWeeklyPointsDisplay = document.getElementById('oldWeeklyPointsDisplay');
 const newBalanceDisplay = document.getElementById('newBalanceDisplay');
+const newWeeklyPointsDisplay = document.getElementById('newWeeklyPointsDisplay');
 const retryBtn = document.getElementById('retryBtn');
 
 // تحسين إدخال الكود (أحرف كبيرة وأرقام فقط)
@@ -710,7 +720,9 @@ async function redeemCode() {
     
     // ✅ جميع التحققات ناجحة - إضافة النقاط
     const currentPoints = studentData.points || 0;
+    const currentWeeklyPoints = studentData.weeklyPoints || 0; // الحصول على النقاط الأسبوعية الحالية (0 إذا لم تكن موجودة)
     const newPoints = currentPoints + codeData.points;
+    const newWeeklyPoints = currentWeeklyPoints + codeData.points; // إضافة النقاط للنقاط الأسبوعية
     
     // تحديث الكود كمستخدم
     await codeRef.update({
@@ -720,9 +732,10 @@ async function redeemCode() {
       redeemedByName: studentData.name
     });
     
-    // إضافة النقاط للطالب
+    // إضافة النقاط للطالب (نقاط عامة + نقاط أسبوعية)
     await studentRef.update({
       points: newPoints,
+      weeklyPoints: newWeeklyPoints, // إضافة/تحديث النقاط الأسبوعية
       lastRedeem: new Date().toISOString(),
       lastRedeemCode: code
     });
@@ -742,7 +755,9 @@ async function redeemCode() {
     studentNameDisplay.textContent = studentData.name;
     studentIdDisplay.textContent = enteredStudentId;
     oldPointsDisplay.textContent = currentPoints + ' نقطة';
+    oldWeeklyPointsDisplay.textContent = currentWeeklyPoints + ' نقطة';
     newBalanceDisplay.textContent = newPoints + ' نقطة';
+    newWeeklyPointsDisplay.textContent = newWeeklyPoints + ' نقطة';
     studentInfo.style.display = 'block';
     
     retryBtn.style.display = 'block';
