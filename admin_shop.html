@@ -31,6 +31,138 @@ body {
   font-size: 13px;
 }
 
+/* Login Screen Styles */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.login-box {
+  background: var(--card-bg);
+  padding: 40px 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.login-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.login-icon i {
+  font-size: 32px;
+  color: white;
+}
+
+.login-box h2 {
+  color: var(--text);
+  font-size: 22px;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.login-box p {
+  color: var(--text-light);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.password-input-wrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.password-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 4px;
+  transition: all 0.2s;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.password-input.error {
+  border-color: var(--danger);
+  animation: shake 0.4s ease;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.error-message {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 16px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-weight: 600;
+}
+
+.error-message.show {
+  opacity: 1;
+}
+
+.login-footer {
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Main App - Hidden by default */
+.main-app {
+  display: none;
+}
+
 .header-logo, .sidebar, .search-form, .dark-toggle, .top-bar, header, #header-wrapper, footer, .footer-container, #footer-wrapper {
   display: none !important;
 }
@@ -605,6 +737,38 @@ textarea {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
+// Password Protection
+const CORRECT_PASSWORD = 'a123123';
+
+function checkPassword() {
+  const input = document.getElementById('passwordInput');
+  const errorMsg = document.getElementById('errorMsg');
+  const loginScreen = document.getElementById('loginScreen');
+  const mainApp = document.getElementById('mainApp');
+  
+  if (input.value === CORRECT_PASSWORD) {
+    // Success
+    loginScreen.style.opacity = '0';
+    loginScreen.style.transition = 'opacity 0.3s ease';
+    mainApp.style.display = 'block';
+    
+    setTimeout(() => {
+      loginScreen.style.display = 'none';
+      // Initialize app after login
+      initApp();
+    }, 300);
+  } else {
+    // Error
+    errorMsg.classList.add('show');
+    input.classList.add('error');
+    
+    setTimeout(() => {
+      input.classList.remove('error');
+    }, 400);
+  }
+}
+
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyByR2B-XISUw_PYh5EeIcbNQwwII0c6xZg",
   authDomain: "store-points-7d2f4.firebaseapp.com",
@@ -614,6 +778,7 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
+
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
@@ -622,6 +787,14 @@ let categories = [];
 let editProductId = null;
 let deleteCategoryId = null;
 let deleteProductId = null;
+
+function initApp() {
+  loadCategories().then(() => {
+    loadProducts();
+    addImgInput('imgInputs');
+    updatePreview('imgInputs');
+  });
+}
 
 // تحميل التصنيفات من Firebase
 function loadCategories() {
@@ -1128,18 +1301,48 @@ window.onclick = e => {
     e.target.classList.remove('show');
   }
 };
-
-// التحميل الأولي
-window.onload = () => {
-  loadCategories().then(() => {
-    loadProducts();
-    addImgInput('imgInputs');
-    updatePreview('imgInputs');
-  });
-};
 </script>
 </head>
 <body>
+
+<!-- Login Screen -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-icon">
+      <i class="fas fa-lock"></i>
+    </div>
+    
+    <h2>لوحة تحكم المتجر</h2>
+    <p>أدخل كلمة المرور للمتابعة</p>
+    
+    <div class="password-input-wrapper">
+      <input 
+        type="password" 
+        id="passwordInput" 
+        class="password-input"
+        placeholder="كلمة المرور" 
+        onkeyup="if(event.key === 'Enter') checkPassword()"
+      >
+    </div>
+    
+    <button class="login-btn" onclick="checkPassword()">
+      دخول
+    </button>
+    
+    <p class="error-message" id="errorMsg">
+      <i class="fas fa-exclamation-circle"></i>
+      كلمة المرور غير صحيحة
+    </p>
+  </div>
+  
+  <p class="login-footer">
+    <i class="fas fa-shield-alt"></i>
+    نظام محمي
+  </p>
+</div>
+
+<!-- Main App -->
+<div class="main-app" id="mainApp">
 
 <div class="admin-header">
   <h1><i class="fas fa-cog"></i> لوحة تحكم المتجر</h1>
@@ -1341,6 +1544,8 @@ window.onload = () => {
       </button>
     </div>
   </div>
+</div>
+
 </div>
 
 </body>
