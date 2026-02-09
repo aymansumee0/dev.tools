@@ -153,8 +153,9 @@
                     <div class="password-dot rounded-full bg-gray-300"></div>
                     <div class="password-dot rounded-full bg-gray-300"></div>
                     <div class="password-dot rounded-full bg-gray-300"></div>
+                    <div class="password-dot rounded-full bg-gray-300"></div>
                 </div>
-                <input type="password" id="admin-password" placeholder="كلمة المرور" maxlength="6"
+                <input type="password" id="admin-password" placeholder="كلمة المرور" maxlength="7"
                        class="w-full p-2.5 text-center text-lg tracking-[0.5em] border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none font-bold"
                        oninput="updatePasswordDots()" onkeypress="handleKeyPress(event)">
             </div>
@@ -451,7 +452,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const ADMIN_PASSWORD = "123456";
+        const ADMIN_PASSWORD = "a123123";
         
         let isLoggedIn = false;
         let allUsers = {};
