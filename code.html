@@ -581,7 +581,10 @@ body {
   </div>
 
   <!-- الفوتر -->
- 
+  <div class="footer">
+    <a href="#" onclick="goToAdmin(); return false;">دخول المشرفين</a>
+  </div>
+</div>
 
 <script>
 // Firebase Configuration (نفس الإعدادات السابقة)
@@ -645,7 +648,7 @@ window.onload = function() {
   }
 };
 
-// دالة استلام الكود
+// دالة استلام الكود - مُصلحة
 async function redeemCode() {
   const code = codeInput.value.trim().toUpperCase();
   const enteredStudentId = studentIdInput.value.trim();
@@ -662,13 +665,27 @@ async function redeemCode() {
   setLoading(true);
   
   try {
-    // الخطوة 1: التحقق من وجود الكود وصلاحيته
-    const codeRef = db.ref('codes/' + code);
-    const codeSnapshot = await codeRef.once('value');
-    const codeData = codeSnapshot.val();
+    // ✅ الخطوة 1: البحث عن الكود باستخدام orderByChild (الحل الصحيح)
+    const codesRef = db.ref('codes').orderByChild('code').equalTo(code);
+    const codesSnapshot = await codesRef.once('value');
+    
+    if (!codesSnapshot.exists()) {
+      showResult(false, 'كود غير صالح', 'هذا الكود غير موجود في نظامنا، تأكد من إدخاله بشكل صحيح', '❌');
+      return;
+    }
+    
+    // استخراج بيانات الكود (أول نتيجة)
+    let codeKey = null;
+    let codeData = null;
+    
+    codesSnapshot.forEach(childSnapshot => {
+      codeKey = childSnapshot.key;
+      codeData = childSnapshot.val();
+      return true; // إيقاف التكرار بعد أول نتيجة
+    });
     
     if (!codeData) {
-      showResult(false, 'كود غير صالح', 'هذا الكود غير موجود في نظامنا، تأكد من إدخاله بشكل صحيح', '❌');
+      showResult(false, 'كود غير صالح', 'تعذر قراءة بيانات الكود', '❌');
       return;
     }
     
@@ -685,12 +702,11 @@ async function redeemCode() {
     }
     
     // ⚠️ الخطوة 2: التحقق المهم - هل الكود مخصص لهذا الرقم الأكاديمي؟
-    // الكود يحتوي على studentId (الرقم المخصص له عند التوليد)
     if (codeData.studentId !== enteredStudentId) {
       showResult(
         false, 
         'الكود غير مخصص لك', 
-        `هذا الكود مخصص لطالب اخر ، لا يمكنك استخدام كود غير خاص بك`, 
+        `هذا الكود مخصص لطالب آخر، لا يمكنك استخدام كود غير خاص بك`, 
         '⛔'
       );
       shakeElement(studentIdInput.parentElement);
@@ -720,22 +736,22 @@ async function redeemCode() {
     
     // ✅ جميع التحققات ناجحة - إضافة النقاط
     const currentPoints = studentData.points || 0;
-    const currentWeeklyPoints = studentData.weeklyPoints || 0; // الحصول على النقاط الأسبوعية الحالية (0 إذا لم تكن موجودة)
+    const currentWeeklyPoints = studentData.weeklyPoints || 0;
     const newPoints = currentPoints + codeData.points;
-    const newWeeklyPoints = currentWeeklyPoints + codeData.points; // إضافة النقاط للنقاط الأسبوعية
+    const newWeeklyPoints = currentWeeklyPoints + codeData.points;
     
-    // تحديث الكود كمستخدم
-    await codeRef.update({
+    // تحديث الكود كمستخدم (باستخدام المفتاح الصحيح)
+    await db.ref('codes/' + codeKey).update({
       used: true,
       usedAt: new Date().toISOString(),
       usedBy: enteredStudentId,
       redeemedByName: studentData.name
     });
     
-    // إضافة النقاط للطالب (نقاط عامة + نقاط أسبوعية)
+    // إضافة النقاط للطالب
     await studentRef.update({
       points: newPoints,
-      weeklyPoints: newWeeklyPoints, // إضافة/تحديث النقاط الأسبوعية
+      weeklyPoints: newWeeklyPoints,
       lastRedeem: new Date().toISOString(),
       lastRedeemCode: code
     });
@@ -764,7 +780,7 @@ async function redeemCode() {
     
   } catch (error) {
     console.error(error);
-    showResult(false, 'خطأ في النظام', 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى لاحقاً', '⚠️');
+    showResult(false, 'خطأ في النظام', 'حدث خطأ غير متوقع: ' + error.message, '⚠️');
   } finally {
     setLoading(false);
   }
